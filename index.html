@@ -1,23 +1,135 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>EMRS Subdega | Official School Website</title>
 <link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
 </head>
 <body>
-<header><div class="top">Eklavya Model Residential School, Subdega</div>
-<nav><div class="brand"><b>EMRS SUBDEGA</b><small>Under NESTS</small></div>
+<header>
+<div class="top">Eklavya Model Residential School, Subdega</div>
+<nav>
+<div class="brand"><b>EMRS SUBDEGA</b><small>Under NESTS</small></div>
 <button onclick="document.querySelector('.links').classList.toggle('open')">☰</button>
-<div class="links"><a href="#home">Home</a><a href="#about">About</a><a href="#principal">Principal</a><a href="#admission">Admissions</a><a href="#notices">Notices</a><a href="#gallery">Gallery</a><a href="#downloads">Downloads</a><a href="#contact">Contact</a></div></nav></header>
-<section id="home" class="hero"><div><label>WELCOME TO</label><h1>Eklavya Model Residential School, Subdega</h1><p>Quality education, residential learning and holistic development.</p><a class="btn" href="#admission">Admissions</a> <a class="btn outline" href="#notices">Latest Notices</a></div></section>
-<section id="about"><h2>About the School</h2><div class="grid"><div><p>EMRS Subdega is an Eklavya Model Residential School dedicated to quality education and a supportive residential environment.</p><p>This website provides school information, notices, admission updates, downloads and contact details.</p></div><div class="card"><h3>School Highlights</h3><ul><li>Residential schooling</li><li>Academic education</li><li>Sports and co-curricular activities</li><li>Student welfare and holistic development</li></ul></div></div></section>
-<section id="principal" class="alt"><h2>Principal's Message</h2><div class="card"><div class="photo">Principal Photo</div><p>Welcome to EMRS Subdega. Our aim is to nurture every student with knowledge, confidence, discipline and values. We encourage our students to learn, explore and contribute positively to society.</p><b>— Principal, EMRS Subdega</b></div></section>
-<section id="admission"><h2>Admissions</h2><div class="grid three"><div class="card"><h3>Admission Notice</h3><p>Important admission announcements will be published here.</p></div><div class="card"><h3>Application Form</h3><p>Application forms and documents can be added here.</p></div><div class="card"><h3>Eligibility</h3><p>Eligibility, age criteria and vacancies will be updated from official notices.</p></div></div></section>
-<section id="notices" class="alt"><h2>Latest Notices</h2><div class="card notice"><b>NOTICE</b><div><h3>Admission / Vacancy Updates</h3><p>New official notices can be added here.</p></div></div><div class="card notice"><b>NOTICE</b><div><h3>School Announcements</h3><p>Important announcements for students and parents.</p></div></div></section>
-<section id="gallery"><h2>School Gallery</h2><div class="gallery"><div>School Photo</div><div>Campus</div><div>Activities</div><div>Students</div></div><p>Replace these placeholders with actual school photographs.</p></section>
-<section id="downloads" class="alt"><h2>Downloads</h2><div class="grid three"><div class="card"><h3>Admission Form</h3><p>PDF application form</p></div><div class="card"><h3>Admission Notice</h3><p>Latest official notice</p></div><div class="card"><h3>Other Documents</h3><p>Forms and circulars</p></div></div></section>
-<section id="contact"><h2>Contact Us</h2><div class="grid"><div class="card"><h3>EMRS Subdega</h3><p><b>Address:</b> Subdega, Sundargarh, Odisha, India</p><p><b>Phone:</b> Add official school phone</p><p><b>Email:</b> Add official school email</p></div><div class="card"><h3>Important</h3><p>Please verify official notices and admission information through the school.</p></div></div></section>
+<div class="links">
+<a href="#home">Home</a><a href="#about">About</a><a href="#principal">Principal</a>
+<a href="#admission">Admissions</a><a href="#notices">Notices</a><a href="#gallery">Gallery</a>
+<a href="#downloads">Downloads</a><a href="#contact">Contact</a>
+<a href="admin/">Admin Login</a>
+</div>
+</nav>
+</header>
+
+<section id="home" class="hero">
+<div>
+<label>WELCOME TO</label>
+<h1>Eklavya Model Residential School, Subdega</h1>
+<p>Quality education, residential learning and holistic development.</p>
+<a class="btn" href="#admission">Admissions</a>
+<a class="btn outline" href="#notices">Latest Notices</a>
+</div>
+</section>
+
+<section id="about">
+<h2>About the School</h2>
+<div class="grid">
+<div><p id="aboutText">EMRS Subdega is an Eklavya Model Residential School dedicated to quality education and a supportive residential environment.</p>
+<p>This website provides school information, notices, admission updates, downloads and contact details.</p></div>
+<div class="card"><h3>School Highlights</h3><ul><li>Residential schooling</li><li>Academic education</li><li>Sports and co-curricular activities</li><li>Student welfare and holistic development</li></ul></div>
+</div>
+</section>
+
+<section id="principal" class="alt">
+<h2>Principal's Message</h2>
+<div class="card">
+<div class="photo">Principal Photo</div>
+<p id="principalMessage">Welcome to EMRS Subdega. Our aim is to nurture every student with knowledge, confidence, discipline and values. We encourage our students to learn, explore and contribute positively to society.</p>
+<b>— Principal, EMRS Subdega</b>
+</div>
+</section>
+
+<section id="admission">
+<h2>Admissions</h2>
+<div class="grid three">
+<div class="card"><h3>Admission Notice</h3><p>Important admission announcements will be published here.</p></div>
+<div class="card"><h3>Application Form</h3><p>Application forms and documents can be added here.</p></div>
+<div class="card"><h3>Eligibility</h3><p>Eligibility, age criteria and vacancies will be updated from official notices.</p></div>
+</div>
+</section>
+
+<section id="notices" class="alt">
+<h2>Latest Notices</h2>
+<div id="noticeList">
+<div class="card notice"><b>NOTICE</b><div><h3>Admission / Vacancy Updates</h3><p>New official notices can be added here.</p></div></div>
+<div class="card notice"><b>NOTICE</b><div><h3>School Announcements</h3><p>Important announcements for students and parents.</p></div></div>
+</div>
+</section>
+
+<section id="gallery">
+<h2>School Gallery</h2>
+<div class="gallery">
+<div style="background:url('school-campus.jpg') center/cover"> </div>
+<div>Campus</div><div>Activities</div><div>Students</div>
+</div>
+<p>More photographs can be added later through the admin dashboard.</p>
+</section>
+
+<section id="downloads" class="alt">
+<h2>Downloads</h2>
+<div class="grid three">
+<div class="card"><h3>Admission Form</h3><p>PDF application form</p></div>
+<div class="card"><h3>Admission Notice</h3><p>Latest official notice</p></div>
+<div class="card"><h3>Other Documents</h3><p>Forms and circulars</p></div>
+</div>
+</section>
+
+<section id="contact">
+<h2>Contact Us</h2>
+<div class="grid">
+<div class="card">
+<h3>EMRS Subdega</h3>
+<p><b>Address:</b> <span id="schoolAddress">Subdega, Sundargarh, Odisha, India</span></p>
+<p><b>Phone:</b> <span id="schoolPhone">Add official school phone</span></p>
+<p><b>Email:</b> <span id="schoolEmail">Add official school email</span></p>
+</div>
+<div class="card"><h3>Important</h3><p>Please verify official notices and admission information through the school.</p></div>
+</div>
+</section>
+
 <footer>© <span id="y"></span> EMRS Subdega. All Rights Reserved.</footer>
-<script>document.getElementById('y').textContent=new Date().getFullYear()</script>
-</body></html>
+
+<script>
+document.getElementById('y').textContent = new Date().getFullYear();
+
+async function loadManagedContent() {
+  if (!window.SUPABASE_URL || window.SUPABASE_URL.includes("PASTE_")) return;
+  try {
+    const client = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+    const { data: content } = await client.from('site_content').select('*').eq('id', 1).maybeSingle();
+    if (content) {
+      if (content.about_text) document.getElementById('aboutText').textContent = content.about_text;
+      if (content.principal_message) document.getElementById('principalMessage').textContent = content.principal_message;
+      if (content.address) document.getElementById('schoolAddress').textContent = content.address;
+      if (content.phone) document.getElementById('schoolPhone').textContent = content.phone;
+      if (content.email) document.getElementById('schoolEmail').textContent = content.email;
+    }
+    const { data: notices } = await client.from('notices').select('*').eq('published', true).order('date', {ascending:false}).order('id', {ascending:false}).limit(10);
+    if (notices && notices.length) {
+      document.getElementById('noticeList').innerHTML = notices.map(n => `
+        <div class="card notice"><b>NOTICE</b><div><h3>${escapeHtml(n.title)}</h3><p>${escapeHtml(n.body)}</p></div></div>
+      `).join('');
+    }
+  } catch (e) {
+    console.log("Managed content not loaded:", e);
+  }
+}
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+}
+loadManagedContent();
+</script>
+</body>
+</html>
