@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EMRS Subdega Admin</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../supabase-config.js"></script>
+</head>
+<body>
+<div id="loginBox" class="panel">
+<h1>EMRS Subdega</h1><p class="muted">Administrator Login</p>
+<form id="loginForm">
+<label>Email</label><input id="email" type="email" required placeholder="Admin email">
+<label>Password</label><input id="password" type="password" required placeholder="Password">
+<button type="submit">Login</button>
+<p id="loginMsg" class="msg"></p>
+</form>
+<a href="../">← Back to website</a>
+</div>
+
+<div id="dashboard" class="hidden">
+<header class="dashHead"><div><b>EMRS SUBDEGA</b><span>Website Admin Dashboard</span></div><button id="logoutBtn">Logout</button></header>
+<main class="wrap">
+<div class="welcome"><h1>School Website Dashboard</h1><p>Change the details below and click Save. Changes will appear on the public website.</p></div>
+
+<section class="panel">
+<h2>School Information</h2>
+<div class="two">
+<div><label>Address</label><input id="address"></div>
+<div><label>Phone</label><input id="phone"></div>
+<div><label>Email</label><input id="schoolEmail"></div>
+</div>
+<label>About the School</label><textarea id="aboutText" rows="5"></textarea>
+<label>Principal's Message</label><textarea id="principalMessage" rows="6"></textarea>
+<button id="saveContent">Save School Details</button>
+<p id="contentMsg" class="msg"></p>
+</section>
+
+<section class="panel">
+<h2>Notices</h2>
+<form id="noticeForm">
+<input type="hidden" id="noticeId">
+<label>Notice Title</label><input id="noticeTitle" required>
+<label>Notice Text</label><textarea id="noticeBody" rows="4" required></textarea>
+<div class="two">
+<div><label>Date</label><input id="noticeDate" type="date" required></div>
+<div class="check"><label><input id="noticePublished" type="checkbox" checked> Publish on website</label></div>
+</div>
+<button type="submit">Save Notice</button>
+<button type="button" id="cancelNotice" class="secondary">Clear</button>
+<p id="noticeMsg" class="msg"></p>
+</form>
+<div id="noticeTable"></div>
+</section>
+</main>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
