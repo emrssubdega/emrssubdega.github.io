@@ -7,56 +7,207 @@
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../supabase-config.js"></script>
+
+<style>
+.gallery-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:15px;
+  margin-top:20px;
+}
+.gallery-card{
+  border:1px solid #dce5de;
+  border-radius:10px;
+  padding:10px;
+  background:#fff;
+}
+.gallery-card img{
+  width:100%;
+  height:150px;
+  object-fit:cover;
+  border-radius:8px;
+}
+.gallery-card button{
+  width:100%;
+  margin-top:8px;
+}
+.gallery-upload{
+  background:#f7faf7;
+  padding:15px;
+  border-radius:10px;
+}
+</style>
 </head>
+
 <body>
+
 <div id="loginBox" class="panel">
-<h1>EMRS Subdega</h1><p class="muted">Administrator Login</p>
-<form id="loginForm">
-<label>Email</label><input id="email" type="email" required placeholder="Admin email">
-<label>Password</label><input id="password" type="password" required placeholder="Password">
-<button type="submit">Login</button>
-<p id="loginMsg" class="msg"></p>
-</form>
-<a href="../">← Back to website</a>
+  <h1>EMRS Subdega</h1>
+  <p class="muted">Administrator Login</p>
+
+  <form id="loginForm">
+    <label>Email</label>
+    <input id="email" type="email" required placeholder="Admin email">
+
+    <label>Password</label>
+    <input id="password" type="password" required placeholder="Password">
+
+    <button type="submit">Login</button>
+
+    <p id="loginMsg" class="msg"></p>
+  </form>
+
+  <a href="../">← Back to website</a>
 </div>
+
 
 <div id="dashboard" class="hidden">
-<header class="dashHead"><div><b>EMRS SUBDEGA</b><span>Website Admin Dashboard</span></div><button id="logoutBtn">Logout</button></header>
+
+<header class="dashHead">
+  <div>
+    <b>EMRS SUBDEGA</b>
+    <span>Website Admin Dashboard</span>
+  </div>
+
+  <button id="logoutBtn">Logout</button>
+</header>
+
+
 <main class="wrap">
-<div class="welcome"><h1>School Website Dashboard</h1><p>Change the details below and click Save. Changes will appear on the public website.</p></div>
+
+<div class="welcome">
+  <h1>School Website Dashboard</h1>
+  <p>
+    Change the details below and click Save.
+    Changes will appear on the public website.
+  </p>
+</div>
+
+
+<!-- SCHOOL INFORMATION -->
 
 <section class="panel">
+
 <h2>School Information</h2>
+
 <div class="two">
-<div><label>Address</label><input id="address"></div>
-<div><label>Phone</label><input id="phone"></div>
-<div><label>Email</label><input id="schoolEmail"></div>
+
+<div>
+<label>Address</label>
+<input id="address">
 </div>
-<label>About the School</label><textarea id="aboutText" rows="5"></textarea>
-<label>Principal's Message</label><textarea id="principalMessage" rows="6"></textarea>
-<button id="saveContent">Save School Details</button>
+
+<div>
+<label>Phone</label>
+<input id="phone">
+</div>
+
+<div>
+<label>Email</label>
+<input id="schoolEmail">
+</div>
+
+</div>
+
+<label>About the School</label>
+<textarea id="aboutText" rows="5"></textarea>
+
+<label>Principal's Message</label>
+<textarea id="principalMessage" rows="6"></textarea>
+
+<button id="saveContent">
+Save School Details
+</button>
+
 <p id="contentMsg" class="msg"></p>
+
 </section>
 
+
+<!-- NOTICES -->
+
 <section class="panel">
+
 <h2>Notices</h2>
+
 <form id="noticeForm">
+
 <input type="hidden" id="noticeId">
-<label>Notice Title</label><input id="noticeTitle" required>
-<label>Notice Text</label><textarea id="noticeBody" rows="4" required></textarea>
+
+<label>Notice Title</label>
+<input id="noticeTitle" required>
+
+<label>Notice Text</label>
+<textarea id="noticeBody" rows="4" required></textarea>
+
 <div class="two">
-<div><label>Date</label><input id="noticeDate" type="date" required></div>
-<div class="check"><label><input id="noticePublished" type="checkbox" checked> Publish on website</label></div>
+
+<div>
+<label>Date</label>
+<input id="noticeDate" type="date" required>
 </div>
-<button type="submit">Save Notice</button>
-<button type="button" id="cancelNotice" class="secondary">Clear</button>
+
+<div class="check">
+<label>
+<input id="noticePublished" type="checkbox" checked>
+Publish on website
+</label>
+</div>
+
+</div>
+
+<button type="submit">
+Save Notice
+</button>
+
+<button type="button" id="cancelNotice" class="secondary">
+Clear
+</button>
+
 <p id="noticeMsg" class="msg"></p>
+
 </form>
+
 <div id="noticeTable"></div>
+
 </section>
+
+
+<!-- GALLERY -->
+
+<section class="panel">
+
+<h2>🖼️ Gallery</h2>
+
+<div class="gallery-upload">
+
+<label>Photo Title</label>
+<input id="galleryTitle" placeholder="Example: Independence Day Celebration">
+
+<label>Select Photo</label>
+<input id="galleryFile" type="file" accept="image/*">
+
+<button type="button" id="uploadGallery">
+Upload Photo
+</button>
+
+<p id="galleryMsg" class="msg"></p>
+
+</div>
+
+<h3>Uploaded Photos</h3>
+
+<div id="galleryGrid" class="gallery-grid">
+</div>
+
+</section>
+
+
 </main>
 </div>
 
+
 <script src="app.js"></script>
+
 </body>
 </html>
