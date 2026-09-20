@@ -450,10 +450,10 @@ document.getElementById('uploadGallery')
   const filePath =
     Date.now() + '-' + safeName;
 
-
+  // Uses 'Gallery' with capital G to match your Supabase bucket name
   const { error: uploadError } =
     await client.storage
-      .from('gallery')
+      .from('Gallery')
       .upload(filePath, file, {
         cacheControl: '3600',
         upsert: false,
@@ -472,7 +472,7 @@ document.getElementById('uploadGallery')
 
   const { data: publicData } =
     client.storage
-      .from('gallery')
+      .from('Gallery')
       .getPublicUrl(filePath);
 
 
@@ -527,8 +527,9 @@ async function deleteGallery(id, imageUrl) {
     const url =
       new URL(imageUrl);
 
+    // Uses '/Gallery/' with capital G matching Supabase Storage URL path
     const marker =
-      '/storage/v1/object/public/gallery/';
+      '/storage/v1/object/public/Gallery/';
 
     const index =
       url.pathname.indexOf(marker);
@@ -543,7 +544,7 @@ async function deleteGallery(id, imageUrl) {
         );
 
       await client.storage
-        .from('gallery')
+        .from('Gallery')
         .remove([filePath]);
     }
 
