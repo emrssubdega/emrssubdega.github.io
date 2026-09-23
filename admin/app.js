@@ -1,9 +1,7 @@
-/* Global Client Initialization */
+/* Global Supabase Client Initialization */
 var client = null;
 if (window.supabase && window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
   client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
-} else {
-  alert("Supabase credentials not detected! Check supabase-config.js in the root directory.");
 }
 
 /* ================= AUTHENTICATION ================= */
@@ -12,48 +10,50 @@ async function checkSession() {
   const { data: { session } } = await client.auth.getSession();
   const loginSection = document.getElementById('loginSection');
   const adminDashboard = document.getElementById('adminDashboard');
-  const userBadge = document.getElementById('userEmailBadge');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const sideUserName = document.getElementById('sideUserName');
+  const cardUserName = document.getElementById('cardUserName');
+  const activeUserEmail = document.getElementById('activeUserEmail');
 
   if (session) {
     if (loginSection) loginSection.style.display = 'none';
-    if (adminDashboard) adminDashboard.style.display = 'block';
-    if (userBadge) userBadge.textContent = 'Logged in as: ' + session.user.email;
+    if (adminDashboard) adminDashboard.style.display = 'flex';
+    if (logoutBtn) logoutBtn.style.display = 'block';
+
+    const emailName = session.user.email ? session.user.email.split('@')[0].toUpperCase() : 'ADMIN';
+    if (sideUserName) sideUserName.textContent = emailName;
+    if (cardUserName) cardUserName.textContent = emailName;
+    if (activeUserEmail) activeUserEmail.textContent = session.user.email;
+
     loadAdminNotices();
     loadGallery();
     loadAdminDocuments();
   } else {
     if (loginSection) loginSection.style.display = 'block';
     if (adminDashboard) adminDashboard.style.display = 'none';
+    if (logoutBtn) logoutBtn.style.display = 'none';
   }
 }
 
 const loginBtn = document.getElementById('loginBtn');
 if (loginBtn) {
-  loginBtn.addEventListener('click', async (e) => {
-    e.preventDefault();
-    const emailInput = document.getElementById('adminEmail');
-    const passInput = document.getElementById('adminPassword');
+  loginBtn.addEventListener('click', async () => {
+    const email = document.getElementById('adminEmail').value.trim();
+    const password = document.getElementById('adminPassword').value.trim();
     const errorMsg = document.getElementById('loginError');
 
-    const email = emailInput ? emailInput.value.trim() : '';
-    const password = passInput ? passInput.value.trim() : '';
-
     if (!email || !password) {
-      if (errorMsg) errorMsg.textContent = 'Please enter both email and password.';
+      errorMsg.textContent = 'Please enter your email and password.';
       return;
     }
 
-    if (errorMsg) errorMsg.textContent = 'Signing in...';
-
-    const { data, error } = await client.auth.signInWithPassword({
-      email: email,
-      password: password
-    });
+    errorMsg.textContent = 'Signing in...';
+    const { data, error } = await client.auth.signInWithPassword({ email, password });
 
     if (error) {
-      if (errorMsg) errorMsg.textContent = error.message;
+      errorMsg.textContent = error.message;
     } else {
-      if (errorMsg) errorMsg.textContent = '';
+      errorMsg.textContent = '';
       checkSession();
     }
   });
@@ -80,18 +80,13 @@ async function loadAdminNotices() {
     .select('*')
     .order('notice_date', { ascending: false });
 
-  if (error) {
-    container.innerHTML = `<p style="color:red">Error: ${escapeHtml(error.message)}</p>`;
-    return;
-  }
-
-  if (!data || data.length === 0) {
-    container.innerHTML = '<p style="color:#64748b;">No notices posted yet.</p>';
+  if (error || !data || data.length === 0) {
+    container.innerHTML = '<p style="color:#64748b; padding:10px 0;">No notices found.</p>';
     return;
   }
 
   container.innerHTML = data.map(n => `
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; margin-bottom:8px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; margin-bottom:8px;">
       <div>
         <strong>${escapeHtml(n.title)}</strong>
         <span style="font-size:0.85rem; color:#64748b; margin-left:8px;">[${escapeHtml(n.notice_date || '')}]</span>
@@ -151,8 +146,6 @@ window.deleteNotice = async function(id) {
 };
 
 /* ================= GALLERY & SLIDER ================= */
-const uploadGalleryBtn = document.getElementById('uploadGallery');
-
 async function loadGallery() {
   const grid = document.getElementById('galleryGrid');
   if (!grid || !client) return;
@@ -162,21 +155,16 @@ async function loadGallery() {
     .select('*')
     .order('created_at', { ascending: false });
 
-  if (error) {
-    grid.innerHTML = `<p style="color:red">Error: ${escapeHtml(error.message)}</p>`;
-    return;
-  }
-
-  if (!data || data.length === 0) {
-    grid.innerHTML = '<p style="color:#64748b;">No photos uploaded yet.</p>';
+  if (error || !data || data.length === 0) {
+    grid.innerHTML = '<p style="color:#64748b; padding:10px 0;">No photos uploaded yet.</p>';
     return;
   }
 
   grid.innerHTML = data.map(photo => `
-    <div style="border:1px solid #cbd5e1; border-radius:8px; padding:10px; background:#ffffff; display:flex; flex-direction:column; gap:8px;">
-      <img src="${escapeHtml(photo.image_url)}" style="width:100%; height:120px; object-fit:cover; border-radius:4px;" />
+    <div style="border:1px solid #cbd5e1; border-radius:6px; padding:8px; background:#ffffff; display:flex; flex-direction:column; gap:8px;">
+      <img src="${escapeHtml(photo.image_url)}" style="width:100%; height:110px; object-fit:cover; border-radius:4px;" />
       <strong style="font-size:0.85rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(photo.title || 'Untitled')}</strong>
-      <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:4px;">
         <button style="padding:4px 8px; font-size:0.75rem; background:${photo.is_slider ? '#f97316' : '#64748b'}; color:white; border:none; border-radius:4px; cursor:pointer;" onclick="toggleSliderStatus(${Number(photo.id)}, ${Boolean(photo.is_slider)})">
           ${photo.is_slider ? '★ In Slider' : '+ Add to Slider'}
         </button>
@@ -186,51 +174,61 @@ async function loadGallery() {
   `).join('');
 }
 
-if (uploadGalleryBtn) {
-  uploadGalleryBtn.addEventListener('click', async () => {
-    const titleInput = document.getElementById('galleryTitle');
-    const fileInput = document.getElementById('galleryFile');
-    const isSliderInput = document.getElementById('galleryIsSlider');
-    const msg = document.getElementById('galleryMsg');
-    const file = fileInput.files[0];
+/* Upload Helper */
+async function handlePhotoUpload(title, file, isSlider, msgEl) {
+  if (!file) {
+    msgEl.textContent = 'Please choose a photo.';
+    return;
+  }
+  msgEl.textContent = 'Uploading photo...';
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+  const filePath = Date.now() + '_' + safeName;
 
-    if (!file) {
-      msg.textContent = 'Please choose a photo.';
-      return;
-    }
+  const { error: uploadError } = await client.storage
+    .from('gallery')
+    .upload(filePath, file, { cacheControl: '3600', upsert: false });
 
-    msg.textContent = 'Uploading photo...';
-    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-    const filePath = Date.now() + '_' + safeName;
+  if (uploadError) {
+    msgEl.textContent = 'Upload error: ' + uploadError.message;
+    return;
+  }
 
-    const { error: uploadError } = await client.storage
-      .from('gallery')
-      .upload(filePath, file, { cacheControl: '3600', upsert: false });
+  const { data: publicData } = client.storage.from('gallery').getPublicUrl(filePath);
 
-    if (uploadError) {
-      msg.textContent = 'Upload error: ' + uploadError.message;
-      return;
-    }
+  const { error: dbError } = await client.from('gallery').insert({
+    title: title.trim(),
+    image_url: publicData.publicUrl,
+    is_slider: isSlider
+  });
 
-    const { data: publicData } = client.storage.from('gallery').getPublicUrl(filePath);
-    const isSlider = isSliderInput ? isSliderInput.checked : false;
-
-    const { error: dbError } = await client.from('gallery').insert({
-      title: titleInput.value.trim(),
-      image_url: publicData.publicUrl,
-      is_slider: isSlider
-    });
-
-    if (dbError) {
-      msg.textContent = 'Database error: ' + dbError.message;
-      return;
-    }
-
-    msg.textContent = 'Photo uploaded successfully!';
-    titleInput.value = '';
-    fileInput.value = '';
-    if (isSliderInput) isSliderInput.checked = true;
+  if (dbError) {
+    msgEl.textContent = 'Database error: ' + dbError.message;
+  } else {
+    msgEl.textContent = 'Photo uploaded successfully!';
     loadGallery();
+  }
+}
+
+/* Gallery View Upload */
+const uploadGalleryBtn = document.getElementById('uploadGallery');
+if (uploadGalleryBtn) {
+  uploadGalleryBtn.addEventListener('click', () => {
+    const title = document.getElementById('galleryTitle').value;
+    const file = document.getElementById('galleryFile').files[0];
+    const isSlider = document.getElementById('galleryIsSlider').checked;
+    const msg = document.getElementById('galleryMsg');
+    handlePhotoUpload(title, file, isSlider, msg);
+  });
+}
+
+/* Dedicated Slider Upload */
+const uploadSliderBtn = document.getElementById('uploadSliderBtn');
+if (uploadSliderBtn) {
+  uploadSliderBtn.addEventListener('click', () => {
+    const title = document.getElementById('sliderPhotoTitle').value;
+    const file = document.getElementById('sliderPhotoFile').files[0];
+    const msg = document.getElementById('sliderMsg');
+    handlePhotoUpload(title, file, true, msg);
   });
 }
 
@@ -268,18 +266,13 @@ async function loadAdminDocuments() {
     .select('*')
     .order('created_at', { ascending: false });
 
-  if (error) {
-    container.innerHTML = `<p style="color:red">Error: ${escapeHtml(error.message)}</p>`;
-    return;
-  }
-
-  if (!data || data.length === 0) {
-    container.innerHTML = '<p style="color:#64748b;">No documents uploaded yet.</p>';
+  if (error || !data || data.length === 0) {
+    container.innerHTML = '<p style="color:#64748b; padding:10px 0;">No documents uploaded yet.</p>';
     return;
   }
 
   container.innerHTML = data.map(doc => `
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; margin-bottom:8px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; margin-bottom:8px;">
       <div>
         <strong>${escapeHtml(doc.title)}</strong>
         <span style="font-size:0.85rem; color:#64748b; margin-left:8px;">[${escapeHtml(doc.category)}]</span>
@@ -302,7 +295,7 @@ if (docForm) {
     const file = fileInput.files[0];
 
     if (!file) {
-      msg.textContent = 'Please choose a file.';
+      msg.textContent = 'Please select a file.';
       return;
     }
 
@@ -329,13 +322,12 @@ if (docForm) {
 
     if (dbError) {
       msg.textContent = 'Database error: ' + dbError.message;
-      return;
+    } else {
+      msg.textContent = 'Document uploaded successfully!';
+      titleInput.value = '';
+      fileInput.value = '';
+      loadAdminDocuments();
     }
-
-    msg.textContent = 'Document uploaded successfully!';
-    titleInput.value = '';
-    fileInput.value = '';
-    loadAdminDocuments();
   });
 }
 
@@ -345,7 +337,6 @@ window.deleteDocument = async function(id) {
   loadAdminDocuments();
 };
 
-/* ================= HELPERS ================= */
 function escapeHtml(val) {
   return String(val == null ? '' : val)
     .replace(/&/g, '&amp;')
@@ -355,5 +346,4 @@ function escapeHtml(val) {
     .replace(/'/g, '&#039;');
 }
 
-/* Check session on page load */
 checkSession();
