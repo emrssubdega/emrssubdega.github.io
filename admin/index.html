@@ -3,189 +3,482 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EMRS Subdega - Admin Portal</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Admin Panel - EMRS Subdega</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #f1f5f9;
+      background: #eaedf1;
       color: #334155;
-      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
-    .admin-card {
-      max-width: 440px;
-      margin: 60px auto;
+
+    /* Top Brand Bar */
+    .top-navbar {
+      background: #0d47a1;
+      color: #ffffff;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+      z-index: 100;
+    }
+    .top-navbar h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .top-right-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .top-right-actions a, .top-right-actions button {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 5px 12px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      text-decoration: none;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .top-right-actions button:hover, .top-right-actions a:hover {
+      background: rgba(255, 255, 255, 0.28);
+    }
+
+    /* Admin Login Box */
+    .login-wrapper {
+      max-width: 400px;
+      margin: 80px auto;
       background: #ffffff;
       padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      border-top: 4px solid #0d47a1;
     }
-    .admin-card h2 { margin-bottom: 8px; color: #0b3c5d; }
-    .admin-card p { font-size: 0.9rem; color: #64748b; margin-bottom: 20px; }
-    .form-group { margin-bottom: 15px; }
-    .form-group label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 6px; }
-    .form-group input, .form-group select, .form-group textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
+    .login-wrapper h2 {
+      color: #0d47a1;
+      font-size: 1.3rem;
+      margin-bottom: 6px;
+    }
+    .login-wrapper p {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-bottom: 20px;
+    }
+
+    /* Main Dashboard Layout */
+    .admin-layout {
+      display: flex;
+      flex: 1;
+      min-height: calc(100vh - 52px);
+    }
+
+    /* Dark Blue Sidebar */
+    .sidebar {
+      width: 250px;
+      background: #1e293b;
+      color: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .sidebar-user-header {
+      background: linear-gradient(135deg, #b91c1c, #475569);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .user-info strong {
+      display: block;
       font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
-    .btn-primary {
+    .user-info span {
+      font-size: 0.75rem;
+      color: #cbd5e1;
+    }
+
+    /* Sidebar Navigation Links */
+    .sidebar-menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar-menu button {
       width: 100%;
-      background: #0b3c5d;
-      color: #fff;
+      text-align: left;
+      background: none;
       border: none;
-      padding: 12px;
-      font-weight: 600;
-      border-radius: 6px;
+      color: #cbd5e1;
+      padding: 12px 18px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 12px;
       cursor: pointer;
-      font-size: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      transition: background 0.15s, color 0.15s;
+      font-family: inherit;
     }
-    .btn-primary:hover { background: #072a42; }
-    .danger { background: #ef4444; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
-    .danger:hover { background: #dc2626; }
-    .dashboard-container {
-      max-width: 1000px;
-      margin: 0 auto;
+    .sidebar-menu button:hover {
+      background: #0f172a;
+      color: #ffffff;
     }
-    .dashboard-header {
+    .sidebar-menu button.active {
+      background: #0d47a1;
+      color: #ffffff;
+      font-weight: 600;
+      border-left: 4px solid #38bdf8;
+    }
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 12px 18px;
+      font-size: 0.75rem;
+      color: #64748b;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: #182234;
+    }
+
+    /* Main Content Workspace */
+    .workspace {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+    }
+    .workspace-header {
+      background: #ffffff;
+      padding: 14px 20px;
+      border-radius: 6px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+      margin-bottom: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #ffffff;
-      padding: 15px 25px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      margin-bottom: 25px;
     }
-    .dashboard-header h1 { font-size: 1.3rem; color: #0b3c5d; }
-    .section-box {
+    .workspace-header h2 {
+      font-size: 1.15rem;
+      color: #1e293b;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    /* Views */
+    .view-card {
+      display: none;
       background: #ffffff;
       padding: 25px;
-      border-radius: 8px;
-      margin-bottom: 25px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      border-radius: 6px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
     }
-    .section-box h3 { margin-bottom: 15px; color: #0f172a; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; }
+    .view-card.active {
+      display: block;
+    }
+
+    /* Profile Avatar Box (Like in screenshot) */
+    .profile-card {
+      max-width: 320px;
+      margin: 20px auto;
+      background: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      text-align: center;
+    }
+    .profile-banner {
+      height: 100px;
+      background: #be123c;
+    }
+    .profile-avatar-circle {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 4px solid #ffffff;
+      margin: -50px auto 10px;
+      background: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .profile-avatar-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .profile-details {
+      padding: 10px 20px 25px;
+    }
+    .profile-details h3 {
+      font-size: 1.1rem;
+      color: #1e293b;
+      margin-bottom: 4px;
+    }
+    .profile-details p {
+      font-size: 0.82rem;
+      color: #64748b;
+      line-height: 1.4;
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 14px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #334155;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+    .btn-primary {
+      background: #0d47a1;
+      color: #ffffff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .btn-primary:hover {
+      background: #0a3880;
+    }
+    .danger {
+      background: #dc2626;
+      color: #fff;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../supabase-config.js"></script>
 </head>
 <body>
 
-  <!-- LOGIN SECTION -->
-  <div id="loginSection" class="admin-card">
-    <h2>Admin Login</h2>
-    <p>Sign in to manage notices, slider photos, and documents</p>
+  <!-- Top Blue Navbar -->
+  <header class="top-navbar">
+    <h1>Admin Panel</h1>
+    <div class="top-right-actions">
+      <a href="../" target="_blank">Live Site ↗</a>
+      <button id="logoutBtn" style="display: none;">Logout</button>
+    </div>
+  </header>
+
+  <!-- Login Form View -->
+  <div id="loginSection" class="login-wrapper">
+    <h2>Admin Sign In</h2>
+    <p>Enter your credentials to access the panel</p>
     <div class="form-group">
-      <label for="adminEmail">Email Address</label>
+      <label>Email Address</label>
       <input type="email" id="adminEmail" placeholder="admin@example.com" />
     </div>
     <div class="form-group">
-      <label for="adminPassword">Password</label>
+      <label>Password</label>
       <input type="password" id="adminPassword" placeholder="••••••••" />
     </div>
-    <button type="button" id="loginBtn" class="btn-primary">Sign In</button>
-    <p id="loginError" style="color: #ef4444; margin-top: 12px; font-weight: 500;"></p>
-    <p style="text-align: center; margin-top: 15px;"><a href="../" style="color: #0284c7; text-decoration: none; font-size: 0.88rem;">← Back to School Website</a></p>
+    <button type="button" id="loginBtn" class="btn-primary" style="width: 100%;">Sign In</button>
+    <p id="loginError" style="color: #dc2626; margin-top: 10px; font-size: 0.85rem;"></p>
   </div>
 
-  <!-- DASHBOARD SECTION -->
-  <div id="adminDashboard" class="dashboard-container" style="display: none;">
-    <div class="dashboard-header">
-      <div>
-        <h1>EMRS Subdega Dashboard</h1>
-        <span id="userEmailBadge" style="font-size: 0.85rem; color: #64748b;"></span>
+  <!-- Synchronized Dashboard Layout -->
+  <div id="adminDashboard" class="admin-layout" style="display: none;">
+    <!-- Left Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-user-header">
+        <div class="user-info">
+          <strong id="sideUserName">ADMIN USER</strong>
+          <span id="sideUserRole">EMRS Subdega Staff</span>
+        </div>
+        <span style="font-size: 0.8rem; color: #cbd5e1;">▼</span>
       </div>
-      <div style="display: flex; gap: 10px;">
-        <a href="../" target="_blank" style="padding: 8px 14px; background: #e2e8f0; color: #334155; text-decoration: none; border-radius: 6px; font-size: 0.88rem; font-weight: 500;">View Live Site ↗</a>
-        <button id="logoutBtn" class="danger" style="padding: 8px 14px; font-size: 0.88rem;">Log Out</button>
-      </div>
-    </div>
 
-    <!-- 1. Notice Management -->
-    <div class="section-box">
-      <h3>Manage Notice Board</h3>
-      <form id="noticeForm">
+      <ul class="sidebar-menu">
+        <li><button class="nav-tab-btn active" onclick="switchAdminTab('view-dashboard', this)">🏠 Dashboard</button></li>
+        <li><button class="nav-tab-btn" onclick="switchAdminTab('view-slider', this)">🖼️ Upload Main Slider</button></li>
+        <li><button class="nav-tab-btn" onclick="switchAdminTab('view-gallery', this)">📷 Upload Photo</button></li>
+        <li><button class="nav-tab-btn" onclick="switchAdminTab('view-notices', this)">📢 Notice Board</button></li>
+        <li><button class="nav-tab-btn" onclick="switchAdminTab('view-documents', this)">📁 File for Information</button></li>
+      </ul>
+
+      <div class="sidebar-footer">
+        Powered by EMRS Portal System
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="workspace">
+      <div class="workspace-header">
+        <h2 id="currentSectionTitle">Dashboard</h2>
+        <span style="font-size: 0.82rem; color: #64748b;" id="activeUserEmail"></span>
+      </div>
+
+      <!-- 1. DASHBOARD OVERVIEW (With Centered Profile Card like screenshot) -->
+      <section id="view-dashboard" class="view-card active">
+        <div class="profile-card">
+          <div class="profile-banner"></div>
+          <div class="profile-avatar-circle">
+            <img src="https://cdn-icons-png.flankfap.com/512/3135/3135715.png" alt="Admin Avatar" onerror="this.src='../school-campus.jpg'" />
+          </div>
+          <div class="profile-details">
+            <h3 id="cardUserName">Admin User</h3>
+            <p><strong>Role:</strong> School Portal Administrator</p>
+            <p>EMRS Subdega, Sundargarh</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. MAIN SLIDER -->
+      <section id="view-slider" class="view-card">
+        <h3 style="margin-bottom: 12px; color: #0d47a1;">Upload Homepage Carousel Slider Photos</h3>
+        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 16px;">Photos uploaded here or marked with "★ In Slider" appear in the top banner carousel on the school website.</p>
+        
         <div class="form-group">
-          <label>Notice Title</label>
-          <input type="text" id="noticeTitle" required />
+          <label>Slide Title / Caption</label>
+          <input type="text" id="sliderPhotoTitle" placeholder="e.g., School Campus Front View" />
         </div>
         <div class="form-group">
-          <label>Notice Date</label>
-          <input type="date" id="noticeDate" required />
+          <label>Select Slider Photo</label>
+          <input type="file" id="sliderPhotoFile" accept="image/*" />
+        </div>
+        <button type="button" id="uploadSliderBtn" class="btn-primary">Upload Slider Photo</button>
+        <span id="sliderMsg" style="margin-left: 10px; font-size: 0.85rem;"></span>
+      </section>
+
+      <!-- 3. ALL PHOTOS & GALLERY -->
+      <section id="view-gallery" class="view-card">
+        <h3 style="margin-bottom: 12px; color: #0d47a1;">Manage Photo Gallery</h3>
+        <div class="form-group">
+          <label>Photo Caption / Title</label>
+          <input type="text" id="galleryTitle" placeholder="e.g., Annual Sports Day 2026" />
         </div>
         <div class="form-group">
-          <label>Notice Content / Details</label>
-          <textarea id="noticeBody" rows="3" required></textarea>
+          <label>Select Photo</label>
+          <input type="file" id="galleryFile" accept="image/*" />
         </div>
         <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
-          <input type="checkbox" id="noticePublished" checked style="width: auto;" />
-          <label for="noticePublished" style="margin-bottom: 0;">Publish on website immediately</label>
+          <input type="checkbox" id="galleryIsSlider" style="width: auto;" />
+          <label for="galleryIsSlider" style="margin-bottom: 0;">Also feature this in the Homepage Slider</label>
         </div>
-        <button type="submit" id="noticeSubmitBtn" class="btn-primary" style="width: auto; padding: 8px 18px;">Publish Notice</button>
-        <span id="noticeMsg" style="margin-left: 10px; font-size: 0.9rem; font-weight: 500;"></span>
-      </form>
-      <div id="adminNoticeList" style="margin-top: 20px;"></div>
-    </div>
+        <button type="button" id="uploadGallery" class="btn-primary">Upload to Gallery</button>
+        <span id="galleryMsg" style="margin-left: 10px; font-size: 0.85rem;"></span>
 
-    <!-- 2. Gallery & Slider Photos -->
-    <div class="section-box">
-      <h3>Manage Photos & Slider</h3>
-      <div class="form-group">
-        <label>Photo Caption / Title</label>
-        <input type="text" id="galleryTitle" placeholder="e.g., Annual Sports Day 2026" />
-      </div>
-      <div class="form-group">
-        <label>Select Photo</label>
-        <input type="file" id="galleryFile" accept="image/*" />
-      </div>
-      <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
-        <input type="checkbox" id="galleryIsSlider" checked style="width: auto;" />
-        <label for="galleryIsSlider" style="margin-bottom: 0; font-weight: 600; color: #f97316;">Feature this photo in the Homepage Carousel Slider</label>
-      </div>
-      <button type="button" id="uploadGallery" class="btn-primary" style="width: auto; padding: 8px 18px;">Upload Photo</button>
-      <span id="galleryMsg" style="margin-left: 10px; font-size: 0.9rem; font-weight: 500;"></span>
-      <div id="galleryGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 20px;"></div>
-    </div>
+        <h4 style="margin-top: 25px; margin-bottom: 10px; color: #334155;">Existing Photos</h4>
+        <div id="galleryGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px;"></div>
+      </section>
 
-    <!-- 3. Official Documents -->
-    <div class="section-box">
-      <h3>Upload School Documents</h3>
-      <form id="docForm">
-        <div class="form-group">
-          <label>Document Title</label>
-          <input type="text" id="docTitle" placeholder="e.g., Class 10 Board Result Analysis" required />
-        </div>
-        <div class="form-group">
-          <label>Category (Matches Website Dropdown)</label>
-          <select id="docCategory" required>
-            <option value="Mandatory Disclosure">Mandatory Disclosure</option>
-            <option value="General Notice">General Notice</option>
-            <option value="Exam Notice">Exam Notice</option>
-            <option value="Rules & Regulations">Rules & Regulations</option>
-            <option value="Committees">Committees</option>
-            <option value="Recent Activities">Recent Activities</option>
-            <option value="Result Analysis">Result Analysis</option>
-            <option value="Transfer Certificate">Transfer Certificate</option>
-            <option value="Admission Notice">Admission Notice</option>
-            <option value="Tenders">Tenders</option>
-            <option value="Career">Career</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>File (PDF or image)</label>
-          <input type="file" id="docFile" required />
-        </div>
-        <button type="submit" class="btn-primary" style="width: auto; padding: 8px 18px;">Upload Document</button>
-        <span id="docMsg" style="margin-left: 10px; font-size: 0.9rem; font-weight: 500;"></span>
-      </form>
-      <div id="adminDocList" style="margin-top: 20px;"></div>
-    </div>
+      <!-- 4. NOTICE BOARD -->
+      <section id="view-notices" class="view-card">
+        <h3 style="margin-bottom: 12px; color: #0d47a1;">Notice Board & Circulars</h3>
+        <form id="noticeForm">
+          <div class="form-group">
+            <label>Notice Title</label>
+            <input type="text" id="noticeTitle" required />
+          </div>
+          <div class="form-group">
+            <label>Notice Date</label>
+            <input type="date" id="noticeDate" required />
+          </div>
+          <div class="form-group">
+            <label>Notice Body / Content</label>
+            <textarea id="noticeBody" rows="3" required></textarea>
+          </div>
+          <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" id="noticePublished" checked style="width: auto;" />
+            <label for="noticePublished" style="margin-bottom: 0;">Publish immediately on website</label>
+          </div>
+          <button type="submit" id="noticeSubmitBtn" class="btn-primary">Publish Notice</button>
+          <span id="noticeMsg" style="margin-left: 10px; font-size: 0.85rem;"></span>
+        </form>
+
+        <h4 style="margin-top: 25px; margin-bottom: 10px; color: #334155;">Active Notices</h4>
+        <div id="adminNoticeList"></div>
+      </section>
+
+      <!-- 5. FILE FOR INFORMATION (DOCUMENTS) -->
+      <section id="view-documents" class="view-card">
+        <h3 style="margin-bottom: 12px; color: #0d47a1;">Upload Official Records & Documents</h3>
+        <form id="docForm">
+          <div class="form-group">
+            <label>Document Title</label>
+            <input type="text" id="docTitle" placeholder="e.g., Mandatory Disclosure 2026" required />
+          </div>
+          <div class="form-group">
+            <label>Category (Matches School Website Dropdown)</label>
+            <select id="docCategory" required>
+              <option value="Mandatory Disclosure">Mandatory Disclosure</option>
+              <option value="General Notice">General Notice</option>
+              <option value="Exam Notice">Exam Notice</option>
+              <option value="Rules & Regulations">Rules & Regulations</option>
+              <option value="Committees">Committees</option>
+              <option value="Recent Activities">Recent Activities</option>
+              <option value="Result Analysis">Result Analysis</option>
+              <option value="Transfer Certificate">Transfer Certificate</option>
+              <option value="Admission Notice">Admission Notice</option>
+              <option value="Tenders">Tenders</option>
+              <option value="Career">Career</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Select File (PDF or Image)</label>
+            <input type="file" id="docFile" required />
+          </div>
+          <button type="submit" class="btn-primary">Upload Document</button>
+          <span id="docMsg" style="margin-left: 10px; font-size: 0.85rem;"></span>
+        </form>
+
+        <h4 style="margin-top: 25px; margin-bottom: 10px; color: #334155;">Uploaded Documents</h4>
+        <div id="adminDocList"></div>
+      </section>
+    </main>
   </div>
 
+  <script>
+    function switchAdminTab(viewId, btnEl) {
+      document.querySelectorAll('.view-card').forEach(v => v.classList.remove('active'));
+      const target = document.getElementById(viewId);
+      if (target) target.classList.add('active');
+
+      document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+
+      const titleMap = {
+        'view-dashboard': 'DASHBOARD',
+        'view-slider': 'UPLOAD MAIN SLIDER',
+        'view-gallery': 'UPLOAD PHOTO',
+        'view-notices': 'NOTICE BOARD',
+        'view-documents': 'FILE FOR INFORMATION'
+      };
+      const titleEl = document.getElementById('currentSectionTitle');
+      if (titleEl) titleEl.textContent = titleMap[viewId] || 'DASHBOARD';
+    }
+  </script>
   <script src="app.js"></script>
 </body>
 </html>
