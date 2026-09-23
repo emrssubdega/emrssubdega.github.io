@@ -170,7 +170,12 @@
     }
     .dropdown:hover .dropdown-content { display: block; }
 
-    .tab-section { width: 100%; flex: 1; }
+    /* Sections */
+    .tab-section {
+      width: 100%;
+      flex: 1;
+      min-height: 400px;
+    }
 
     /* Carousel */
     .slider-container {
@@ -255,6 +260,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 24px;
+      margin-top: 20px;
     }
     .photo-card {
       position: relative;
@@ -316,8 +322,8 @@
     }
   </style>
 
-  <!-- Immediate Global Engine -->
   <script>
+    // Global client instantiation
     window.client = null;
     try {
       if (window.supabase && window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
@@ -326,6 +332,8 @@
     } catch(e) {}
 
     window.allDocuments = [];
+    window.allGallery = [];
+    window.allNotices = [];
     window.currentDocCategory = 'ALL';
 
     window.escapeHtml = function(value) {
@@ -337,13 +345,25 @@
         .replace(/'/g, '&#039;');
     };
 
+    // Robust tab switcher that handles every section ID
     window.goToTab = function(tabId) {
-      var tabs = ['tab-home', 'tab-documents', 'tab-notices', 'tab-gallery', 'tab-contact'];
-      for (var i = 0; i < tabs.length; i++) {
-        var el = document.getElementById(tabs[i]);
-        if (el) el.style.display = (tabs[i] === tabId) ? 'block' : 'none';
+      var allTabs = ['tab-home', 'tab-documents', 'tab-notices', 'tab-gallery', 'tab-contact'];
+      for (var i = 0; i < allTabs.length; i++) {
+        var el = document.getElementById(allTabs[i]);
+        if (el) {
+          el.style.display = (allTabs[i] === tabId) ? 'block' : 'none';
+        }
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Refresh UI components for the active tab
+      if (tabId === 'tab-gallery') {
+        window.renderGallery();
+      } else if (tabId === 'tab-notices') {
+        window.renderNotices();
+      } else if (tabId === 'tab-documents') {
+        window.renderDocuments();
+      }
     };
 
     window.renderDocuments = function() {
@@ -359,7 +379,6 @@
         if (title) title.textContent = window.currentDocCategory;
         if (sub) sub.textContent = 'Official records and circulars filed under ' + window.currentDocCategory;
         
-        // Match exact or partial category names ignoring casing
         matches = matches.filter(function(d) {
           var docCat = String(d.category || '').trim().toLowerCase();
           return docCat === targetCat || docCat.includes(targetCat) || targetCat.includes(docCat);
@@ -399,7 +418,6 @@
       window.currentDocCategory = catName;
       window.goToTab('tab-documents');
       
-      // If documents haven't loaded yet, fetch them immediately
       if (!window.allDocuments || window.allDocuments.length === 0) {
         if (window.client) {
           var res = await window.client.from("documents").select("*").order("created_at", { ascending: false });
@@ -408,11 +426,65 @@
       }
       window.renderDocuments();
     };
+
+    window.renderGallery = function() {
+      var grid = document.getElementById("publicGalleryGrid");
+      if (!grid) return;
+
+      if (!window.allGallery || window.allGallery.length === 0) {
+        grid.innerHTML = '<p style="color:#64748b; grid-column: 1 / -1;">No photos uploaded yet.</p>';
+        return;
+      }
+
+      grid.innerHTML = window.allGallery.map(function(photo) {
+        return '<div class="photo-card" data-url="' + photo.image_url + '" data-title="' + (photo.title || '') + '">' +
+          '<img src="' + photo.image_url + '" alt="' + (photo.title || 'School photo') + '" loading="lazy" />' +
+          (photo.title ? '<div class="photo-card-title">' + window.escapeHtml(photo.title) + '</div>' : '') +
+        '</div>';
+      }).join("");
+
+      var cards = grid.querySelectorAll(".photo-card");
+      cards.forEach(function(card) {
+        card.addEventListener("click", function() {
+          var lb = document.getElementById("lightbox");
+          var img = document.getElementById("lightboxImg");
+          var cap = document.getElementById("lightboxCaption");
+          if (img) img.src = card.dataset.url;
+          if (cap) cap.textContent = card.dataset.title;
+          if (lb) lb.style.display = "flex";
+        });
+      });
+    };
+
+    window.renderNotices = function() {
+      var nCont = document.getElementById("noticeList");
+      var hCont = document.getElementById("homeNoticeList");
+      
+      if (!window.allNotices || window.allNotices.length === 0) {
+        var empty = '<p style="color: #64748b; font-style: italic;">No current circulars posted.</p>';
+        if (nCont) nCont.innerHTML = empty;
+        if (hCont) hCont.innerHTML = empty;
+        return;
+      }
+
+      var html = window.allNotices.map(function(item) {
+        return '<div class="notice-item">' +
+          '<div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;">' +
+            '<span style="color:#0f172a; font-weight:600; font-size:1.05rem;">' + window.escapeHtml(item.title || '') + '</span>' +
+            '<span style="font-size:0.85rem; color:#64748b; background:#e2e8f0; padding:2px 8px; border-radius:4px;">' + window.escapeHtml(item.notice_date || '') + '</span>' +
+          '</div>' +
+          '<p style="color:#475569; font-size:0.95rem; line-height:1.5;">' + window.escapeHtml(item.body || '') + '</p>' +
+        '</div>';
+      }).join("");
+
+      if (nCont) nCont.innerHTML = html;
+      if (hCont) hCont.innerHTML = html;
+    };
   </script>
 </head>
 <body>
 
-  <!-- Top Header -->
+  <!-- Top Official Header -->
   <div class="top-header">
     <div class="header-left">
       <img src="logo.png" alt="EMRS Logo" class="header-logo" onerror="this.src='https://nests.tribal.gov.in/assets/images/emrs_logo.png'" />
@@ -460,7 +532,7 @@
   </nav>
 
   <!-- 1. HOME VIEW -->
-  <div id="tab-home" class="tab-section" style="display: block;">
+  <section id="tab-home" class="tab-section" style="display: block;">
     <div class="slider-container" id="homeSlider">
       <div class="slide active">
         <img src="school-campus.jpg" alt="EMRS Subdega Campus" />
@@ -474,55 +546,4 @@
       <div class="slider-dots" id="sliderDots"></div>
     </div>
 
-    <section class="content-container">
-      <div class="content-card">
-        <h2 style="color: #0b3c5d; margin-bottom: 12px;">About Our Institution</h2>
-        <p style="color: #475569; font-size: 1.05rem; margin-bottom: 16px;">
-          Eklavya Model Residential School (EMRS), Subdega, Sundargarh is established under the Ministry of Tribal Affairs, Government of India, to provide quality education to tribal students in remote areas.
-        </p>
-        <p style="color: #475569; font-size: 1rem;">
-          Our focus is on the comprehensive development of students through high academic standards, sports, and cultural enrichment.
-        </p>
-      </div>
-    </section>
-
-    <section class="content-container">
-      <div class="content-card" style="border-top: 4px solid #0b3c5d;">
-        <h2 style="color: #0b3c5d; font-size: 1.5rem; margin-bottom: 14px;">Latest Circulars & Announcements</h2>
-        <div id="homeNoticeList" style="display: flex; flex-direction: column; gap: 10px;">
-          <p style="color: #64748b;">Loading recent notices...</p>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <!-- 2. DOCUMENTS VIEW -->
-  <div id="tab-documents" class="tab-section" style="display: none;">
-    <section class="content-container">
-      <div class="content-card" style="border-top: 4px solid #0284c7; padding: 25px 30px;">
-        <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; margin-bottom: 8px;">
-          <h2 id="docHeading" style="color: #0b3c5d; font-size: 1.8rem;">General Circulars</h2>
-          <button type="button" onclick="window.openDocCategory('ALL')" style="background: none; border: 1px solid #0284c7; color: #0284c7; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">View All Documents</button>
-        </div>
-        <p id="docSub" style="color: #64748b; font-size: 0.95rem; margin-bottom: 22px;">Official records and circulars</p>
-        
-        <div style="overflow-x: auto;">
-          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.92rem;">
-            <thead>
-              <tr style="background: #7a8fa6; color: #ffffff;">
-                <th style="padding: 12px 14px; width: 14%; border: 1px solid #cbd5e1; text-align: center;">Circular No.</th>
-                <th style="padding: 12px 14px; width: 14%; border: 1px solid #cbd5e1; text-align: center;">Date</th>
-                <th style="padding: 12px 16px; width: 58%; border: 1px solid #cbd5e1;">Subject</th>
-                <th style="padding: 12px 14px; width: 14%; border: 1px solid #cbd5e1; text-align: center;">Download</th>
-              </tr>
-            </thead>
-            <tbody id="documentList"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <!-- 3. NOTICES VIEW -->
-  <div id="tab-notices" class="tab-section" style="display: none;">
-    <section class="content-
+    <div class="content-con
