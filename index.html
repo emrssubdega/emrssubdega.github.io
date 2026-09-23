@@ -1,62 +1,205 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>EMRS Subdega Admin</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../supabase-config.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EMRS Subdega - Eklavya Model Residential School</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Public page quick styles */
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #333;
+      background: #f8fafc;
+    }
+    header.hero {
+      background: linear-gradient(135deg, #0b3c5d, #1d2731);
+      color: white;
+      padding: 60px 20px;
+      text-align: center;
+    }
+    header.hero h1 { margin: 0 0 10px; font-size: 2.5rem; }
+    header.hero p { margin: 0; font-size: 1.1rem; opacity: 0.9; }
+    
+    .gallery-container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+      text-align: center;
+    }
+    .gallery-container h2 {
+      color: #0b3c5d;
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+    .gallery-subtitle {
+      color: #64748b;
+      margin-bottom: 30px;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .photo-card {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      height: 220px;
+      background: #e2e8f0;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      cursor: pointer;
+      transition: transform 0.25s ease;
+    }
+    .photo-card:hover {
+      transform: translateY(-4px);
+    }
+    .photo-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .photo-card-title {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 10px 14px;
+      background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
+      color: #fff;
+      text-align: left;
+      font-size: 0.95rem;
+    }
+
+    /* Modal / Lightbox */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    .lightbox img {
+      max-width: 85%;
+      max-height: 80vh;
+      border-radius: 6px;
+    }
+    .lightbox .caption {
+      color: white;
+      margin-top: 15px;
+      font-size: 1.1rem;
+    }
+    .lightbox .close {
+      position: absolute;
+      top: 20px;
+      right: 35px;
+      color: white;
+      font-size: 40px;
+      cursor: pointer;
+    }
+    footer {
+      text-align: center;
+      padding: 30px;
+      font-size: 0.9rem;
+      color: #94a3b8;
+    }
+    footer a { color: #64748b; text-decoration: none; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
 </head>
 <body>
-<div id="loginBox" class="panel">
-<h1>EMRS Subdega</h1><p class="muted">Administrator Login</p>
-<form id="loginForm">
-<label>Email</label><input id="email" type="email" required placeholder="Admin email">
-<label>Password</label><input id="password" type="password" required placeholder="Password">
-<button type="submit">Login</button>
-<p id="loginMsg" class="msg"></p>
-</form>
-<a href="../">← Back to website</a>
-</div>
 
-<div id="dashboard" class="hidden">
-<header class="dashHead"><div><b>EMRS SUBDEGA</b><span>Website Admin Dashboard</span></div><button id="logoutBtn">Logout</button></header>
-<main class="wrap">
-<div class="welcome"><h1>School Website Dashboard</h1><p>Change the details below and click Save. Changes will appear on the public website.</p></div>
+  <!-- Hero Header -->
+  <header class="hero">
+    <h1>EMRS Subdega</h1>
+    <p>Eklavya Model Residential School, Subdega, Sundargarh, Odisha</p>
+  </header>
 
-<section class="panel">
-<h2>School Information</h2>
-<div class="two">
-<div><label>Address</label><input id="address"></div>
-<div><label>Phone</label><input id="phone"></div>
-<div><label>Email</label><input id="schoolEmail"></div>
-</div>
-<label>About the School</label><textarea id="aboutText" rows="5"></textarea>
-<label>Principal's Message</label><textarea id="principalMessage" rows="6"></textarea>
-<button id="saveContent">Save School Details</button>
-<p id="contentMsg" class="msg"></p>
-</section>
+  <!-- Photo Gallery Section -->
+  <section class="gallery-container">
+    <h2>Photo Gallery</h2>
+    <p class="gallery-subtitle">Moments, activities, and campus life</p>
 
-<section class="panel">
-<h2>Notices</h2>
-<form id="noticeForm">
-<input type="hidden" id="noticeId">
-<label>Notice Title</label><input id="noticeTitle" required>
-<label>Notice Text</label><textarea id="noticeBody" rows="4" required></textarea>
-<div class="two">
-<div><label>Date</label><input id="noticeDate" type="date" required></div>
-<div class="check"><label><input id="noticePublished" type="checkbox" checked> Publish on website</label></div>
-</div>
-<button type="submit">Save Notice</button>
-<button type="button" id="cancelNotice" class="secondary">Clear</button>
-<p id="noticeMsg" class="msg"></p>
-</form>
-<div id="noticeTable"></div>
-</section>
-</main>
-</div>
+    <div id="publicGalleryGrid" class="gallery-grid">
+      <p>Loading photos...</p>
+    </div>
+  </section>
 
-<script src="app.js"></script>
+  <!-- Lightbox Popup -->
+  <div id="lightbox" class="lightbox">
+    <span class="close" id="closeBtn">&times;</span>
+    <img id="lightboxImg" src="" alt="Popup Preview" />
+    <div id="lightboxCaption" class="caption"></div>
+  </div>
+
+  <footer>
+    <p>&copy; EMRS Subdega. All rights reserved. | <a href="admin/">Admin Login</a></p>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const client = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+      const grid = document.getElementById("publicGalleryGrid");
+      const lightbox = document.getElementById("lightbox");
+      const lightboxImg = document.getElementById("lightboxImg");
+      const lightboxCaption = document.getElementById("lightboxCaption");
+      const closeBtn = document.getElementById("closeBtn");
+
+      function escapeHtml(value) {
+        return String(value ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      try {
+        const { data, error } = await client
+          .from("gallery")
+          .select("*")
+          .order("created_at", { ascending: false });
+
+        if (error) {
+          grid.innerHTML = `<p style="color:red">Failed to load photos: ${escapeHtml(error.message)}</p>`;
+          return;
+        }
+
+        if (!data || data.length === 0) {
+          grid.innerHTML = "<p>No photos uploaded yet.</p>";
+          return;
+        }
+
+        grid.innerHTML = data.map(photo => `
+          <div class="photo-card" data-url="${escapeHtml(photo.image_url)}" data-title="${escapeHtml(photo.title || '')}">
+            <img src="${escapeHtml(photo.image_url)}" alt="${escapeHtml(photo.title || 'Gallery image')}" loading="lazy" />
+            ${photo.title ? `<div class="photo-card-title">${escapeHtml(photo.title)}</div>` : ''}
+          </div>
+        `).join("");
+
+        document.querySelectorAll(".photo-card").forEach(card => {
+          card.addEventListener("click", () => {
+            lightboxImg.src = card.dataset.url;
+            lightboxCaption.textContent = card.dataset.title;
+            lightbox.style.display = "flex";
+          });
+        });
+
+      } catch (err) {
+        grid.innerHTML = `<p style="color:red">${escapeHtml(err.message)}</p>`;
+      }
+
+      closeBtn.addEventListener("click", () => { lightbox.style.display = "none"; });
+      lightbox.addEventListener("click", (e) => {
+        if (e.target === lightbox) lightbox.style.display = "none";
+      });
+    });
+  </script>
 </body>
 </html>
