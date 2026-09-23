@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EMRS Subdega - Eklavya Model Residential School</title>
   
-  <!-- Supabase Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
 
@@ -317,17 +316,14 @@
     }
   </style>
 
-  <!-- Instant Engine Script -->
+  <!-- Immediate Global Engine -->
   <script>
-    // 1. Initialize client immediately onto global window
     window.client = null;
     try {
       if (window.supabase && window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
         window.client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
       }
-    } catch(e) {
-      console.error("Supabase init error:", e);
-    }
+    } catch(e) {}
 
     window.allDocuments = [];
     window.currentDocCategory = 'ALL';
@@ -345,9 +341,7 @@
       var tabs = ['tab-home', 'tab-documents', 'tab-notices', 'tab-gallery', 'tab-contact'];
       for (var i = 0; i < tabs.length; i++) {
         var el = document.getElementById(tabs[i]);
-        if (el) {
-          el.style.display = (tabs[i] === tabId) ? 'block' : 'none';
-        }
+        if (el) el.style.display = (tabs[i] === tabId) ? 'block' : 'none';
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
@@ -359,11 +353,16 @@
       if (!list) return;
 
       var matches = window.allDocuments || [];
-      if (window.currentDocCategory && window.currentDocCategory !== 'ALL') {
+      var targetCat = (window.currentDocCategory || 'ALL').trim().toLowerCase();
+
+      if (targetCat !== 'all') {
         if (title) title.textContent = window.currentDocCategory;
         if (sub) sub.textContent = 'Official records and circulars filed under ' + window.currentDocCategory;
+        
+        // Match exact or partial category names ignoring casing
         matches = matches.filter(function(d) {
-          return String(d.category || '').trim().toLowerCase() === String(window.currentDocCategory).trim().toLowerCase();
+          var docCat = String(d.category || '').trim().toLowerCase();
+          return docCat === targetCat || docCat.includes(targetCat) || targetCat.includes(docCat);
         });
       } else {
         if (title) title.textContent = 'All Official Documents';
@@ -371,7 +370,7 @@
       }
 
       if (!matches || matches.length === 0) {
-        list.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748b; padding: 24px; font-style: italic; border: 1px solid #e2e8f0;">No documents uploaded under "' + (window.currentDocCategory || 'General') + '" yet.</td></tr>';
+        list.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748b; padding: 24px; font-style: italic; border: 1px solid #e2e8f0;">No documents found under "' + (window.currentDocCategory || 'General') + '". Click <a href="javascript:void(0)" onclick="window.openDocCategory(\'ALL\')" style="color:#0284c7; text-decoration:underline;">View All Documents</a> to see everything.</td></tr>';
         return;
       }
 
@@ -385,6 +384,7 @@
           '<td style="padding: 12px 16px; border: 1px solid #e2e8f0; color: #1e293b; line-height: 1.4;">' +
             '<span style="display: inline-block; font-size: 0.72rem; font-weight: 700; color: #0284c7; background: #e0f2fe; padding: 1px 5px; border-radius: 3px; margin-right: 6px;">NEW</span>' +
             window.escapeHtml(doc.title) +
+            (doc.category ? '<span style="font-size:0.75rem; color:#64748b; margin-left:8px; background:#f1f5f9; padding:2px 6px; border-radius:3px;">[' + window.escapeHtml(doc.category) + ']</span>' : '') +
           '</td>' +
           '<td style="padding: 12px 14px; text-align: center; border: 1px solid #e2e8f0;">' +
             '<a href="' + doc.file_url + '" target="_blank" download style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; background: #fee2e2; border: 1px solid #fca5a5; border-radius: 4px; text-decoration: none;" title="Download PDF">' +
@@ -395,9 +395,17 @@
       }).join('');
     };
 
-    window.openDocCategory = function(catName) {
+    window.openDocCategory = async function(catName) {
       window.currentDocCategory = catName;
       window.goToTab('tab-documents');
+      
+      // If documents haven't loaded yet, fetch them immediately
+      if (!window.allDocuments || window.allDocuments.length === 0) {
+        if (window.client) {
+          var res = await window.client.from("documents").select("*").order("created_at", { ascending: false });
+          if (res.data) window.allDocuments = res.data;
+        }
+      }
       window.renderDocuments();
     };
   </script>
@@ -517,17 +525,4 @@
 
   <!-- 3. NOTICES VIEW -->
   <div id="tab-notices" class="tab-section" style="display: none;">
-    <section class="content-container">
-      <div class="content-card" style="border-top: 4px solid #0b3c5d;">
-        <h2 style="color: #0b3c5d; font-size: 1.8rem; margin-bottom: 6px;">Notice Board & Circulars</h2>
-        <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 20px;">All academic announcements, admissions, and schedules</p>
-        <div id="noticeList" style="display: flex; flex-direction: column; gap: 14px;"></div>
-      </div>
-    </section>
-  </div>
-
-  <!-- 4. GALLERY VIEW -->
-  <div id="tab-gallery" class="tab-section" style="display: none;">
-    <section class="content-container" style="text-align: center;">
-      <h2 style="color: #0b3c5d; font-size: 2.2rem; margin-bottom: 8px;">Photo Gallery</h2>
-      <p style="col
+    <section class="content-
