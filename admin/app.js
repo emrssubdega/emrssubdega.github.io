@@ -10,15 +10,13 @@ async function checkSession() {
   const { data: { session } } = await client.auth.getSession();
   const loginSection = document.getElementById('loginSection');
   const adminDashboard = document.getElementById('adminDashboard');
-  const logoutBtn = document.getElementById('logoutBtn');
   const sideUserName = document.getElementById('sideUserName');
   const cardUserName = document.getElementById('cardUserName');
   const activeUserEmail = document.getElementById('activeUserEmail');
 
   if (session) {
     if (loginSection) loginSection.style.display = 'none';
-    if (adminDashboard) adminDashboard.style.display = 'flex';
-    if (logoutBtn) logoutBtn.style.display = 'block';
+    if (adminDashboard) adminDashboard.style.setProperty('display', 'flex', 'important');
 
     const emailName = session.user.email ? session.user.email.split('@')[0].toUpperCase() : 'ADMIN';
     if (sideUserName) sideUserName.textContent = emailName;
@@ -30,8 +28,7 @@ async function checkSession() {
     loadAdminDocuments();
   } else {
     if (loginSection) loginSection.style.display = 'block';
-    if (adminDashboard) adminDashboard.style.display = 'none';
-    if (logoutBtn) logoutBtn.style.display = 'none';
+    if (adminDashboard) adminDashboard.style.setProperty('display', 'none', 'important');
   }
 }
 
@@ -56,14 +53,6 @@ if (loginBtn) {
       errorMsg.textContent = '';
       checkSession();
     }
-  });
-}
-
-const logoutBtn = document.getElementById('logoutBtn');
-if (logoutBtn) {
-  logoutBtn.addEventListener('click', async () => {
-    await client.auth.signOut();
-    checkSession();
   });
 }
 
