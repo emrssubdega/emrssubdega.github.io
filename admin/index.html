@@ -10,60 +10,76 @@
       margin: 0;
       padding: 0;
     }
-    body {
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #eaedf1;
+      background: #f1f5f9;
       color: #334155;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+      overflow-x: hidden;
     }
 
-    /* Top Brand Bar */
+    /* Top Blue Brand Navbar */
     .top-navbar {
       background: #0d47a1;
       color: #ffffff;
-      height: 52px;
+      height: 54px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 20px;
+      padding: 0 24px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-      z-index: 100;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
     .top-navbar h1 {
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       font-weight: 700;
       letter-spacing: 0.5px;
+      margin: 0;
     }
     .top-right-actions {
       display: flex;
       align-items: center;
       gap: 12px;
     }
-    .top-right-actions a, .top-right-actions button {
+    .top-btn-link {
       background: rgba(255, 255, 255, 0.15);
       color: #fff;
       border: 1px solid rgba(255, 255, 255, 0.3);
-      padding: 5px 12px;
+      padding: 6px 14px;
       border-radius: 4px;
       font-size: 0.85rem;
       text-decoration: none;
-      cursor: pointer;
       font-weight: 500;
     }
-    .top-right-actions button:hover, .top-right-actions a:hover {
-      background: rgba(255, 255, 255, 0.28);
+    .top-btn-link:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+    .top-btn-logout {
+      background: #ef4444;
+      color: #ffffff;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .top-btn-logout:hover {
+      background: #dc2626;
     }
 
-    /* Admin Login Box */
+    /* Login Form View */
     .login-wrapper {
       max-width: 400px;
-      margin: 80px auto;
+      margin: 90px auto;
       background: #ffffff;
-      padding: 30px;
+      padding: 32px;
       border-radius: 8px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 18px rgba(0,0,0,0.1);
       border-top: 4px solid #0d47a1;
     }
     .login-wrapper h2 {
@@ -77,21 +93,26 @@
       margin-bottom: 20px;
     }
 
-    /* Main Dashboard Layout */
+    /* Fixed Side-by-Side Flex Container */
     .admin-layout {
       display: flex;
-      flex: 1;
-      min-height: calc(100vh - 52px);
+      flex-direction: row;
+      align-items: stretch;
+      min-height: calc(100vh - 54px);
+      width: 100%;
     }
 
-    /* Dark Blue Sidebar */
+    /* Left Sidebar */
     .sidebar {
       width: 250px;
+      min-width: 250px;
+      max-width: 250px;
       background: #1e293b;
       color: #f8fafc;
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
+      border-right: 1px solid #0f172a;
     }
     .sidebar-user-header {
       background: linear-gradient(135deg, #b91c1c, #475569);
@@ -111,8 +132,6 @@
       font-size: 0.75rem;
       color: #cbd5e1;
     }
-
-    /* Sidebar Navigation Links */
     .sidebar-menu {
       list-style: none;
       padding: 0;
@@ -126,14 +145,14 @@
       background: none;
       border: none;
       color: #cbd5e1;
-      padding: 12px 18px;
+      padding: 13px 18px;
       font-size: 0.88rem;
       font-weight: 500;
       display: flex;
       align-items: center;
       gap: 12px;
       cursor: pointer;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       transition: background 0.15s, color 0.15s;
       font-family: inherit;
     }
@@ -149,25 +168,31 @@
     }
     .sidebar-footer {
       margin-top: auto;
-      padding: 12px 18px;
+      padding: 14px 18px;
       font-size: 0.75rem;
       color: #64748b;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       background: #182234;
     }
 
-    /* Main Content Workspace */
+    /* Main Center Workspace */
     .workspace {
       flex: 1;
-      padding: 24px;
+      padding: 28px 35px;
+      background: #eaedf1;
       overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center; /* Centers all content cards horizontally */
     }
     .workspace-header {
+      width: 100%;
+      max-width: 900px;
       background: #ffffff;
       padding: 14px 20px;
       border-radius: 6px;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-      margin-bottom: 20px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+      margin-bottom: 22px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -177,40 +202,45 @@
       color: #1e293b;
       text-transform: uppercase;
       font-weight: 700;
+      margin: 0;
     }
 
-    /* Views */
+    /* Card Panels in Workspace */
     .view-card {
       display: none;
+      width: 100%;
+      max-width: 900px; /* Aligns comfortably in the center */
       background: #ffffff;
-      padding: 25px;
-      border-radius: 6px;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+      padding: 28px;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+      margin: 0 auto;
     }
     .view-card.active {
       display: block;
     }
 
-    /* Profile Avatar Box (Like in screenshot) */
+    /* Center Profile Card on Dashboard */
     .profile-card {
-      max-width: 320px;
-      margin: 20px auto;
+      max-width: 340px;
+      margin: 30px auto;
       background: #ffffff;
       border-radius: 8px;
       overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
       text-align: center;
+      border: 1px solid #e2e8f0;
     }
     .profile-banner {
-      height: 100px;
+      height: 110px;
       background: #be123c;
     }
     .profile-avatar-circle {
-      width: 100px;
-      height: 100px;
+      width: 105px;
+      height: 105px;
       border-radius: 50%;
       border: 4px solid #ffffff;
-      margin: -50px auto 10px;
+      margin: -55px auto 10px;
       background: #e2e8f0;
       display: flex;
       align-items: center;
@@ -223,22 +253,23 @@
       object-fit: cover;
     }
     .profile-details {
-      padding: 10px 20px 25px;
+      padding: 12px 24px 28px;
     }
     .profile-details h3 {
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       color: #1e293b;
       margin-bottom: 4px;
     }
     .profile-details p {
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       color: #64748b;
       line-height: 1.4;
+      margin-bottom: 4px;
     }
 
     /* Forms */
     .form-group {
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
     .form-group label {
       display: block;
@@ -286,8 +317,8 @@
   <header class="top-navbar">
     <h1>Admin Panel</h1>
     <div class="top-right-actions">
-      <a href="../" target="_blank">Live Site ↗</a>
-      <button id="logoutBtn" style="display: none;">Logout</button>
+      <a href="../" target="_blank" class="top-btn-link">Live Site ↗</a>
+      <button id="logoutBtn" class="top-btn-logout" type="button">Logout</button>
     </div>
   </header>
 
@@ -307,7 +338,7 @@
     <p id="loginError" style="color: #dc2626; margin-top: 10px; font-size: 0.85rem;"></p>
   </div>
 
-  <!-- Synchronized Dashboard Layout -->
+  <!-- Synchronized Dashboard Layout (Locked Side-by-Side) -->
   <div id="adminDashboard" class="admin-layout" style="display: none;">
     <!-- Left Sidebar -->
     <aside class="sidebar">
@@ -320,11 +351,12 @@
       </div>
 
       <ul class="sidebar-menu">
-        <li><button class="nav-tab-btn active" onclick="switchAdminTab('view-dashboard', this)">🏠 Dashboard</button></li>
-        <li><button class="nav-tab-btn" onclick="switchAdminTab('view-slider', this)">🖼️ Upload Main Slider</button></li>
-        <li><button class="nav-tab-btn" onclick="switchAdminTab('view-gallery', this)">📷 Upload Photo</button></li>
-        <li><button class="nav-tab-btn" onclick="switchAdminTab('view-notices', this)">📢 Notice Board</button></li>
-        <li><button class="nav-tab-btn" onclick="switchAdminTab('view-documents', this)">📁 File for Information</button></li>
+        <li><button type="button" class="nav-tab-btn active" onclick="switchAdminTab('view-dashboard', this)">🏠 Dashboard</button></li>
+        <li><button type="button" class="nav-tab-btn" onclick="switchAdminTab('view-slider', this)">🖼️ Upload Main Slider</button></li>
+        <li><button type="button" class="nav-tab-btn" onclick="switchAdminTab('view-gallery', this)">📷 Upload Photo</button></li>
+        <li><button type="button" class="nav-tab-btn" onclick="switchAdminTab('view-notices', this)">📢 Notice Board</button></li>
+        <li><button type="button" class="nav-tab-btn" onclick="switchAdminTab('view-documents', this)">📁 File for Information</button></li>
+        <li><button type="button" class="nav-tab-btn" onclick="logoutAdmin()" style="color: #f87171;">🚪 Logout</button></li>
       </ul>
 
       <div class="sidebar-footer">
@@ -332,19 +364,19 @@
       </div>
     </aside>
 
-    <!-- Main Workspace -->
+    <!-- Main Workspace (Pinned to the Center) -->
     <main class="workspace">
       <div class="workspace-header">
-        <h2 id="currentSectionTitle">Dashboard</h2>
+        <h2 id="currentSectionTitle">DASHBOARD</h2>
         <span style="font-size: 0.82rem; color: #64748b;" id="activeUserEmail"></span>
       </div>
 
-      <!-- 1. DASHBOARD OVERVIEW (With Centered Profile Card like screenshot) -->
+      <!-- 1. DASHBOARD OVERVIEW -->
       <section id="view-dashboard" class="view-card active">
         <div class="profile-card">
           <div class="profile-banner"></div>
           <div class="profile-avatar-circle">
-            <img src="https://cdn-icons-png.flankfap.com/512/3135/3135715.png" alt="Admin Avatar" onerror="this.src='../school-campus.jpg'" />
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Admin Avatar" onerror="this.src='../school-campus.jpg'" />
           </div>
           <div class="profile-details">
             <h3 id="cardUserName">Admin User</h3>
@@ -461,22 +493,29 @@
 
   <script>
     function switchAdminTab(viewId, btnEl) {
-      document.querySelectorAll('.view-card').forEach(v => v.classList.remove('active'));
-      const target = document.getElementById(viewId);
+      document.querySelectorAll('.view-card').forEach(function(v) { v.classList.remove('active'); });
+      var target = document.getElementById(viewId);
       if (target) target.classList.add('active');
 
-      document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.nav-tab-btn').forEach(function(b) { b.classList.remove('active'); });
       if (btnEl) btnEl.classList.add('active');
 
-      const titleMap = {
+      var titleMap = {
         'view-dashboard': 'DASHBOARD',
         'view-slider': 'UPLOAD MAIN SLIDER',
         'view-gallery': 'UPLOAD PHOTO',
         'view-notices': 'NOTICE BOARD',
         'view-documents': 'FILE FOR INFORMATION'
       };
-      const titleEl = document.getElementById('currentSectionTitle');
+      var titleEl = document.getElementById('currentSectionTitle');
       if (titleEl) titleEl.textContent = titleMap[viewId] || 'DASHBOARD';
+    }
+
+    async function logoutAdmin() {
+      if (window.client) {
+        await window.client.auth.signOut();
+      }
+      window.location.reload();
     }
   </script>
   <script src="app.js"></script>
