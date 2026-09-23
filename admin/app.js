@@ -163,7 +163,7 @@ async function loadGallery() {
   `).join('');
 }
 
-/* Upload Helper */
+/* Photo Upload Helper */
 async function handlePhotoUpload(title, file, isSlider, msgEl) {
   if (!file) {
     msgEl.textContent = 'Please choose a photo.';
@@ -198,7 +198,6 @@ async function handlePhotoUpload(title, file, isSlider, msgEl) {
   }
 }
 
-/* Gallery View Upload */
 const uploadGalleryBtn = document.getElementById('uploadGallery');
 if (uploadGalleryBtn) {
   uploadGalleryBtn.addEventListener('click', () => {
@@ -210,7 +209,6 @@ if (uploadGalleryBtn) {
   });
 }
 
-/* Dedicated Slider Upload */
 const uploadSliderBtn = document.getElementById('uploadSliderBtn');
 if (uploadSliderBtn) {
   uploadSliderBtn.addEventListener('click', () => {
@@ -263,11 +261,13 @@ async function loadAdminDocuments() {
   container.innerHTML = data.map(doc => `
     <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; margin-bottom:8px;">
       <div>
+        <span style="font-weight:700; color:#0d47a1; margin-right:8px;">${escapeHtml(doc.circular_no || '-')}</span>
         <strong>${escapeHtml(doc.title)}</strong>
-        <span style="font-size:0.85rem; color:#64748b; margin-left:8px;">[${escapeHtml(doc.category)}]</span>
+        <span style="font-size:0.82rem; color:#64748b; margin-left:8px;">[${escapeHtml(doc.doc_date || '')}]</span>
+        <span style="font-size:0.78rem; background:#e2e8f0; color:#475569; padding:2px 6px; border-radius:3px; margin-left:6px;">${escapeHtml(doc.category)}</span>
       </div>
       <div style="display:flex; gap:10px; align-items:center;">
-        <a href="${escapeHtml(doc.file_url)}" target="_blank" style="font-size:0.85rem; color:#0284c7;">View</a>
+        <a href="${escapeHtml(doc.file_url)}" target="_blank" style="font-size:0.85rem; color:#0284c7; text-decoration:none;">View PDF</a>
         <button class="danger" style="padding:4px 8px; font-size:0.8rem;" onclick="deleteDocument(${Number(doc.id)})">Delete</button>
       </div>
     </div>
@@ -277,6 +277,8 @@ async function loadAdminDocuments() {
 if (docForm) {
   docForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+    const circularNo = document.getElementById('docCircularNo').value.trim();
+    const docDate = document.getElementById('docDate').value;
     const titleInput = document.getElementById('docTitle');
     const catInput = document.getElementById('docCategory');
     const fileInput = document.getElementById('docFile');
@@ -306,6 +308,8 @@ if (docForm) {
     const { error: dbError } = await client.from('documents').insert({
       title: titleInput.value.trim(),
       category: catInput.value,
+      circular_no: circularNo,
+      doc_date: docDate || new Date().toISOString().split('T')[0],
       file_url: publicData.publicUrl
     });
 
@@ -313,6 +317,8 @@ if (docForm) {
       msg.textContent = 'Database error: ' + dbError.message;
     } else {
       msg.textContent = 'Document uploaded successfully!';
+      document.getElementById('docCircularNo').value = '';
+      document.getElementById('docDate').value = '';
       titleInput.value = '';
       fileInput.value = '';
       loadAdminDocuments();
