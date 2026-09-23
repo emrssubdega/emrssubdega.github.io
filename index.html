@@ -77,14 +77,18 @@
       flex-direction: column;
       align-items: flex-end;
     }
-    .header-tagline span {
-      font-size: 0.78rem;
-      color: #475569;
-      text-transform: uppercase;
+    .header-tagline strong.ministry-title {
+      font-family: inherit;
+      font-size: 1.15rem;
+      color: #0b3c5d;
+      font-weight: 800;
       letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-top: 2px;
+      line-height: 1.2;
     }
-    .header-tagline strong {
-      font-size: 0.95rem;
+    .header-tagline strong.tagline-sub {
+      font-size: 0.88rem;
       color: #0b3c5d;
       font-weight: 700;
     }
@@ -99,7 +103,7 @@
       background: #0b3c5d;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
       display: flex;
-      justify-content: flex-end; /* Shifts all navigation tabs to the right */
+      justify-content: flex-end;
       align-items: center;
       padding: 0 clamp(15px, 4vw, 45px);
     }
@@ -120,6 +124,7 @@
       font-size: 0.92rem;
       transition: background 0.2s ease, color 0.2s ease;
       cursor: pointer;
+      user-select: none;
     }
     .nav-links a:hover,
     .nav-links a.active {
@@ -141,7 +146,7 @@
       display: none;
       position: absolute;
       top: 100%;
-      right: 0; /* Dropdown aligns flush with the right-shifted nav */
+      right: 0;
       background-color: #ffffff;
       min-width: 230px;
       box-shadow: 0 10px 22px rgba(0,0,0,0.15);
@@ -363,7 +368,6 @@
   <!-- Top Official Branding Header -->
   <div class="top-header">
     <div class="header-left">
-      <!-- School Logo (Reads logo.png from root repository) -->
       <img src="logo.png" alt="EMRS Logo" class="header-logo" onerror="this.src='https://nests.tribal.gov.in/assets/images/emrs_logo.png'" />
       <div class="header-titles">
         <h2>एकलव्य आदर्श आवासीय विद्यालय, सबडेगा</h2>
@@ -372,17 +376,17 @@
       </div>
     </div>
 
-    <!-- Right Header with Logo above Ministry of Tribal Affairs -->
+    <!-- Right Header with Emblem and BOLD Matching Ministry Name -->
     <div class="header-right">
       <div class="header-tagline">
         <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" alt="National Emblem" style="height: 48px; width: auto; margin-bottom: 4px; object-fit: contain;" />
-        <span style="font-weight: 800; font-size: 0.88rem; color: #1e293b; letter-spacing: 0.5px;">MINISTRY OF TRIBAL AFFAIRS</span>
-        <strong>Tribal Transformation Through Education</strong>
+        <strong class="ministry-title">MINISTRY OF TRIBAL AFFAIRS</strong>
+        <strong class="tagline-sub">Tribal Transformation Through Education</strong>
       </div>
     </div>
   </div>
 
-  <!-- Primary Navigation (Shifted to Right Side) -->
+  <!-- Primary Navigation (Aligned to Right) -->
   <nav class="navbar">
     <ul class="nav-links">
       <li><a onclick="showPage('home-view')">HOME</a></li>
@@ -534,7 +538,7 @@
     let galleryPhotos = [];
     let currentSlideIdx = 0;
     let sliderTimer = null;
-    let client;
+    let client = null;
 
     function escapeHtml(value) {
       return String(value ?? '')
@@ -545,17 +549,21 @@
         .replace(/'/g, '&#039;');
     }
 
-    /* Page Switcher */
+    /* Page Switcher Function */
     window.showPage = function(viewId) {
-      document.querySelectorAll('.page-view').forEach(view => view.classList.remove('active'));
+      const views = document.querySelectorAll('.page-view');
+      views.forEach(view => view.classList.remove('active'));
+
       const target = document.getElementById(viewId);
-      if (target) target.classList.add('active');
+      if (target) {
+        target.classList.add('active');
+      }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     /* Documents Page Switcher & Filter */
     window.showDocPage = function(category) {
-      showPage('documents-view');
+      window.showPage('documents-view');
       const listContainer = document.getElementById("documentList");
       const heading = document.getElementById("docHeading");
       const sub = document.getElementById("docSub");
@@ -563,14 +571,14 @@
       let filtered = allDocuments;
       if (category && category !== 'ALL') {
         heading.textContent = category;
-        sub.textContent = `Official documents filed under ${category}`;
+        sub.textContent = 'Official documents filed under ' + category;
         filtered = allDocuments.filter(d => d.category === category);
       } else {
         heading.textContent = "All Official Documents";
         sub.textContent = "Complete archive of uploaded documents and circulars";
       }
 
-      if (filtered.length === 0) {
+      if (!filtered || filtered.length === 0) {
         listContainer.innerHTML = '<p style="color: #64748b; font-style: italic;">No documents uploaded in this category yet.</p>';
         return;
       }
@@ -588,5 +596,4 @@
 
     /* Carousel / Slider Engine */
     function buildSlider(photos) {
-      const slider = document.getElementById('homeSlider');
-      const dotsContainer = document.getElementById('sliderDots');
+      const slider = document.getElementById('
