@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EMRS Subdega - Eklavya Model Residential School</title>
-  <link rel="stylesheet" href="style.css" />
   <style>
     * {
       box-sizing: border-box;
@@ -13,7 +12,6 @@
     }
     html, body {
       width: 100%;
-      max-width: 100%;
       overflow-x: hidden;
       margin: 0;
       padding: 0;
@@ -117,8 +115,10 @@
       align-items: center;
       flex-wrap: wrap;
     }
-    .nav-links a {
+    .nav-links a, .nav-links button.nav-link-btn {
       display: block;
+      background: none;
+      border: none;
       padding: 14px 18px;
       text-decoration: none;
       color: #ffffff;
@@ -126,9 +126,11 @@
       font-size: 0.92rem;
       transition: background 0.2s ease, color 0.2s ease;
       cursor: pointer;
+      font-family: inherit;
     }
     .nav-links a:hover,
-    .nav-links a.active {
+    .nav-links a.active,
+    .nav-links button.nav-link-btn:hover {
       background: #072a42;
       color: #38bdf8;
     }
@@ -157,30 +159,31 @@
       border: 1px solid #e2e8f0;
       border-top: 3px solid #f97316;
     }
-    .dropdown-content a {
-      color: #334155 !important;
+    .dropdown-content button {
+      width: 100%;
+      text-align: left;
+      border: none;
+      background: #fff;
+      color: #334155;
       padding: 10px 16px;
       font-size: 0.88rem;
       border-bottom: 1px solid #f1f5f9;
-      background: #fff;
+      cursor: pointer;
+      font-family: inherit;
     }
-    .dropdown-content a:hover {
-      background-color: #f8fafc !important;
-      color: #0b3c5d !important;
+    .dropdown-content button:hover {
+      background-color: #f8fafc;
+      color: #0b3c5d;
       font-weight: 600;
     }
     .dropdown:hover .dropdown-content {
       display: block;
     }
 
-    /* Page View Controller - Active takes absolute display priority */
-    .page-view {
-      display: none;
-      flex: 1;
+    /* Page View Containers */
+    .tab-section {
       width: 100%;
-    }
-    .page-view.active {
-      display: block !important;
+      flex: 1;
     }
 
     /* Homepage Slider Carousel */
@@ -363,6 +366,60 @@
     }
   </style>
 
+  <!-- FAIL-SAFE DIRECT TAB SWITCHING SCRIPT -->
+  <script>
+    var allDocuments = [];
+
+    function goToTab(tabId) {
+      var tabs = ['tab-home', 'tab-documents', 'tab-notices', 'tab-gallery', 'tab-contact'];
+      for (var i = 0; i < tabs.length; i++) {
+        var el = document.getElementById(tabs[i]);
+        if (el) {
+          if (tabs[i] === tabId) {
+            el.style.display = 'block';
+          } else {
+            el.style.display = 'none';
+          }
+        }
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function openDocCategory(catName) {
+      goToTab('tab-documents');
+      var list = document.getElementById('documentList');
+      var title = document.getElementById('docHeading');
+      var sub = document.getElementById('docSub');
+
+      var matches = allDocuments;
+      if (catName && catName !== 'ALL') {
+        if (title) title.textContent = catName;
+        if (sub) sub.textContent = 'Official documents filed under ' + catName;
+        matches = allDocuments.filter(function(d) { return d.category === catName; });
+      } else {
+        if (title) title.textContent = 'All Official Documents';
+        if (sub) sub.textContent = 'Complete archive of uploaded documents and circulars';
+      }
+
+      if (!list) return;
+
+      if (!matches || matches.length === 0) {
+        list.innerHTML = '<p style="color: #64748b; font-style: italic; padding: 20px 0;">No documents uploaded under "' + catName + '" yet.</p>';
+        return;
+      }
+
+      list.innerHTML = matches.map(function(doc) {
+        return '<div style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:#f8fafc; border-radius:8px; border:1px solid #e2e8f0; flex-wrap:wrap; gap:10px; margin-bottom:10px;">' +
+          '<div>' +
+            '<strong style="color:#0f172a; font-size:1rem;">' + (doc.title || 'Untitled') + '</strong>' +
+            '<span style="display:inline-block; font-size:0.78rem; background:#e2e8f0; color:#475569; padding:2px 8px; border-radius:4px; margin-left:8px;">' + (doc.category || 'General') + '</span>' +
+          '</div>' +
+          '<a href="' + doc.file_url + '" target="_blank" download style="background:#0b3c5d; color:#ffffff; text-decoration:none; padding:6px 14px; border-radius:4px; font-size:0.88rem; font-weight:500;">Download / View PDF ↗</a>' +
+        '</div>';
+      }).join('');
+    }
+  </script>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
 </head>
@@ -391,36 +448,36 @@
 
   <!-- Primary Navigation -->
   <nav class="navbar">
-    <ul class="nav-links">
-      <li><a href="#home" class="nav-btn" data-target="home-view">HOME</a></li>
+    <div class="nav-links">
+      <button class="nav-link-btn" onclick="goToTab('tab-home')">HOME</button>
 
       <!-- Information Dropdown -->
-      <li class="dropdown">
-        <a class="dropdown-btn">INFORMATION ▾</a>
+      <div class="dropdown">
+        <button class="nav-link-btn dropdown-btn">INFORMATION ▾</button>
         <div class="dropdown-content">
-          <a href="#documents" class="doc-btn" data-cat="Mandatory Disclosure">Mandatory Disclosure</a>
-          <a href="#documents" class="doc-btn" data-cat="General Notice">General Notice</a>
-          <a href="#documents" class="doc-btn" data-cat="Exam Notice">Exam Notice</a>
-          <a href="#documents" class="doc-btn" data-cat="Rules & Regulations">Rules & Regulations</a>
-          <a href="#documents" class="doc-btn" data-cat="Committees">Committees</a>
-          <a href="#documents" class="doc-btn" data-cat="Recent Activities">Recent Activities</a>
-          <a href="#documents" class="doc-btn" data-cat="Result Analysis">Result Analysis</a>
-          <a href="#documents" class="doc-btn" data-cat="Transfer Certificate">Transfer Certificate</a>
-          <a href="#documents" class="doc-btn" data-cat="Admission Notice">Admission Notice</a>
-          <a href="#documents" class="doc-btn" data-cat="Tenders">Tenders</a>
-          <a href="#documents" class="doc-btn" data-cat="Career">Career</a>
+          <button onclick="openDocCategory('Mandatory Disclosure')">Mandatory Disclosure</button>
+          <button onclick="openDocCategory('General Notice')">General Notice</button>
+          <button onclick="openDocCategory('Exam Notice')">Exam Notice</button>
+          <button onclick="openDocCategory('Rules & Regulations')">Rules & Regulations</button>
+          <button onclick="openDocCategory('Committees')">Committees</button>
+          <button onclick="openDocCategory('Recent Activities')">Recent Activities</button>
+          <button onclick="openDocCategory('Result Analysis')">Result Analysis</button>
+          <button onclick="openDocCategory('Transfer Certificate')">Transfer Certificate</button>
+          <button onclick="openDocCategory('Admission Notice')">Admission Notice</button>
+          <button onclick="openDocCategory('Tenders')">Tenders</button>
+          <button onclick="openDocCategory('Career')">Career</button>
         </div>
-      </li>
+      </div>
 
-      <li><a href="#notices" class="nav-btn" data-target="notices-view">NOTICES</a></li>
-      <li><a href="#gallery" class="nav-btn" data-target="gallery-view">GALLERY</a></li>
-      <li><a href="#contact" class="nav-btn" data-target="contact-view">CONTACT</a></li>
-      <li><a href="admin/">ADMIN PORTAL</a></li>
-    </ul>
+      <button class="nav-link-btn" onclick="goToTab('tab-notices')">NOTICES</button>
+      <button class="nav-link-btn" onclick="goToTab('tab-gallery')">GALLERY</button>
+      <button class="nav-link-btn" onclick="goToTab('tab-contact')">CONTACT</button>
+      <a href="admin/" style="display:block;">ADMIN PORTAL</a>
+    </div>
   </nav>
 
   <!-- ==================== 1. HOME VIEW ==================== -->
-  <div id="home-view" class="page-view active">
+  <div id="tab-home" class="tab-section" style="display: block;">
     <!-- Photo Slider / Carousel -->
     <div class="slider-container" id="homeSlider">
       <div class="slide active">
@@ -461,21 +518,21 @@
   </div>
 
   <!-- ==================== 2. INFORMATION / DOCUMENTS VIEW ==================== -->
-  <div id="documents-view" class="page-view">
+  <div id="tab-documents" class="tab-section" style="display: none;">
     <section class="content-container">
       <div class="content-card" style="border-top: 4px solid #0284c7;">
         <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; margin-bottom: 8px;">
           <h2 id="docHeading" style="color: #0b3c5d; font-size: 1.8rem;">Documents</h2>
-          <button id="viewAllDocsBtn" style="background: none; border: 1px solid #0284c7; color: #0284c7; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">View All Documents</button>
+          <button onclick="openDocCategory('ALL')" style="background: none; border: 1px solid #0284c7; color: #0284c7; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">View All Documents</button>
         </div>
         <p id="docSub" style="color: #64748b; font-size: 0.95rem; margin-bottom: 22px;">Official records and circulars</p>
-        <div id="documentList" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        <div id="documentList"></div>
       </div>
     </section>
   </div>
 
   <!-- ==================== 3. NOTICES VIEW ==================== -->
-  <div id="notices-view" class="page-view">
+  <div id="tab-notices" class="tab-section" style="display: none;">
     <section class="content-container">
       <div class="content-card" style="border-top: 4px solid #0b3c5d;">
         <h2 style="color: #0b3c5d; font-size: 1.8rem; margin-bottom: 6px;">Notice Board & Circulars</h2>
@@ -486,7 +543,7 @@
   </div>
 
   <!-- ==================== 4. GALLERY VIEW ==================== -->
-  <div id="gallery-view" class="page-view">
+  <div id="tab-gallery" class="tab-section" style="display: none;">
     <section class="content-container" style="text-align: center;">
       <h2 style="color: #0b3c5d; font-size: 2.2rem; margin-bottom: 8px;">Photo Gallery</h2>
       <p style="color: #64748b; margin-bottom: 35px;">Moments, activities, and campus life</p>
@@ -495,7 +552,7 @@
   </div>
 
   <!-- ==================== 5. CONTACT VIEW ==================== -->
-  <div id="contact-view" class="page-view">
+  <div id="tab-contact" class="tab-section" style="display: none;">
     <section class="content-container">
       <div class="content-card" style="border-top: 4px solid #0b3c5d;">
         <h2 style="color: #0b3c5d; font-size: 1.8rem; margin-bottom: 12px;">Contact Us</h2>
@@ -528,77 +585,4 @@
       <div class="footer-col">
         <h3>Contact & Portal</h3>
         <p>Email: <a href="mailto:emrssubdega@gmail.com">emrssubdega@gmail.com</a></p>
-        <p>Portal: <a href="admin/">Staff & Admin Login</a></p>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p>&copy; EMRS Subdega. All rights reserved. | <a href="admin/">Admin Login</a></p>
-    </div>
-  </footer>
-
-  <!-- Bulletproof Router & Data Handler -->
-  <script>
-    var allDocuments = [];
-    var galleryPhotos = [];
-    var currentSlideIdx = 0;
-    var sliderTimer = null;
-    var client = null;
-
-    function escapeHtml(value) {
-      return String(value == null ? '' : value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
-    /* Reliable View Switcher */
-    function switchView(viewId) {
-      var views = document.querySelectorAll('.page-view');
-      for (var i = 0; i < views.length; i++) {
-        views[i].classList.remove('active');
-      }
-      var target = document.getElementById(viewId);
-      if (target) {
-        target.classList.add('active');
-      }
-
-      var navBtns = document.querySelectorAll('.nav-btn');
-      for (var j = 0; j < navBtns.length; j++) {
-        if (navBtns[j].getAttribute('data-target') === viewId) {
-          navBtns[j].classList.add('active');
-        } else {
-          navBtns[j].classList.remove('active');
-        }
-      }
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    /* Filter and Render Documents */
-    function filterDocuments(category) {
-      switchView('documents-view');
-      var listContainer = document.getElementById("documentList");
-      var heading = document.getElementById("docHeading");
-      var sub = document.getElementById("docSub");
-
-      var filtered = allDocuments;
-      if (category && category !== 'ALL') {
-        if (heading) heading.textContent = category;
-        if (sub) sub.textContent = 'Official documents filed under ' + category;
-        filtered = allDocuments.filter(function(d) { return d.category === category; });
-      } else {
-        if (heading) heading.textContent = "All Official Documents";
-        if (sub) sub.textContent = "Complete archive of uploaded documents and circulars";
-      }
-
-      if (!listContainer) return;
-
-      if (!filtered || filtered.length === 0) {
-        listContainer.innerHTML = '<p style="color: #64748b; font-style: italic;">No documents uploaded under ' + escapeHtml(category) + ' yet.</p>';
-        return;
-      }
-
-      listContainer.innerHTML = filtered.map(function(doc) {
-        return '<div style="display:flex; justify-content:
+        <p>Portal: <a href="admin/">Staff &
