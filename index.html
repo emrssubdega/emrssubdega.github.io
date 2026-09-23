@@ -59,6 +59,8 @@
       margin: 2px 0;
       font-weight: 800;
       line-height: 1.2;
+      text-transform: uppercase; /* Ensures all letters are capital case */
+      letter-spacing: 0.5px;
     }
     .header-titles p {
       font-size: 0.85rem;
@@ -124,7 +126,6 @@
       font-size: 0.92rem;
       transition: background 0.2s ease, color 0.2s ease;
       cursor: pointer;
-      user-select: none;
     }
     .nav-links a:hover,
     .nav-links a.active {
@@ -170,6 +171,16 @@
     }
     .dropdown:hover .dropdown-content {
       display: block;
+    }
+
+    /* Page View Controller (FORCED DISPLAY PRIORITY) */
+    .page-view {
+      display: none !important;
+      flex: 1;
+      width: 100%;
+    }
+    .page-view.active {
+      display: block !important;
     }
 
     /* Homepage Slider Carousel */
@@ -253,15 +264,6 @@
       background: #f97316;
       width: 24px;
       border-radius: 6px;
-    }
-
-    /* Page View Controller */
-    .page-view {
-      display: none;
-      flex: 1;
-    }
-    .page-view.active {
-      display: block;
     }
 
     .content-container {
@@ -360,6 +362,67 @@
       .slider-container { height: 260px; }
     }
   </style>
+
+  <!-- Instant Page Controller: defined immediately so clicks never fail -->
+  <script>
+    var allDocuments = [];
+
+    function escapeHtml(value) {
+      return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function showPage(viewId) {
+      var views = document.querySelectorAll('.page-view');
+      for (var i = 0; i < views.length; i++) {
+        views[i].classList.remove('active');
+      }
+      var target = document.getElementById(viewId);
+      if (target) {
+        target.classList.add('active');
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showDocPage(category) {
+      showPage('documents-view');
+      var listContainer = document.getElementById("documentList");
+      var heading = document.getElementById("docHeading");
+      var sub = document.getElementById("docSub");
+
+      var filtered = allDocuments;
+      if (category && category !== 'ALL') {
+        if (heading) heading.textContent = category;
+        if (sub) sub.textContent = 'Official documents filed under ' + category;
+        filtered = allDocuments.filter(function(d) { return d.category === category; });
+      } else {
+        if (heading) heading.textContent = "All Official Documents";
+        if (sub) sub.textContent = "Complete archive of uploaded documents and circulars";
+      }
+
+      if (!listContainer) return;
+
+      if (!filtered || filtered.length === 0) {
+        listContainer.innerHTML = '<p style="color: #64748b; font-style: italic;">No documents uploaded under ' + escapeHtml(category) + ' yet.</p>';
+        return;
+      }
+
+      listContainer.innerHTML = filtered.map(function(doc) {
+        return '<div style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:#f8fafc; border-radius:8px; border:1px solid #e2e8f0; flex-wrap:wrap; gap:10px;">' +
+          '<div>' +
+            '<strong style="color:#0f172a; font-size:1rem;">' + escapeHtml(doc.title) + '</strong>' +
+            '<span style="display:inline-block; font-size:0.78rem; background:#e2e8f0; color:#475569; padding:2px 8px; border-radius:4px; margin-left:8px;">' + escapeHtml(doc.category) + '</span>' +
+          '</div>' +
+          '<a href="' + escapeHtml(doc.file_url) + '" target="_blank" download style="background:#0b3c5d; color:#ffffff; text-decoration:none; padding:6px 14px; border-radius:4px; font-size:0.88rem; font-weight:500;">Download / View PDF ↗</a>' +
+        '</div>';
+      }).join('');
+    }
+  </script>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
 </head>
@@ -371,12 +434,13 @@
       <img src="logo.png" alt="EMRS Logo" class="header-logo" onerror="this.src='https://nests.tribal.gov.in/assets/images/emrs_logo.png'" />
       <div class="header-titles">
         <h2>एकलव्य आदर्श आवासीय विद्यालय, सबडेगा</h2>
-        <h1>Eklavya Model Residential School, Subdega</h1>
+        <!-- School name in all CAPITAL letters -->
+        <h1>EKLAVYA MODEL RESIDENTIAL SCHOOL, SUBDEGA</h1>
         <p>National Education Society for Tribal Students (NESTS) | Ministry of Tribal Affairs, Govt. of India</p>
       </div>
     </div>
 
-    <!-- Right Header with Emblem and BOLD Matching Ministry Name -->
+    <!-- Right Header with National Emblem and Bold Ministry Title -->
     <div class="header-right">
       <div class="header-tagline">
         <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" alt="National Emblem" style="height: 48px; width: auto; margin-bottom: 4px; object-fit: contain;" />
@@ -386,32 +450,32 @@
     </div>
   </div>
 
-  <!-- Primary Navigation (Aligned to Right) -->
+  <!-- Primary Navigation -->
   <nav class="navbar">
     <ul class="nav-links">
-      <li><a onclick="showPage('home-view')">HOME</a></li>
+      <li><a href="javascript:void(0)" onclick="showPage('home-view')">HOME</a></li>
 
       <!-- Information Dropdown -->
       <li class="dropdown">
         <a class="dropdown-btn">INFORMATION ▾</a>
         <div class="dropdown-content">
-          <a onclick="showDocPage('Mandatory Disclosure')">Mandatory Disclosure</a>
-          <a onclick="showDocPage('General Notice')">General Notice</a>
-          <a onclick="showDocPage('Exam Notice')">Exam Notice</a>
-          <a onclick="showDocPage('Rules & Regulations')">Rules & Regulations</a>
-          <a onclick="showDocPage('Committees')">Committees</a>
-          <a onclick="showDocPage('Recent Activities')">Recent Activities</a>
-          <a onclick="showDocPage('Result Analysis')">Result Analysis</a>
-          <a onclick="showDocPage('Transfer Certificate')">Transfer Certificate</a>
-          <a onclick="showDocPage('Admission Notice')">Admission Notice</a>
-          <a onclick="showDocPage('Tenders')">Tenders</a>
-          <a onclick="showDocPage('Career')">Career</a>
+          <a href="javascript:void(0)" onclick="showDocPage('Mandatory Disclosure')">Mandatory Disclosure</a>
+          <a href="javascript:void(0)" onclick="showDocPage('General Notice')">General Notice</a>
+          <a href="javascript:void(0)" onclick="showDocPage('Exam Notice')">Exam Notice</a>
+          <a href="javascript:void(0)" onclick="showDocPage('Rules & Regulations')">Rules & Regulations</a>
+          <a href="javascript:void(0)" onclick="showDocPage('Committees')">Committees</a>
+          <a href="javascript:void(0)" onclick="showDocPage('Recent Activities')">Recent Activities</a>
+          <a href="javascript:void(0)" onclick="showDocPage('Result Analysis')">Result Analysis</a>
+          <a href="javascript:void(0)" onclick="showDocPage('Transfer Certificate')">Transfer Certificate</a>
+          <a href="javascript:void(0)" onclick="showDocPage('Admission Notice')">Admission Notice</a>
+          <a href="javascript:void(0)" onclick="showDocPage('Tenders')">Tenders</a>
+          <a href="javascript:void(0)" onclick="showDocPage('Career')">Career</a>
         </div>
       </li>
 
-      <li><a onclick="showPage('notices-view')">NOTICES</a></li>
-      <li><a onclick="showPage('gallery-view')">GALLERY</a></li>
-      <li><a onclick="showPage('contact-view')">CONTACT</a></li>
+      <li><a href="javascript:void(0)" onclick="showPage('notices-view')">NOTICES</a></li>
+      <li><a href="javascript:void(0)" onclick="showPage('gallery-view')">GALLERY</a></li>
+      <li><a href="javascript:void(0)" onclick="showPage('contact-view')">CONTACT</a></li>
       <li><a href="admin/">ADMIN PORTAL</a></li>
     </ul>
   </nav>
@@ -518,82 +582,3 @@
         <p>A premier residential institution dedicated to quality CBSE education for tribal students under the Ministry of Tribal Affairs, Govt. of India.</p>
       </div>
       <div class="footer-col">
-        <h3>Campus Location</h3>
-        <p>At/Po: Subdega, District: Sundargarh</p>
-        <p>Odisha, India - 770014</p>
-      </div>
-      <div class="footer-col">
-        <h3>Contact & Portal</h3>
-        <p>Email: <a href="mailto:emrssubdega@gmail.com">emrssubdega@gmail.com</a></p>
-        <p>Portal: <a href="admin/">Staff & Admin Login</a></p>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p>&copy; EMRS Subdega. All rights reserved. | <a href="admin/">Admin Login</a></p>
-    </div>
-  </footer>
-
-  <script>
-    let allDocuments = [];
-    let galleryPhotos = [];
-    let currentSlideIdx = 0;
-    let sliderTimer = null;
-    let client = null;
-
-    function escapeHtml(value) {
-      return String(value ?? '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
-    /* Page Switcher Function */
-    window.showPage = function(viewId) {
-      const views = document.querySelectorAll('.page-view');
-      views.forEach(view => view.classList.remove('active'));
-
-      const target = document.getElementById(viewId);
-      if (target) {
-        target.classList.add('active');
-      }
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    /* Documents Page Switcher & Filter */
-    window.showDocPage = function(category) {
-      window.showPage('documents-view');
-      const listContainer = document.getElementById("documentList");
-      const heading = document.getElementById("docHeading");
-      const sub = document.getElementById("docSub");
-
-      let filtered = allDocuments;
-      if (category && category !== 'ALL') {
-        heading.textContent = category;
-        sub.textContent = 'Official documents filed under ' + category;
-        filtered = allDocuments.filter(d => d.category === category);
-      } else {
-        heading.textContent = "All Official Documents";
-        sub.textContent = "Complete archive of uploaded documents and circulars";
-      }
-
-      if (!filtered || filtered.length === 0) {
-        listContainer.innerHTML = '<p style="color: #64748b; font-style: italic;">No documents uploaded in this category yet.</p>';
-        return;
-      }
-
-      listContainer.innerHTML = filtered.map(doc => `
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 10px;">
-          <div>
-            <strong style="color: #0f172a; font-size: 1rem;">${escapeHtml(doc.title)}</strong>
-            <span style="display: inline-block; font-size: 0.78rem; background: #e2e8f0; color: #475569; padding: 2px 8px; border-radius: 4px; margin-left: 8px;">${escapeHtml(doc.category)}</span>
-          </div>
-          <a href="${escapeHtml(doc.file_url)}" target="_blank" download style="background: #0b3c5d; color: #ffffff; text-decoration: none; padding: 6px 14px; border-radius: 4px; font-size: 0.88rem; font-weight: 500;">Download / View PDF ↗</a>
-        </div>
-      `).join('');
-    };
-
-    /* Carousel / Slider Engine */
-    function buildSlider(photos) {
-      const slider = document.getElementById('
