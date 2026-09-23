@@ -48,7 +48,7 @@
     }
     .nav-links {
       display: flex;
-      gap: clamp(12px, 2.5vw, 24px);
+      gap: clamp(12px, 2vw, 22px);
       list-style: none;
       margin: 0;
       padding: 0;
@@ -66,52 +66,72 @@
       color: #0b3c5d;
     }
 
-    /* Hero Section */
+    /* Dropdown */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .dropdown-btn {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background-color: #ffffff;
+      min-width: 220px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+      border-radius: 6px;
+      overflow: hidden;
+      z-index: 1001;
+      border: 1px solid #e2e8f0;
+    }
+    .dropdown-content a {
+      color: #334155;
+      padding: 10px 16px;
+      text-decoration: none;
+      display: block;
+      font-size: 0.9rem;
+      border-bottom: 1px solid #f1f5f9;
+      text-align: left;
+    }
+    .dropdown-content a:hover {
+      background-color: #f8fafc;
+      color: #0b3c5d;
+      font-weight: 600;
+    }
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    /* Hero */
     header.hero {
       background: linear-gradient(135deg, #0b3c5d, #1d2731);
       color: white;
       padding: 70px 20px;
       text-align: center;
     }
-    header.hero h1 {
-      margin-bottom: 10px;
-      font-size: 2.6rem;
-    }
-    header.hero p {
-      font-size: 1.15rem;
-      opacity: 0.92;
-      max-width: 750px;
-      margin: 0 auto;
-    }
+    header.hero h1 { margin-bottom: 10px; font-size: 2.6rem; }
+    header.hero p { font-size: 1.15rem; opacity: 0.92; max-width: 750px; margin: 0 auto; }
 
-    /* Notice Board Section */
-    .notices-container {
+    /* Sections */
+    .content-container {
       max-width: 1200px;
-      margin: 40px auto 20px;
+      margin: 35px auto;
       padding: 0 20px;
     }
-    .notices-card {
+    .content-card {
       background: #ffffff;
       border-radius: 12px;
       padding: 28px;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-      border-top: 4px solid #0b3c5d;
     }
-    .notices-card h2 {
-      color: #0b3c5d;
-      font-size: 1.8rem;
-      margin-bottom: 6px;
-    }
-    .notices-subtitle {
-      color: #64748b;
-      font-size: 0.95rem;
-      margin-bottom: 20px;
-    }
-    .notice-list {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
+
+    /* Notice Board Items */
     .notice-item {
       padding: 16px;
       border-radius: 8px;
@@ -120,48 +140,10 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
-    }
-    .notice-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .notice-title {
-      color: #0f172a;
-      font-size: 1.05rem;
-      font-weight: 600;
-    }
-    .notice-date {
-      font-size: 0.85rem;
-      color: #64748b;
-      background: #e2e8f0;
-      padding: 2px 8px;
-      border-radius: 4px;
-    }
-    .notice-body {
-      color: #475569;
-      font-size: 0.95rem;
-      line-height: 1.5;
+      margin-bottom: 12px;
     }
 
-    /* Gallery Section */
-    .gallery-container {
-      max-width: 1200px;
-      margin: 50px auto;
-      padding: 0 20px;
-      text-align: center;
-    }
-    .gallery-container h2 {
-      color: #0b3c5d;
-      font-size: 2.2rem;
-      margin-bottom: 8px;
-    }
-    .gallery-subtitle {
-      color: #64748b;
-      margin-bottom: 35px;
-    }
+    /* Gallery Grid */
     .gallery-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -175,29 +157,17 @@
       background: #e2e8f0;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       cursor: pointer;
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      transition: transform 0.25s ease;
     }
-    .photo-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-    }
-    .photo-card img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
+    .photo-card:hover { transform: translateY(-4px); }
+    .photo-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .photo-card-title {
       position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      bottom: 0; left: 0; right: 0;
       padding: 12px 14px;
       background: linear-gradient(to top, rgba(0, 0, 0, 0.78), transparent);
       color: #fff;
-      text-align: left;
       font-size: 0.95rem;
-      font-weight: 500;
     }
 
     /* Lightbox Modal */
@@ -211,24 +181,9 @@
       align-items: center;
       flex-direction: column;
     }
-    .lightbox img {
-      max-width: 85%;
-      max-height: 80vh;
-      border-radius: 8px;
-    }
-    .lightbox .caption {
-      color: white;
-      margin-top: 15px;
-      font-size: 1.1rem;
-    }
-    .lightbox .close {
-      position: absolute;
-      top: 20px;
-      right: 35px;
-      color: white;
-      font-size: 40px;
-      cursor: pointer;
-    }
+    .lightbox img { max-width: 85%; max-height: 80vh; border-radius: 8px; }
+    .lightbox .caption { color: white; margin-top: 15px; font-size: 1.1rem; }
+    .lightbox .close { position: absolute; top: 20px; right: 35px; color: white; font-size: 40px; cursor: pointer; }
 
     /* Footer */
     footer.site-footer {
@@ -245,32 +200,12 @@
       gap: 35px;
       padding-bottom: 35px;
       border-bottom: 1px solid #1e293b;
-      text-align: left;
     }
-    .footer-col h3 {
-      color: #ffffff;
-      margin-bottom: 15px;
-      font-size: 1.15rem;
-    }
-    .footer-col p {
-      font-size: 0.95rem;
-      margin-bottom: 10px;
-      color: #cbd5e1;
-    }
-    .footer-col a {
-      color: #38bdf8;
-      text-decoration: none;
-    }
-    .footer-bottom {
-      max-width: 1200px;
-      margin: 25px auto 0;
-      text-align: center;
-      font-size: 0.88rem;
-    }
-    .footer-bottom a {
-      color: #64748b;
-      text-decoration: none;
-    }
+    .footer-col h3 { color: #ffffff; margin-bottom: 15px; font-size: 1.15rem; }
+    .footer-col p { font-size: 0.95rem; margin-bottom: 10px; color: #cbd5e1; }
+    .footer-col a { color: #38bdf8; text-decoration: none; }
+    .footer-bottom { max-width: 1200px; margin: 25px auto 0; text-align: center; font-size: 0.88rem; }
+    .footer-bottom a { color: #64748b; text-decoration: none; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
@@ -282,6 +217,25 @@
     <a href="#" class="nav-brand">EMRS Subdega</a>
     <ul class="nav-links">
       <li><a href="#">Home</a></li>
+
+      <!-- Information Dropdown -->
+      <li class="dropdown">
+        <a href="javascript:void(0)" class="dropdown-btn">INFORMATION ▾</a>
+        <div class="dropdown-content">
+          <a href="#documents" onclick="filterDocs('Mandatory Disclosure')">Mandatory Disclosure</a>
+          <a href="#documents" onclick="filterDocs('General Notice')">General Notice</a>
+          <a href="#documents" onclick="filterDocs('Exam Notice')">Exam Notice</a>
+          <a href="#documents" onclick="filterDocs('Rules & Regulations')">Rules & Regulations</a>
+          <a href="#documents" onclick="filterDocs('Committees')">Committees</a>
+          <a href="#documents" onclick="filterDocs('Recent Activities')">Recent Activities</a>
+          <a href="#documents" onclick="filterDocs('Result Analysis')">Result Analysis</a>
+          <a href="#documents" onclick="filterDocs('Transfer Certificate')">Transfer Certificate</a>
+          <a href="#documents" onclick="filterDocs('Admission Notice')">Admission Notice</a>
+          <a href="#documents" onclick="filterDocs('Tenders')">Tenders</a>
+          <a href="#documents" onclick="filterDocs('Career')">Career</a>
+        </div>
+      </li>
+
       <li><a href="#notices">Notices</a></li>
       <li><a href="#gallery">Gallery</a></li>
       <li><a href="#contact">Contact</a></li>
@@ -295,21 +249,35 @@
     <p>Eklavya Model Residential School, Subdega, Sundargarh, Odisha</p>
   </header>
 
+  <!-- Document Archive Section -->
+  <section class="content-container" id="documents">
+    <div class="content-card" style="border-top: 4px solid #0284c7;">
+      <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; margin-bottom: 12px;">
+        <h2 id="docHeading" style="color: #0b3c5d; font-size: 1.8rem;">School Documents & Disclosures</h2>
+        <button onclick="renderDocList(allDocuments, 'All Documents')" style="background: none; border: 1px solid #0284c7; color: #0284c7; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">View All</button>
+      </div>
+      <p id="docSub" style="color: #64748b; font-size: 0.95rem; margin-bottom: 20px;">Browse official school circulars and records</p>
+      <div id="documentList" style="display: flex; flex-direction: column; gap: 10px;">
+        <p style="color: #64748b;">Loading files...</p>
+      </div>
+    </div>
+  </section>
+
   <!-- Notice Board -->
-  <section class="notices-container" id="notices">
-    <div class="notices-card">
-      <h2>Notice Board & Circulars</h2>
-      <p class="notices-subtitle">Important announcements, admissions, and schedules</p>
-      <div id="noticeList" class="notice-list">
-        <p style="color: #64748b;">Loading circulars...</p>
+  <section class="content-container" id="notices">
+    <div class="content-card" style="border-top: 4px solid #0b3c5d;">
+      <h2 style="color: #0b3c5d; font-size: 1.8rem; margin-bottom: 6px;">Notice Board & Circulars</h2>
+      <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 20px;">Important announcements, admissions, and schedules</p>
+      <div id="noticeList" style="display: flex; flex-direction: column; gap: 14px;">
+        <p style="color: #64748b;">Loading notices...</p>
       </div>
     </div>
   </section>
 
   <!-- Gallery Section -->
-  <section class="gallery-container" id="gallery">
-    <h2>Photo Gallery</h2>
-    <p class="gallery-subtitle">Moments, activities, and campus life</p>
+  <section class="content-container" id="gallery" style="text-align: center;">
+    <h2 style="color: #0b3c5d; font-size: 2.2rem; margin-bottom: 8px;">Photo Gallery</h2>
+    <p style="color: #64748b; margin-bottom: 35px;">Moments, activities, and campus life</p>
     <div id="publicGalleryGrid" class="gallery-grid">
       <p>Loading photos...</p>
     </div>
@@ -322,7 +290,7 @@
     <div id="lightboxCaption" class="caption"></div>
   </div>
 
-  <!-- Contact & Footer -->
+  <!-- Footer -->
   <footer class="site-footer" id="contact">
     <div class="footer-content">
       <div class="footer-col">
@@ -331,8 +299,7 @@
       </div>
       <div class="footer-col">
         <h3>Campus Location</h3>
-        <p>At/Po: Subdega</p>
-        <p>District: Sundargarh</p>
+        <p>At/Po: Subdega, District: Sundargarh</p>
         <p>Odisha, India - 770014</p>
       </div>
       <div class="footer-col">
@@ -347,8 +314,45 @@
   </footer>
 
   <script>
+    let allDocuments = [];
+    let client;
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function renderDocList(docs, title = "School Documents & Disclosures") {
+      const listContainer = document.getElementById("documentList");
+      document.getElementById("docHeading").textContent = title;
+      
+      if (!docs || docs.length === 0) {
+        listContainer.innerHTML = '<p style="color: #64748b; font-style: italic;">No documents uploaded in this category.</p>';
+        return;
+      }
+
+      listContainer.innerHTML = docs.map(doc => `
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <strong style="color: #0f172a; font-size: 1rem;">${escapeHtml(doc.title)}</strong>
+            <span style="display: inline-block; font-size: 0.78rem; background: #e2e8f0; color: #475569; padding: 2px 8px; border-radius: 4px; margin-left: 8px;">${escapeHtml(doc.category)}</span>
+          </div>
+          <a href="${escapeHtml(doc.file_url)}" target="_blank" download style="background: #0b3c5d; color: #ffffff; text-decoration: none; padding: 6px 14px; border-radius: 4px; font-size: 0.88rem; font-weight: 500;">Download / View PDF ↗</a>
+        </div>
+      `).join('');
+    }
+
+    window.filterDocs = function(category) {
+      const filtered = allDocuments.filter(d => d.category === category);
+      renderDocList(filtered, category);
+    };
+
     document.addEventListener("DOMContentLoaded", async () => {
-      const client = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+      client = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
       const grid = document.getElementById("publicGalleryGrid");
       const noticeContainer = document.getElementById("noticeList");
       const lightbox = document.getElementById("lightbox");
@@ -356,66 +360,58 @@
       const lightboxCaption = document.getElementById("lightboxCaption");
       const closeBtn = document.getElementById("closeBtn");
 
-      function escapeHtml(value) {
-        return String(value ?? '')
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;')
-          .replace(/'/g, '&#039;');
-      }
+      // 1. Fetch Documents
+      async function loadDocuments() {
+        const { data, error } = await client
+          .from("documents")
+          .select("*")
+          .order("created_at", { ascending: false });
 
-      // 1. Fetch Notices
-      async function loadNotices() {
-        try {
-          const { data, error } = await client
-            .from("notices")
-            .select("*")
-            .eq("published", true)
-            .order("notice_date", { ascending: false });
-
-          if (error) {
-            noticeContainer.innerHTML = `<p style="color:#ef4444">Error loading notices: ${escapeHtml(error.message)}</p>`;
-            return;
-          }
-
-          if (!data || data.length === 0) {
-            noticeContainer.innerHTML = `<p style="color: #64748b; font-style: italic;">No current announcements posted.</p>`;
-            return;
-          }
-
-          noticeContainer.innerHTML = data.map(item => `
-            <div class="notice-item">
-              <div class="notice-header">
-                <span class="notice-title">${escapeHtml(item.title)}</span>
-                <span class="notice-date">${escapeHtml(item.notice_date || '')}</span>
-              </div>
-              <p class="notice-body">${escapeHtml(item.body)}</p>
-            </div>
-          `).join("");
-        } catch (err) {
-          noticeContainer.innerHTML = `<p style="color:#ef4444">${escapeHtml(err.message)}</p>`;
+        if (!error && data) {
+          allDocuments = data;
+          renderDocList(allDocuments);
+        } else {
+          document.getElementById("documentList").innerHTML = `<p style="color:#ef4444">Error loading documents.</p>`;
         }
       }
 
-      // 2. Fetch Photos
+      // 2. Fetch Notices
+      async function loadNotices() {
+        const { data, error } = await client
+          .from("notices")
+          .select("*")
+          .eq("published", true)
+          .order("notice_date", { ascending: false });
+
+        if (error) {
+          noticeContainer.innerHTML = `<p style="color:#ef4444">Error loading notices: ${escapeHtml(error.message)}</p>`;
+          return;
+        }
+
+        if (!data || data.length === 0) {
+          noticeContainer.innerHTML = `<p style="color: #64748b; font-style: italic;">No current announcements posted.</p>`;
+          return;
+        }
+
+        noticeContainer.innerHTML = data.map(item => `
+          <div class="notice-item">
+            <div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;">
+              <span style="color:#0f172a; font-weight:600; font-size:1.05rem;">${escapeHtml(item.title)}</span>
+              <span style="font-size:0.85rem; color:#64748b; background:#e2e8f0; padding:2px 8px; border-radius:4px;">${escapeHtml(item.notice_date || '')}</span>
+            </div>
+            <p style="color:#475569; font-size:0.95rem; line-height:1.5;">${escapeHtml(item.body)}</p>
+          </div>
+        `).join("");
+      }
+
+      // 3. Fetch Gallery
       async function loadGallery() {
-        try {
-          const { data, error } = await client
-            .from("gallery")
-            .select("*")
-            .order("created_at", { ascending: false });
+        const { data, error } = await client
+          .from("gallery")
+          .select("*")
+          .order("created_at", { ascending: false });
 
-          if (error) {
-            grid.innerHTML = `<p style="color:#ef4444">Failed to load photos: ${escapeHtml(error.message)}</p>`;
-            return;
-          }
-
-          if (!data || data.length === 0) {
-            grid.innerHTML = "<p>No photos uploaded yet.</p>";
-            return;
-          }
-
+        if (!error && data && data.length > 0) {
           grid.innerHTML = data.map(photo => `
             <div class="photo-card" data-url="${escapeHtml(photo.image_url)}" data-title="${escapeHtml(photo.title || '')}">
               <img src="${escapeHtml(photo.image_url)}" alt="${escapeHtml(photo.title || 'School photo')}" loading="lazy" />
@@ -430,18 +426,17 @@
               lightbox.style.display = "flex";
             });
           });
-        } catch (err) {
-          grid.innerHTML = `<p style="color:#ef4444">${escapeHtml(err.message)}</p>`;
+        } else {
+          grid.innerHTML = "<p>No photos uploaded yet.</p>";
         }
       }
 
-      // Modal Controls
       closeBtn.addEventListener("click", () => { lightbox.style.display = "none"; });
       lightbox.addEventListener("click", (e) => {
         if (e.target === lightbox) lightbox.style.display = "none";
       });
 
-      // Execute both
+      loadDocuments();
       loadNotices();
       loadGallery();
     });
