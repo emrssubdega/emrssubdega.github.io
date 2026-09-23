@@ -20,7 +20,6 @@
       min-height: 100vh;
     }
 
-    /* Top Official Header */
     .top-header {
       background: #ffffff;
       padding: 12px clamp(15px, 4vw, 45px);
@@ -89,7 +88,6 @@
       font-weight: 700;
     }
 
-    /* Navbar */
     .navbar {
       position: sticky;
       top: 0;
@@ -131,7 +129,6 @@
       color: #38bdf8;
     }
 
-    /* Dropdown */
     .dropdown { position: relative; }
     .dropdown-btn { cursor: pointer; display: flex; align-items: center; gap: 4px; }
     .dropdown-content {
@@ -169,7 +166,6 @@
 
     .tab-section { width: 100%; flex: 1; }
 
-    /* Carousel */
     .slider-container {
       position: relative;
       width: 100%;
@@ -313,7 +309,9 @@
     }
   </style>
 
-  <!-- Pre-load router functions so buttons work immediately -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
   <script>
     window.allDocuments = [];
     window.currentDocCategory = 'ALL';
@@ -348,7 +346,9 @@
       if (window.currentDocCategory && window.currentDocCategory !== 'ALL') {
         if (title) title.textContent = window.currentDocCategory;
         if (sub) sub.textContent = 'Official records and circulars filed under ' + window.currentDocCategory;
-        matches = matches.filter(function(d) { return d.category === window.currentDocCategory; });
+        matches = matches.filter(function(d) {
+          return String(d.category || '').trim().toLowerCase() === String(window.currentDocCategory).trim().toLowerCase();
+        });
       } else {
         if (title) title.textContent = 'All Official Documents';
         if (sub) sub.textContent = 'Complete archive of uploaded documents and circulars';
@@ -385,13 +385,9 @@
       window.renderDocuments();
     };
   </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
 </head>
 <body>
 
-  <!-- Top Header -->
   <div class="top-header">
     <div class="header-left">
       <img src="logo.png" alt="EMRS Logo" class="header-logo" onerror="this.src='https://nests.tribal.gov.in/assets/images/emrs_logo.png'" />
@@ -411,7 +407,6 @@
     </div>
   </div>
 
-  <!-- Navbar -->
   <nav class="navbar">
     <div class="nav-links">
       <button type="button" class="nav-link-btn" onclick="window.goToTab('tab-home')">HOME</button>
@@ -475,7 +470,7 @@
     </section>
   </div>
 
-  <!-- 2. INFORMATION / DOCUMENTS / CIRCULARS TABULAR VIEW -->
+  <!-- 2. DOCUMENTS VIEW -->
   <div id="tab-documents" class="tab-section" style="display: none;">
     <section class="content-container">
       <div class="content-card" style="border-top: 4px solid #0284c7; padding: 25px 30px;">
@@ -526,4 +521,5 @@
   <div id="tab-contact" class="tab-section" style="display: none;">
     <section class="content-container">
       <div class="content-card" style="border-top: 4px solid #0b3c5d;">
-        <h
+        <h2 style="color: #0b3c5d; font-size: 1.8rem; margin-bottom: 12px;">Contact Us</h2>
+        <p style="color: #475569; margin-bottom: 12px;"><str
