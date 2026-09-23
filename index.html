@@ -365,7 +365,7 @@
     </div>
   </nav>
 
-  <!-- 1. HOME -->
+  <!-- 1. HOME VIEW -->
   <div id="tab-home" class="tab-section" style="display: block;">
     <div class="slider-container" id="homeSlider">
       <div class="slide active">
@@ -402,21 +402,34 @@
     </section>
   </div>
 
-  <!-- 2. DOCUMENTS -->
+  <!-- 2. INFORMATION / DOCUMENTS / CIRCULARS TABULAR VIEW -->
   <div id="tab-documents" class="tab-section" style="display: none;">
     <section class="content-container">
-      <div class="content-card" style="border-top: 4px solid #0284c7;">
+      <div class="content-card" style="border-top: 4px solid #0284c7; padding: 25px 30px;">
         <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; margin-bottom: 8px;">
-          <h2 id="docHeading" style="color: #0b3c5d; font-size: 1.8rem;">Documents</h2>
+          <h2 id="docHeading" style="color: #0b3c5d; font-size: 1.8rem;">General Circulars</h2>
           <button onclick="openDocCategory('ALL')" style="background: none; border: 1px solid #0284c7; color: #0284c7; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">View All Documents</button>
         </div>
         <p id="docSub" style="color: #64748b; font-size: 0.95rem; margin-bottom: 22px;">Official records and circulars</p>
-        <div id="documentList"></div>
+        
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.92rem;">
+            <thead>
+              <tr style="background: #7a8fa6; color: #ffffff;">
+                <th style="padding: 12px 14px; width: 14%; border: 1px solid #cbd5e1; text-align: center;">Circular No.</th>
+                <th style="padding: 12px 14px; width: 14%; border: 1px solid #cbd5e1; text-align: center;">Date</th>
+                <th style="padding: 12px 16px; width: 58%; border: 1px solid #cbd5e1;">Subject</th>
+                <th style="padding: 12px 14px; width: 14%; border: 1px solid #cbd5e1; text-align: center;">Download</th>
+              </tr>
+            </thead>
+            <tbody id="documentList"></tbody>
+          </table>
+        </div>
       </div>
     </section>
   </div>
 
-  <!-- 3. NOTICES -->
+  <!-- 3. NOTICES VIEW -->
   <div id="tab-notices" class="tab-section" style="display: none;">
     <section class="content-container">
       <div class="content-card" style="border-top: 4px solid #0b3c5d;">
@@ -427,7 +440,7 @@
     </section>
   </div>
 
-  <!-- 4. GALLERY -->
+  <!-- 4. GALLERY VIEW -->
   <div id="tab-gallery" class="tab-section" style="display: none;">
     <section class="content-container" style="text-align: center;">
       <h2 style="color: #0b3c5d; font-size: 2.2rem; margin-bottom: 8px;">Photo Gallery</h2>
@@ -436,7 +449,7 @@
     </section>
   </div>
 
-  <!-- 5. CONTACT -->
+  <!-- 5. CONTACT VIEW -->
   <div id="tab-contact" class="tab-section" style="display: none;">
     <section class="content-container">
       <div class="content-card" style="border-top: 4px solid #0b3c5d;">
@@ -476,7 +489,7 @@
     </div>
   </footer>
 
-  <!-- IMMEDIATE SUPABASE INITIALIZATION & ROUTER -->
+  <!-- Instant Router & Data Loader Script -->
   <script>
     var client = null;
     if (window.supabase && window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
@@ -487,6 +500,15 @@
     var currentDocCategory = null;
     var currentSlideIdx = 0;
     var sliderTimer = null;
+
+    function escapeHtml(value) {
+      return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
 
     function goToTab(tabId) {
       var tabs = ['tab-home', 'tab-documents', 'tab-notices', 'tab-gallery', 'tab-contact'];
@@ -506,7 +528,7 @@
       var matches = allDocuments;
       if (currentDocCategory && currentDocCategory !== 'ALL') {
         if (title) title.textContent = currentDocCategory;
-        if (sub) sub.textContent = 'Official documents filed under ' + currentDocCategory;
+        if (sub) sub.textContent = 'Official records and circulars filed under ' + currentDocCategory;
         matches = allDocuments.filter(function(d) { return d.category === currentDocCategory; });
       } else {
         if (title) title.textContent = 'All Official Documents';
@@ -514,165 +536,12 @@
       }
 
       if (!matches || matches.length === 0) {
-        list.innerHTML = '<p style="color: #64748b; font-style: italic; padding: 20px 0;">No documents uploaded under "' + (currentDocCategory || 'General') + '" yet.</p>';
+        list.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748b; padding: 24px; font-style: italic; border: 1px solid #e2e8f0;">No documents uploaded under "' + (currentDocCategory || 'General') + '" yet.</td></tr>';
         return;
       }
 
-      list.innerHTML = matches.map(function(doc) {
-        return '<div style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:#f8fafc; border-radius:8px; border:1px solid #e2e8f0; flex-wrap:wrap; gap:10px; margin-bottom:10px;">' +
-          '<div>' +
-            '<strong style="color:#0f172a; font-size:1rem;">' + (doc.title || 'Untitled') + '</strong>' +
-            '<span style="display:inline-block; font-size:0.78rem; background:#e2e8f0; color:#475569; padding:2px 8px; border-radius:4px; margin-left:8px;">' + (doc.category || 'General') + '</span>' +
-          '</div>' +
-          '<a href="' + doc.file_url + '" target="_blank" download style="background:#0b3c5d; color:#ffffff; text-decoration:none; padding:6px 14px; border-radius:4px; font-size:0.88rem; font-weight:500;">Download / View PDF ↗</a>' +
-        '</div>';
-      }).join('');
-    }
+      list.innerHTML = matches.map(function(doc, index) {
+        var displayNo = doc.circular_no ? doc.circular_no : ('#' + (matches.length - index));
+        var displayDate = doc.doc_date || (doc.created_at ? doc.created_at.split('T')[0] : '-');
 
-    function openDocCategory(catName) {
-      currentDocCategory = catName;
-      goToTab('tab-documents');
-      renderDocuments();
-    }
-
-    function buildSlider(photos) {
-      var slider = document.getElementById('homeSlider');
-      var dotsContainer = document.getElementById('sliderDots');
-      if (!slider || !dotsContainer) return;
-
-      var selected = (photos || []).filter(function(p) { return p.is_slider === true; });
-      var slidesData = selected.length > 0
-        ? selected.map(function(p) { return { url: p.image_url, title: p.title || 'EMRS Subdega' }; })
-        : [{ url: 'school-campus.jpg', title: 'EMRS Subdega Campus' }];
-
-      var existing = slider.querySelectorAll('.slide');
-      for (var i = 0; i < existing.length; i++) existing[i].remove();
-      dotsContainer.innerHTML = '';
-
-      slidesData.forEach(function(item, idx) {
-        var slide = document.createElement('div');
-        slide.className = 'slide ' + (idx === 0 ? 'active' : '');
-        slide.innerHTML = '<img src="' + item.url + '" alt="' + (item.title || '') + '" />' +
-          '<div class="slide-overlay">' +
-            '<h3>' + (item.title || '') + '</h3>' +
-            '<p>EMRS Subdega, Sundargarh, Odisha</p>' +
-          '</div>';
-        slider.appendChild(slide);
-
-        var dot = document.createElement('div');
-        dot.className = 'dot ' + (idx === 0 ? 'active' : '');
-        dot.onclick = function() { goToSlide(idx); };
-        dotsContainer.appendChild(dot);
-      });
-
-      startAutoSlider(slidesData.length);
-    }
-
-    function goToSlide(idx) {
-      var slides = document.querySelectorAll('.slide');
-      var dots = document.querySelectorAll('.dot');
-      if (slides.length === 0) return;
-
-      if (slides[currentSlideIdx]) slides[currentSlideIdx].classList.remove('active');
-      if (dots[currentSlideIdx]) dots[currentSlideIdx].classList.remove('active');
-
-      currentSlideIdx = (idx + slides.length) % slides.length;
-
-      if (slides[currentSlideIdx]) slides[currentSlideIdx].classList.add('active');
-      if (dots[currentSlideIdx]) dots[currentSlideIdx].classList.add('active');
-    }
-
-    function startAutoSlider(total) {
-      if (sliderTimer) clearInterval(sliderTimer);
-      sliderTimer = setInterval(function() { goToSlide(currentSlideIdx + 1); }, 5000);
-    }
-
-    async function fetchAllData() {
-      if (!client) return;
-
-      // 1. Fetch Documents
-      try {
-        var dRes = await client.from("documents").select("*").order("created_at", { ascending: false });
-        if (!dRes.error && dRes.data) {
-          allDocuments = dRes.data;
-          renderDocuments();
-        }
-      } catch(e) {}
-
-      // 2. Fetch Notices
-      try {
-        var nRes = await client.from("notices").select("*").eq("published", true).order("notice_date", { ascending: false });
-        var nCont = document.getElementById("noticeList");
-        var hCont = document.getElementById("homeNoticeList");
-        if (nRes.data && nRes.data.length > 0) {
-          var html = nRes.data.map(function(item) {
-            return '<div class="notice-item">' +
-              '<div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;">' +
-                '<span style="color:#0f172a; font-weight:600; font-size:1.05rem;">' + (item.title || '') + '</span>' +
-                '<span style="font-size:0.85rem; color:#64748b; background:#e2e8f0; padding:2px 8px; border-radius:4px;">' + (item.notice_date || '') + '</span>' +
-              '</div>' +
-              '<p style="color:#475569; font-size:0.95rem; line-height:1.5;">' + (item.body || '') + '</p>' +
-            '</div>';
-          }).join("");
-          if (nCont) nCont.innerHTML = html;
-          if (hCont) hCont.innerHTML = html;
-        } else {
-          var empty = '<p style="color: #64748b; font-style: italic;">No current circulars posted.</p>';
-          if (nCont) nCont.innerHTML = empty;
-          if (hCont) hCont.innerHTML = empty;
-        }
-      } catch(e) {}
-
-      // 3. Fetch Photos
-      try {
-        var gRes = await client.from("gallery").select("*").order("created_at", { ascending: false });
-        var grid = document.getElementById("publicGalleryGrid");
-        if (gRes.data && gRes.data.length > 0) {
-          buildSlider(gRes.data);
-          if (grid) {
-            grid.innerHTML = gRes.data.map(function(photo) {
-              return '<div class="photo-card" data-url="' + photo.image_url + '" data-title="' + (photo.title || '') + '">' +
-                '<img src="' + photo.image_url + '" alt="' + (photo.title || 'School photo') + '" loading="lazy" />' +
-                (photo.title ? '<div class="photo-card-title">' + photo.title + '</div>' : '') +
-              '</div>';
-            }).join("");
-
-            var cards = document.querySelectorAll(".photo-card");
-            cards.forEach(function(card) {
-              card.addEventListener("click", function() {
-                var lb = document.getElementById("lightbox");
-                var img = document.getElementById("lightboxImg");
-                var cap = document.getElementById("lightboxCaption");
-                if (img) img.src = card.dataset.url;
-                if (cap) cap.textContent = card.dataset.title;
-                if (lb) lb.style.display = "flex";
-              });
-            });
-          }
-        } else {
-          buildSlider([]);
-          if (grid) grid.innerHTML = '<p style="color:#64748b;">No photos uploaded yet.</p>';
-        }
-      } catch(e) {
-        buildSlider([]);
-      }
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-      var prevBtn = document.getElementById('sliderPrev');
-      var nextBtn = document.getElementById('sliderNext');
-      if (prevBtn) prevBtn.addEventListener('click', function() { goToSlide(currentSlideIdx - 1); });
-      if (nextBtn) nextBtn.addEventListener('click', function() { goToSlide(currentSlideIdx + 1); });
-
-      var closeBtn = document.getElementById("closeBtn");
-      var lb = document.getElementById("lightbox");
-      if (closeBtn && lb) {
-        closeBtn.addEventListener("click", function() { lb.style.display = "none"; });
-        lb.addEventListener("click", function(e) { if (e.target === lb) lb.style.display = "none"; });
-      }
-
-      fetchAllData();
-    });
-  </script>
-</body>
-</html>
+        return '<tr style="border-bottom: 1px solid #e2e8f0; background: ' + (index % 2 === 0 ? '#ffffff' : '#f8fafc') + ';">' +
