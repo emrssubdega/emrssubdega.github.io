@@ -15,27 +15,25 @@
       margin: 0;
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #f1f5f9;
+      background: #eaedf1;
       color: #334155;
-      overflow-x: hidden;
     }
 
     /* Top Blue Brand Navbar */
     .top-navbar {
       background: #0d47a1;
       color: #ffffff;
-      height: 54px;
+      height: 52px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 24px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
+      position: relative;
+      z-index: 100;
     }
     .top-navbar h1 {
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       font-weight: 700;
       letter-spacing: 0.5px;
       margin: 0;
@@ -75,7 +73,7 @@
     /* Login Form View */
     .login-wrapper {
       max-width: 400px;
-      margin: 90px auto;
+      margin: 80px auto;
       background: #ffffff;
       padding: 32px;
       border-radius: 8px;
@@ -93,25 +91,27 @@
       margin-bottom: 20px;
     }
 
-    /* Fixed Side-by-Side Flex Container */
+    /* Primary Side-by-Side Flex Layout */
     .admin-layout {
-      display: flex;
-      flex-direction: row;
-      align-items: stretch;
-      min-height: calc(100vh - 54px);
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: stretch !important;
+      height: calc(100vh - 52px);
       width: 100%;
+      overflow: hidden;
     }
 
     /* Left Sidebar */
     .sidebar {
-      width: 250px;
-      min-width: 250px;
-      max-width: 250px;
+      width: 250px !important;
+      min-width: 250px !important;
+      max-width: 250px !important;
       background: #1e293b;
       color: #f8fafc;
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
+      height: 100%;
       border-right: 1px solid #0f172a;
     }
     .sidebar-user-header {
@@ -145,7 +145,7 @@
       background: none;
       border: none;
       color: #cbd5e1;
-      padding: 13px 18px;
+      padding: 12px 18px;
       font-size: 0.88rem;
       font-weight: 500;
       display: flex;
@@ -175,24 +175,20 @@
       background: #182234;
     }
 
-    /* Main Center Workspace */
+    /* Workspace Content Area (Directly to the right of Sidebar) */
     .workspace {
-      flex: 1;
-      padding: 28px 35px;
-      background: #eaedf1;
+      flex: 1 1 auto;
+      height: 100%;
       overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center; /* Centers all content cards horizontally */
+      padding: 24px 30px;
+      background: #eaedf1;
     }
     .workspace-header {
-      width: 100%;
-      max-width: 900px;
       background: #ffffff;
       padding: 14px 20px;
       border-radius: 6px;
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-      margin-bottom: 22px;
+      margin-bottom: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -205,16 +201,13 @@
       margin: 0;
     }
 
-    /* Card Panels in Workspace */
+    /* View Cards */
     .view-card {
       display: none;
-      width: 100%;
-      max-width: 900px; /* Aligns comfortably in the center */
       background: #ffffff;
       padding: 28px;
-      border-radius: 8px;
+      border-radius: 6px;
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-      margin: 0 auto;
     }
     .view-card.active {
       display: block;
@@ -222,7 +215,7 @@
 
     /* Center Profile Card on Dashboard */
     .profile-card {
-      max-width: 340px;
+      max-width: 320px;
       margin: 30px auto;
       background: #ffffff;
       border-radius: 8px;
@@ -232,15 +225,15 @@
       border: 1px solid #e2e8f0;
     }
     .profile-banner {
-      height: 110px;
+      height: 100px;
       background: #be123c;
     }
     .profile-avatar-circle {
-      width: 105px;
-      height: 105px;
+      width: 100px;
+      height: 100px;
       border-radius: 50%;
       border: 4px solid #ffffff;
-      margin: -55px auto 10px;
+      margin: -50px auto 10px;
       background: #e2e8f0;
       display: flex;
       align-items: center;
@@ -253,10 +246,10 @@
       object-fit: cover;
     }
     .profile-details {
-      padding: 12px 24px 28px;
+      padding: 12px 20px 24px;
     }
     .profile-details h3 {
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       color: #1e293b;
       margin-bottom: 4px;
     }
@@ -267,7 +260,7 @@
       margin-bottom: 4px;
     }
 
-    /* Forms */
+    /* Form Fields */
     .form-group {
       margin-bottom: 16px;
     }
@@ -318,7 +311,7 @@
     <h1>Admin Panel</h1>
     <div class="top-right-actions">
       <a href="../" target="_blank" class="top-btn-link">Live Site ↗</a>
-      <button id="logoutBtn" class="top-btn-logout" type="button">Logout</button>
+      <button id="logoutBtn" class="top-btn-logout" type="button" onclick="logoutAdmin()">Logout</button>
     </div>
   </header>
 
@@ -338,7 +331,7 @@
     <p id="loginError" style="color: #dc2626; margin-top: 10px; font-size: 0.85rem;"></p>
   </div>
 
-  <!-- Synchronized Dashboard Layout (Locked Side-by-Side) -->
+  <!-- Synchronized Dashboard Layout (Locked to Row) -->
   <div id="adminDashboard" class="admin-layout" style="display: none;">
     <!-- Left Sidebar -->
     <aside class="sidebar">
@@ -364,7 +357,7 @@
       </div>
     </aside>
 
-    <!-- Main Workspace (Pinned to the Center) -->
+    <!-- Main Workspace (Directly on the Right Side) -->
     <main class="workspace">
       <div class="workspace-header">
         <h2 id="currentSectionTitle">DASHBOARD</h2>
