@@ -89,7 +89,7 @@
       font-weight: 700;
     }
 
-    /* Navy Navbar */
+    /* Navy Navbar shifted to the right */
     .navbar {
       position: sticky;
       top: 0;
@@ -99,7 +99,7 @@
       background: #0b3c5d;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end; /* Shifts all navigation tabs to the right */
       align-items: center;
       padding: 0 clamp(15px, 4vw, 45px);
     }
@@ -141,7 +141,7 @@
       display: none;
       position: absolute;
       top: 100%;
-      left: 0;
+      right: 0; /* Dropdown aligns flush with the right-shifted nav */
       background-color: #ffffff;
       min-width: 230px;
       box-shadow: 0 10px 22px rgba(0,0,0,0.15);
@@ -350,6 +350,8 @@
     @media (max-width: 768px) {
       .top-header { flex-direction: column; align-items: flex-start; }
       .header-right { align-items: flex-start; }
+      .header-tagline { align-items: flex-start; }
+      .navbar { justify-content: flex-start; }
       .slider-container { height: 260px; }
     }
   </style>
@@ -361,22 +363,26 @@
   <!-- Top Official Branding Header -->
   <div class="top-header">
     <div class="header-left">
-      <img src="logo.png" alt="EMRS Logo" class="header-logo" />
+      <!-- School Logo (Reads logo.png from root repository) -->
+      <img src="logo.png" alt="EMRS Logo" class="header-logo" onerror="this.src='https://nests.tribal.gov.in/assets/images/emrs_logo.png'" />
       <div class="header-titles">
         <h2>एकलव्य आदर्श आवासीय विद्यालय, सबडेगा</h2>
         <h1>Eklavya Model Residential School, Subdega</h1>
         <p>National Education Society for Tribal Students (NESTS) | Ministry of Tribal Affairs, Govt. of India</p>
       </div>
     </div>
+
+    <!-- Right Header with Logo above Ministry of Tribal Affairs -->
     <div class="header-right">
       <div class="header-tagline">
-        <span>Ministry of Tribal Affairs</span>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" alt="National Emblem" style="height: 48px; width: auto; margin-bottom: 4px; object-fit: contain;" />
+        <span style="font-weight: 600;">Ministry of Tribal Affairs</span>
         <strong>Tribal Transformation Through Education</strong>
       </div>
     </div>
   </div>
 
-  <!-- Primary Navigation -->
+  <!-- Primary Navigation (Shifted to Right Side) -->
   <nav class="navbar">
     <ul class="nav-links">
       <li><a onclick="showPage('home-view')">HOME</a></li>
@@ -580,169 +586,7 @@
       `).join('');
     };
 
-    /* Carousel / Slider Engine (Filters Selected is_slider Photos) */
+    /* Carousel / Slider Engine */
     function buildSlider(photos) {
       const slider = document.getElementById('homeSlider');
       const dotsContainer = document.getElementById('sliderDots');
-
-      // Only pick photos where is_slider === true; if none selected, fall back to default
-      const selectedSliderPhotos = (photos || []).filter(p => p.is_slider === true);
-
-      const slidesData = selectedSliderPhotos.length > 0
-        ? selectedSliderPhotos.map(p => ({ url: p.image_url, title: p.title || 'EMRS Subdega' }))
-        : [{ url: 'school-campus.jpg', title: 'EMRS Subdega Campus' }];
-
-      slider.querySelectorAll('.slide').forEach(s => s.remove());
-      dotsContainer.innerHTML = '';
-
-      slidesData.forEach((item, idx) => {
-        const slide = document.createElement('div');
-        slide.className = `slide ${idx === 0 ? 'active' : ''}`;
-        slide.innerHTML = `
-          <img src="${escapeHtml(item.url)}" alt="${escapeHtml(item.title)}" />
-          <div class="slide-overlay">
-            <h3>${escapeHtml(item.title)}</h3>
-            <p>EMRS Subdega, Sundargarh, Odisha</p>
-          </div>
-        `;
-        slider.appendChild(slide);
-
-        const dot = document.createElement('div');
-        dot.className = `dot ${idx === 0 ? 'active' : ''}`;
-        dot.onclick = () => goToSlide(idx);
-        dotsContainer.appendChild(dot);
-      });
-
-      startAutoSlider(slidesData.length);
-    }
-
-    function goToSlide(idx) {
-      const slides = document.querySelectorAll('.slide');
-      const dots = document.querySelectorAll('.dot');
-      if (slides.length === 0) return;
-
-      slides[currentSlideIdx].classList.remove('active');
-      if (dots[currentSlideIdx]) dots[currentSlideIdx].classList.remove('active');
-
-      currentSlideIdx = (idx + slides.length) % slides.length;
-
-      slides[currentSlideIdx].classList.add('active');
-      if (dots[currentSlideIdx]) dots[currentSlideIdx].classList.add('active');
-    }
-
-    window.nextSlide = function() {
-      const slides = document.querySelectorAll('.slide');
-      goToSlide(currentSlideIdx + 1);
-      resetAutoSlider(slides.length);
-    };
-
-    window.prevSlide = function() {
-      const slides = document.querySelectorAll('.slide');
-      goToSlide(currentSlideIdx - 1);
-      resetAutoSlider(slides.length);
-    };
-
-    function startAutoSlider(total) {
-      if (sliderTimer) clearInterval(sliderTimer);
-      sliderTimer = setInterval(() => {
-        goToSlide(currentSlideIdx + 1);
-      }, 5000);
-    }
-
-    function resetAutoSlider(total) {
-      startAutoSlider(total);
-    }
-
-    document.addEventListener("DOMContentLoaded", async () => {
-      client = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
-      const grid = document.getElementById("publicGalleryGrid");
-      const noticeContainer = document.getElementById("noticeList");
-      const homeNoticeContainer = document.getElementById("homeNoticeList");
-      const lightbox = document.getElementById("lightbox");
-      const lightboxImg = document.getElementById("lightboxImg");
-      const lightboxCaption = document.getElementById("lightboxCaption");
-      const closeBtn = document.getElementById("closeBtn");
-
-      // 1. Fetch Documents
-      async function loadDocuments() {
-        const { data, error } = await client
-          .from("documents")
-          .select("*")
-          .order("created_at", { ascending: false });
-
-        if (!error && data) allDocuments = data;
-      }
-
-      // 2. Fetch Notices
-      async function loadNotices() {
-        const { data, error } = await client
-          .from("notices")
-          .select("*")
-          .eq("published", true)
-          .order("notice_date", { ascending: false });
-
-        if (error || !data || data.length === 0) {
-          const emptyHtml = `<p style="color: #64748b; font-style: italic;">No current circulars posted.</p>`;
-          if (noticeContainer) noticeContainer.innerHTML = emptyHtml;
-          if (homeNoticeContainer) homeNoticeContainer.innerHTML = emptyHtml;
-          return;
-        }
-
-        const itemsHtml = data.map(item => `
-          <div class="notice-item">
-            <div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;">
-              <span style="color:#0f172a; font-weight:600; font-size:1.05rem;">${escapeHtml(item.title)}</span>
-              <span style="font-size:0.85rem; color:#64748b; background:#e2e8f0; padding:2px 8px; border-radius:4px;">${escapeHtml(item.notice_date || '')}</span>
-            </div>
-            <p style="color:#475569; font-size:0.95rem; line-height:1.5;">${escapeHtml(item.body)}</p>
-          </div>
-        `).join("");
-
-        if (noticeContainer) noticeContainer.innerHTML = itemsHtml;
-        if (homeNoticeContainer) homeNoticeContainer.innerHTML = itemsHtml;
-      }
-
-      // 3. Fetch Gallery & populate Slider
-      async function loadGallery() {
-        const { data, error } = await client
-          .from("gallery")
-          .select("*")
-          .order("created_at", { ascending: false });
-
-        if (!error && data && data.length > 0) {
-          galleryPhotos = data;
-
-          // Build slider with only is_slider === true photos
-          buildSlider(galleryPhotos);
-
-          // Build public gallery with all photos
-          grid.innerHTML = data.map(photo => `
-            <div class="photo-card" data-url="${escapeHtml(photo.image_url)}" data-title="${escapeHtml(photo.title || '')}">
-              <img src="${escapeHtml(photo.image_url)}" alt="${escapeHtml(photo.title || 'School photo')}" loading="lazy" />
-              ${photo.title ? `<div class="photo-card-title">${escapeHtml(photo.title)}</div>` : ''}
-            </div>
-          `).join("");
-
-          document.querySelectorAll(".photo-card").forEach(card => {
-            card.addEventListener("click", () => {
-              lightboxImg.src = card.dataset.url;
-              lightboxCaption.textContent = card.dataset.title;
-              lightbox.style.display = "flex";
-            });
-          });
-        } else {
-          grid.innerHTML = "<p>No photos uploaded yet.</p>";
-          buildSlider([]);
-        }
-      }
-
-      closeBtn.addEventListener("click", () => { lightbox.style.display = "none"; });
-      lightbox.addEventListener("click", (e) => {
-        if (e.target === lightbox) lightbox.style.display = "none";
-      });
-
-      await Promise.all([loadDocuments(), loadNotices(), loadGallery()]);
-    });
-  </script>
-</body>
-</html>
