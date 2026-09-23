@@ -163,7 +163,6 @@ async function loadGallery() {
   `).join('');
 }
 
-/* Photo Upload Helper */
 async function handlePhotoUpload(title, file, isSlider, msgEl) {
   if (!file) {
     msgEl.textContent = 'Please choose a photo.';
