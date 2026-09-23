@@ -5,9 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EMRS Subdega - Eklavya Model Residential School</title>
   
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
-
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
@@ -174,7 +171,7 @@
     .tab-section {
       width: 100%;
       flex: 1;
-      min-height: 400px;
+      min-height: 450px;
     }
 
     /* Carousel */
@@ -322,15 +319,12 @@
     }
   </style>
 
-  <script>
-    // Global client instantiation
-    window.client = null;
-    try {
-      if (window.supabase && window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
-        window.client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
-      }
-    } catch(e) {}
+  <!-- Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
 
+  <!-- Self-Contained Router & Render Engine -->
+  <script>
     window.allDocuments = [];
     window.allGallery = [];
     window.allNotices = [];
@@ -345,25 +339,19 @@
         .replace(/'/g, '&#039;');
     };
 
-    // Robust tab switcher that handles every section ID
     window.goToTab = function(tabId) {
-      var allTabs = ['tab-home', 'tab-documents', 'tab-notices', 'tab-gallery', 'tab-contact'];
-      for (var i = 0; i < allTabs.length; i++) {
-        var el = document.getElementById(allTabs[i]);
+      var tabs = ['tab-home', 'tab-documents', 'tab-notices', 'tab-gallery', 'tab-contact'];
+      for (var i = 0; i < tabs.length; i++) {
+        var el = document.getElementById(tabs[i]);
         if (el) {
-          el.style.display = (allTabs[i] === tabId) ? 'block' : 'none';
+          el.style.display = (tabs[i] === tabId) ? 'block' : 'none';
         }
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
-      // Refresh UI components for the active tab
-      if (tabId === 'tab-gallery') {
-        window.renderGallery();
-      } else if (tabId === 'tab-notices') {
-        window.renderNotices();
-      } else if (tabId === 'tab-documents') {
-        window.renderDocuments();
-      }
+      if (tabId === 'tab-gallery') window.renderGallery();
+      if (tabId === 'tab-notices') window.renderNotices();
+      if (tabId === 'tab-documents') window.renderDocuments();
     };
 
     window.renderDocuments = function() {
@@ -372,13 +360,12 @@
       var sub = document.getElementById('docSub');
       if (!list) return;
 
-      var matches = window.allDocuments || [];
       var targetCat = (window.currentDocCategory || 'ALL').trim().toLowerCase();
+      var matches = window.allDocuments || [];
 
       if (targetCat !== 'all') {
         if (title) title.textContent = window.currentDocCategory;
         if (sub) sub.textContent = 'Official records and circulars filed under ' + window.currentDocCategory;
-        
         matches = matches.filter(function(d) {
           var docCat = String(d.category || '').trim().toLowerCase();
           return docCat === targetCat || docCat.includes(targetCat) || targetCat.includes(docCat);
@@ -389,7 +376,7 @@
       }
 
       if (!matches || matches.length === 0) {
-        list.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748b; padding: 24px; font-style: italic; border: 1px solid #e2e8f0;">No documents found under "' + (window.currentDocCategory || 'General') + '". Click <a href="javascript:void(0)" onclick="window.openDocCategory(\'ALL\')" style="color:#0284c7; text-decoration:underline;">View All Documents</a> to see everything.</td></tr>';
+        list.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748b; padding: 24px; font-style: italic; border: 1px solid #e2e8f0;">No documents found under "' + (window.currentDocCategory || 'General') + '". <br/><button type="button" onclick="window.openDocCategory(\'ALL\')" style="margin-top:8px; background:#0b3c5d; color:#fff; border:none; padding:5px 12px; border-radius:4px; cursor:pointer;">View All Uploaded Records</button></td></tr>';
         return;
       }
 
@@ -414,16 +401,9 @@
       }).join('');
     };
 
-    window.openDocCategory = async function(catName) {
+    window.openDocCategory = function(catName) {
       window.currentDocCategory = catName;
       window.goToTab('tab-documents');
-      
-      if (!window.allDocuments || window.allDocuments.length === 0) {
-        if (window.client) {
-          var res = await window.client.from("documents").select("*").order("created_at", { ascending: false });
-          if (res.data) window.allDocuments = res.data;
-        }
-      }
       window.renderDocuments();
     };
 
@@ -484,7 +464,7 @@
 </head>
 <body>
 
-  <!-- Top Official Header -->
+  <!-- Top Header -->
   <div class="top-header">
     <div class="header-left">
       <img src="logo.png" alt="EMRS Logo" class="header-logo" onerror="this.src='https://nests.tribal.gov.in/assets/images/emrs_logo.png'" />
@@ -546,4 +526,13 @@
       <div class="slider-dots" id="sliderDots"></div>
     </div>
 
-    <div class="content-con
+    <div class="content-container">
+      <div class="content-card">
+        <h2 style="color: #0b3c5d; margin-bottom: 12px;">About Our Institution</h2>
+        <p style="color: #475569; font-size: 1.05rem; margin-bottom: 16px;">
+          Eklavya Model Residential School (EMRS), Subdega, Sundargarh is established under the Ministry of Tribal Affairs, Government of India, to provide quality education to tribal students in remote areas.
+        </p>
+        <p style="color: #475569; font-size: 1rem;">
+          Our focus is on the comprehensive development of students through high academic standards, sports, and cultural enrichment.
+        </p>
+      </div>
