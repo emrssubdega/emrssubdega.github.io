@@ -1,219 +1,167 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>EMRS Subdega Admin</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../supabase-config.js"></script>
-
-<style>
-.gallery-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
-  gap:15px;
-  margin-top:20px;
-}
-.gallery-card{
-  border:1px solid #dce5de;
-  border-radius:10px;
-  padding:10px;
-  background:#fff;
-}
-.gallery-card img{
-  width:100%;
-  height:150px;
-  object-fit:cover;
-  border-radius:8px;
-}
-.gallery-card button{
-  width:100%;
-  margin-top:8px;
-}
-.gallery-upload{
-  background:#f7faf7;
-  padding:15px;
-  border-radius:10px;
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EMRS Subdega - Admin Portal</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f1f5f9;
+      color: #334155;
+      padding: 20px;
+    }
+    .admin-card {
+      max-width: 440px;
+      margin: 60px auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    }
+    .admin-card h2 { margin-bottom: 8px; color: #0b3c5d; }
+    .admin-card p { font-size: 0.9rem; color: #64748b; margin-bottom: 20px; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 6px; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+    .btn-primary {
+      width: 100%;
+      background: #0b3c5d;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .btn-primary:hover { background: #072a42; }
+    .danger { background: #ef4444; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+    .danger:hover { background: #dc2626; }
+    .dashboard-container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff;
+      padding: 15px 25px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      margin-bottom: 25px;
+    }
+    .dashboard-header h1 { font-size: 1.3rem; color: #0b3c5d; }
+    .section-box {
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .section-box h3 { margin-bottom: 15px; color: #0f172a; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../supabase-config.js"></script>
 </head>
-
 <body>
 
-<div id="loginBox" class="panel">
-  <h1>EMRS Subdega</h1>
-  <p class="muted">Administrator Login</p>
-
-  <form id="loginForm">
-    <label>Email</label>
-    <input id="email" type="email" required placeholder="Admin email">
-
-    <label>Password</label>
-    <input id="password" type="password" required placeholder="Password">
-
-    <button type="submit">Login</button>
-
-    <p id="loginMsg" class="msg"></p>
-  </form>
-
-  <a href="../">← Back to website</a>
-</div>
-
-
-<div id="dashboard" class="hidden">
-
-<header class="dashHead">
-  <div>
-    <b>EMRS SUBDEGA</b>
-    <span>Website Admin Dashboard</span>
+  <!-- LOGIN SECTION -->
+  <div id="loginSection" class="admin-card">
+    <h2>Admin Login</h2>
+    <p>Sign in to manage notices, slider photos, and documents</p>
+    <div class="form-group">
+      <label for="adminEmail">Email Address</label>
+      <input type="email" id="adminEmail" placeholder="admin@example.com" />
+    </div>
+    <div class="form-group">
+      <label for="adminPassword">Password</label>
+      <input type="password" id="adminPassword" placeholder="••••••••" />
+    </div>
+    <button type="button" id="loginBtn" class="btn-primary">Sign In</button>
+    <p id="loginError" style="color: #ef4444; margin-top: 12px; font-weight: 500;"></p>
+    <p style="text-align: center; margin-top: 15px;"><a href="../" style="color: #0284c7; text-decoration: none; font-size: 0.88rem;">← Back to School Website</a></p>
   </div>
 
-  <button id="logoutBtn">Logout</button>
-</header>
+  <!-- DASHBOARD SECTION -->
+  <div id="adminDashboard" class="dashboard-container" style="display: none;">
+    <div class="dashboard-header">
+      <div>
+        <h1>EMRS Subdega Dashboard</h1>
+        <span id="userEmailBadge" style="font-size: 0.85rem; color: #64748b;"></span>
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <a href="../" target="_blank" style="padding: 8px 14px; background: #e2e8f0; color: #334155; text-decoration: none; border-radius: 6px; font-size: 0.88rem; font-weight: 500;">View Live Site ↗</a>
+        <button id="logoutBtn" class="danger" style="padding: 8px 14px; font-size: 0.88rem;">Log Out</button>
+      </div>
+    </div>
 
+    <!-- 1. Notice Management -->
+    <div class="section-box">
+      <h3>Manage Notice Board</h3>
+      <form id="noticeForm">
+        <div class="form-group">
+          <label>Notice Title</label>
+          <input type="text" id="noticeTitle" required />
+        </div>
+        <div class="form-group">
+          <label>Notice Date</label>
+          <input type="date" id="noticeDate" required />
+        </div>
+        <div class="form-group">
+          <label>Notice Content / Details</label>
+          <textarea id="noticeBody" rows="3" required></textarea>
+        </div>
+        <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+          <input type="checkbox" id="noticePublished" checked style="width: auto;" />
+          <label for="noticePublished" style="margin-bottom: 0;">Publish on website immediately</label>
+        </div>
+        <button type="submit" id="noticeSubmitBtn" class="btn-primary" style="width: auto; padding: 8px 18px;">Publish Notice</button>
+        <span id="noticeMsg" style="margin-left: 10px; font-size: 0.9rem; font-weight: 500;"></span>
+      </form>
+      <div id="adminNoticeList" style="margin-top: 20px;"></div>
+    </div>
 
-<main class="wrap">
+    <!-- 2. Gallery & Slider Photos -->
+    <div class="section-box">
+      <h3>Manage Photos & Slider</h3>
+      <div class="form-group">
+        <label>Photo Caption / Title</label>
+        <input type="text" id="galleryTitle" placeholder="e.g., Annual Sports Day 2026" />
+      </div>
+      <div class="form-group">
+        <label>Select Photo</label>
+        <input type="file" id="galleryFile" accept="image/*" />
+      </div>
+      <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+        <input type="checkbox" id="galleryIsSlider" checked style="width: auto;" />
+        <label for="galleryIsSlider" style="margin-bottom: 0; font-weight: 600; color: #f97316;">Feature this photo in the Homepage Carousel Slider</label>
+      </div>
+      <button type="button" id="uploadGallery" class="btn-primary" style="width: auto; padding: 8px 18px;">Upload Photo</button>
+      <span id="galleryMsg" style="margin-left: 10px; font-size: 0.9rem; font-weight: 500;"></span>
+      <div id="galleryGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 20px;"></div>
+    </div>
 
-<div class="welcome">
-  <h1>School Website Dashboard</h1>
-  <p>
-    Change the details below and click Save.
-    Changes will appear on the public website.
-  </p>
-</div>
-
-
-<!-- SCHOOL INFORMATION -->
-
-<section class="panel">
-
-<h2>School Information</h2>
-
-<div class="two">
-
-<div>
-<label>Address</label>
-<input id="address">
-</div>
-
-<div>
-<label>Phone</label>
-<input id="phone">
-</div>
-
-<div>
-<label>Email</label>
-<input id="schoolEmail">
-</div>
-
-</div>
-
-<label>About the School</label>
-<textarea id="aboutText" rows="5"></textarea>
-
-<label>Principal's Message</label>
-<textarea id="principalMessage" rows="6"></textarea>
-
-<button id="saveContent">
-Save School Details
-</button>
-
-<p id="contentMsg" class="msg"></p>
-
-</section>
-
-
-<!-- NOTICES -->
-
-<section class="panel">
-
-<h2>Notices</h2>
-
-<form id="noticeForm">
-
-<input type="hidden" id="noticeId">
-
-<label>Notice Title</label>
-<input id="noticeTitle" required>
-
-<label>Notice Text</label>
-<textarea id="noticeBody" rows="4" required></textarea>
-
-<div class="two">
-
-<div>
-<label>Date</label>
-<input id="noticeDate" type="date" required>
-</div>
-
-<div class="check">
-<label>
-<input id="noticePublished" type="checkbox" checked>
-Publish on website
-</label>
-</div>
-
-</div>
-
-<button type="submit">
-Save Notice
-</button>
-
-<button type="button" id="cancelNotice" class="secondary">
-Clear
-</button>
-
-<p id="noticeMsg" class="msg"></p>
-
-</form>
-
-<div id="noticeTable"></div>
-
-</section>
-
-
-<!-- GALLERY -->
-
-<section class="panel">
-
-<h2>🖼️ Gallery</h2>
-
-<div class="gallery-upload">
-
-<label>Photo Title</label>
-<input id="galleryTitle" placeholder="Example: Independence Day Celebration">
-
-<label>Select Photo</label>
-<input id="galleryFile" type="file" accept="image/*">
-  <label style="display: flex; align-items: center; gap: 8px; margin: 12px 0; cursor: pointer; font-size: 0.95rem;">
-            <input type="checkbox" id="galleryIsSlider" style="width: 18px; height: 18px;" />
-            <span>Feature this photo in the Homepage Slider</span>
-          </label>
-
-<button type="button" id="uploadGallery">
-Upload Photo
-</button>
-
-<p id="galleryMsg" class="msg"></p>
-
-</div>
-
-<h3>Uploaded Photos</h3>
-
-<div id="galleryGrid" class="gallery-grid">
-</div>
-
-</section>
-  <!-- Document Upload Section -->
-      <section class="panel">
-        <h2>Upload School Document / Circular</h2>
-        <form id="docForm">
-          <label for="docTitle">Document Title</label>
-          <input type="text" id="docTitle" placeholder="e.g. Mandatory Disclosure 2026-27" required />
-
-          <label for="docCategory">Category / Menu Location</label>
-          <select id="docCategory" required style="width: 100%; padding: 10px; margin: 8px 0 16px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem;">
+    <!-- 3. Official Documents -->
+    <div class="section-box">
+      <h3>Upload School Documents</h3>
+      <form id="docForm">
+        <div class="form-group">
+          <label>Document Title</label>
+          <input type="text" id="docTitle" placeholder="e.g., Class 10 Board Result Analysis" required />
+        </div>
+        <div class="form-group">
+          <label>Category (Matches Website Dropdown)</label>
+          <select id="docCategory" required>
             <option value="Mandatory Disclosure">Mandatory Disclosure</option>
             <option value="General Notice">General Notice</option>
             <option value="Exam Notice">Exam Notice</option>
@@ -226,24 +174,18 @@ Upload Photo
             <option value="Tenders">Tenders</option>
             <option value="Career">Career</option>
           </select>
+        </div>
+        <div class="form-group">
+          <label>File (PDF or image)</label>
+          <input type="file" id="docFile" required />
+        </div>
+        <button type="submit" class="btn-primary" style="width: auto; padding: 8px 18px;">Upload Document</button>
+        <span id="docMsg" style="margin-left: 10px; font-size: 0.9rem; font-weight: 500;"></span>
+      </form>
+      <div id="adminDocList" style="margin-top: 20px;"></div>
+    </div>
+  </div>
 
-          <label for="docFile">Select File (PDF, DOCX, or Image)</label>
-          <input type="file" id="docFile" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" required />
-
-          <button type="submit" style="margin-top: 15px;">Upload Document</button>
-          <p id="docMsg" class="msg" style="margin-top: 10px;"></p>
-        </form>
-
-        <h3 style="margin-top: 25px;">Uploaded Documents</h3>
-        <div id="adminDocList" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;"></div>
-      </section>
-
-
-</main>
-</div>
-
-
-<script src="app.js"></script>
-
+  <script src="app.js"></script>
 </body>
 </html>
