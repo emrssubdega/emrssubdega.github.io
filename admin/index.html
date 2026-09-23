@@ -175,7 +175,7 @@
       background: #182234;
     }
 
-    /* Workspace Content Area (Directly to the right of Sidebar) */
+    /* Workspace Content Area */
     .workspace {
       flex: 1 1 auto;
       height: 100%;
@@ -331,7 +331,7 @@
     <p id="loginError" style="color: #dc2626; margin-top: 10px; font-size: 0.85rem;"></p>
   </div>
 
-  <!-- Synchronized Dashboard Layout (Locked to Row) -->
+  <!-- Synchronized Dashboard Layout -->
   <div id="adminDashboard" class="admin-layout" style="display: none;">
     <!-- Left Sidebar -->
     <aside class="sidebar">
@@ -357,7 +357,7 @@
       </div>
     </aside>
 
-    <!-- Main Workspace (Directly on the Right Side) -->
+    <!-- Main Workspace -->
     <main class="workspace">
       <div class="workspace-header">
         <h2 id="currentSectionTitle">DASHBOARD</h2>
@@ -446,13 +446,23 @@
         <div id="adminNoticeList"></div>
       </section>
 
-      <!-- 5. FILE FOR INFORMATION (DOCUMENTS) -->
+      <!-- 5. FILE FOR INFORMATION (DOCUMENTS & CIRCULARS) -->
       <section id="view-documents" class="view-card">
-        <h3 style="margin-bottom: 12px; color: #0d47a1;">Upload Official Records & Documents</h3>
+        <h3 style="margin-bottom: 12px; color: #0d47a1;">Upload Official Records & Circulars</h3>
         <form id="docForm">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="form-group">
+              <label>Circular No. / Ref No.</label>
+              <input type="text" id="docCircularNo" placeholder="e.g. #243" required />
+            </div>
+            <div class="form-group">
+              <label>Issue Date</label>
+              <input type="date" id="docDate" required />
+            </div>
+          </div>
           <div class="form-group">
-            <label>Document Title</label>
-            <input type="text" id="docTitle" placeholder="e.g., Mandatory Disclosure 2026" required />
+            <label>Subject / Document Title</label>
+            <input type="text" id="docTitle" placeholder="e.g. Implementation of Mentor-Mentee Programme in EMRSs" required />
           </div>
           <div class="form-group">
             <label>Category (Matches School Website Dropdown)</label>
@@ -471,14 +481,14 @@
             </select>
           </div>
           <div class="form-group">
-            <label>Select File (PDF or Image)</label>
+            <label>Select File (PDF or Document)</label>
             <input type="file" id="docFile" required />
           </div>
           <button type="submit" class="btn-primary">Upload Document</button>
           <span id="docMsg" style="margin-left: 10px; font-size: 0.85rem;"></span>
         </form>
 
-        <h4 style="margin-top: 25px; margin-bottom: 10px; color: #334155;">Uploaded Documents</h4>
+        <h4 style="margin-top: 25px; margin-bottom: 10px; color: #334155;">Uploaded Records</h4>
         <div id="adminDocList"></div>
       </section>
     </main>
