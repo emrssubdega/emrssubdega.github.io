@@ -1,334 +1,257 @@
-const client = supabase.createClient(
-  window.SUPABASE_URL,
-  window.SUPABASE_ANON_KEY
-);
-
-const loginBox = document.getElementById('loginBox');
-const dashboard = document.getElementById('dashboard');
-const loginMsg = document.getElementById('loginMsg');
-
-function configReady() {
-  return window.SUPABASE_URL &&
-         !window.SUPABASE_URL.includes("PASTE_") &&
-         window.SUPABASE_ANON_KEY &&
-         !window.SUPABASE_ANON_KEY.includes("PASTE_");
-}
-
-/* ---------------- LOGIN ---------------- */
-
+/* ================= SESSION & AUTH ================= */
 async function checkSession() {
-  if (!configReady()) {
-    loginMsg.textContent = "First configure supabase-config.js.";
-    return;
-  }
+  const { data: { session } } = await client.auth.getSession();
+  const loginSection = document.getElementById('loginSection');
+  const adminDashboard = document.getElementById('adminDashboard');
 
-  const { data } = await client.auth.getSession();
-
-  if (data.session) {
-    showDashboard();
+  if (session) {
+    if (loginSection) loginSection.style.display = 'none';
+    if (adminDashboard) adminDashboard.style.display = 'block';
+    loadAdminNotices();
+    loadGallery();
+    loadAdminDocuments();
+  } else {
+    if (loginSection) loginSection.style.display = 'block';
+    if (adminDashboard) adminDashboard.style.display = 'none';
   }
 }
 
-function showDashboard() {
-  loginBox.classList.add('hidden');
-  dashboard.classList.remove('hidden');
+const loginBtn = document.getElementById('loginBtn');
+if (loginBtn) {
+  loginBtn.addEventListener('click', async () => {
+    const email = document.getElementById('adminEmail').value.trim();
+    const password = document.getElementById('adminPassword').value.trim();
+    const errorMsg = document.getElementById('loginError');
 
-  loadContent();
-  loadNotices();
-  loadGallery();
-}
+    errorMsg.textContent = '';
+    const { data, error } = await client.auth.signInWithPassword({ email, password });
 
-document.getElementById('loginForm')
-.addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  if (!configReady()) {
-    loginMsg.textContent = "Supabase configuration is missing.";
-    return;
-  }
-
-  loginMsg.textContent = "Signing in...";
-
-  const { error } = await client.auth.signInWithPassword({
-    email: document.getElementById('email').value.trim(),
-    password: document.getElementById('password').value
+    if (error) {
+      errorMsg.textContent = error.message;
+    } else {
+      checkSession();
+    }
   });
-
-  loginMsg.textContent = error ? error.message : "";
-
-  if (!error) {
-    showDashboard();
-  }
-});
-
-document.getElementById('logoutBtn')
-.addEventListener('click', async () => {
-  await client.auth.signOut();
-  dashboard.classList.add('hidden');
-  loginBox.classList.remove('hidden');
-});
-
-/* ---------------- SCHOOL INFORMATION ---------------- */
-
-async function loadContent() {
-  const { data, error } = await client
-    .from('site_content')
-    .select('*')
-    .eq('id', 1)
-    .maybeSingle();
-
-  if (error) {
-    document.getElementById('contentMsg').textContent = error.message;
-    return;
-  }
-
-  if (!data) return;
-
-  document.getElementById('address').value = data.address || '';
-  document.getElementById('phone').value = data.phone || '';
-  document.getElementById('schoolEmail').value = data.email || '';
-  document.getElementById('aboutText').value = data.about_text || '';
-  document.getElementById('principalMessage').value = data.principal_message || '';
 }
 
-document.getElementById('saveContent')
-.addEventListener('click', async () => {
-  const payload = {
-    id: 1,
-    address: document.getElementById('address').value,
-    phone: document.getElementById('phone').value,
-    email: document.getElementById('schoolEmail').value,
-    about_text: document.getElementById('aboutText').value,
-    principal_message: document.getElementById('principalMessage').value,
-    updated_at: new Date().toISOString()
-  };
+const logoutBtn = document.getElementById('logoutBtn');
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', async () => {
+    await client.auth.signOut();
+    checkSession();
+  });
+}
 
-  const { error } = await client.from('site_content').upsert(payload);
+/* ================= NOTICE BOARD MANAGEMENT ================= */
+const noticeForm = document.getElementById('noticeForm');
+let editingNoticeId = null;
 
-  document.getElementById('contentMsg').textContent = error ? error.message : "Saved successfully.";
-});
+async function loadAdminNotices() {
+  const noticeTable = document.getElementById('adminNoticeList');
+  if (!noticeTable) return;
 
-/* ---------------- NOTICES ---------------- */
-
-async function loadNotices() {
   const { data, error } = await client
     .from('notices')
     .select('*')
-    .order('date', { ascending: false })
-    .order('id', { ascending: false });
-
-  const box = document.getElementById('noticeTable');
+    .order('notice_date', { ascending: false });
 
   if (error) {
-    box.innerHTML = `<p>${escapeHtml(error.message)}</p>`;
+    noticeTable.innerHTML = `<p style="color:red">Error loading notices: ${escapeHtml(error.message)}</p>`;
     return;
   }
 
-  box.innerHTML = (data || []).map(n => `
-    <div class="noticeRow">
-      <h3>${escapeHtml(n.title)}</h3>
-      <div>${escapeHtml(n.body)}</div>
-      <small>${escapeHtml(n.date || '')} • ${n.published ? 'Published' : 'Hidden'}</small>
-      <div class="noticeActions">
-        <button onclick='editNotice(${JSON.stringify(n).replace(/'/g,"&#39;")})'>Edit</button>
-        <button class="danger" onclick="deleteNotice(${Number(n.id)})">Delete</button>
+  if (!data || data.length === 0) {
+    noticeTable.innerHTML = '<p>No notices found.</p>';
+    return;
+  }
+
+  noticeTable.innerHTML = data.map(n => `
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; margin-bottom:8px;">
+      <div>
+        <strong>${escapeHtml(n.title)}</strong>
+        <span style="font-size:0.85rem; color:#64748b; margin-left:8px;">[${escapeHtml(n.notice_date || '')}]</span>
+        <span style="font-size:0.8rem; margin-left:6px; color:${n.published ? '#16a34a' : '#dc2626'};">(${n.published ? 'Published' : 'Draft'})</span>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button style="padding:4px 8px; font-size:0.8rem;" onclick='editNotice(${JSON.stringify(n)})'>Edit</button>
+        <button class="danger" style="padding:4px 8px; font-size:0.8rem;" onclick="deleteNotice(${Number(n.id)})">Delete</button>
       </div>
     </div>
-  `).join('') || '<p>No notices yet.</p>';
+  `).join('');
 }
 
-function editNotice(n) {
-  document.getElementById('noticeId').value = n.id;
-  document.getElementById('noticeTitle').value = n.title || '';
-  document.getElementById('noticeBody').value = n.body || '';
-  document.getElementById('noticeDate').value = n.date || '';
-  document.getElementById('noticePublished').checked = !!n.published;
+if (noticeForm) {
+  noticeForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const title = document.getElementById('noticeTitle').value.trim();
+    const notice_date = document.getElementById('noticeDate').value;
+    const body = document.getElementById('noticeBody').value.trim();
+    const published = document.getElementById('noticePublished').checked;
+    const msg = document.getElementById('noticeMsg');
 
-  window.scrollTo({
-    top: document.getElementById('noticeForm').offsetTop - 30,
-    behavior: 'smooth'
+    msg.textContent = 'Saving notice...';
+
+    const payload = { title, notice_date, body, published };
+
+    let error;
+    if (editingNoticeId) {
+      const res = await client.from('notices').update(payload).eq('id', editingNoticeId);
+      error = res.error;
+    } else {
+      const res = await client.from('notices').insert(payload);
+      error = res.error;
+    }
+
+    if (error) {
+      msg.textContent = 'Error: ' + error.message;
+    } else {
+      msg.textContent = 'Notice saved successfully!';
+      clearNoticeForm();
+      loadAdminNotices();
+    }
   });
 }
 
-document.getElementById('noticeForm')
-.addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  const id = document.getElementById('noticeId').value;
-  const payload = {
-    title: document.getElementById('noticeTitle').value.trim(),
-    body: document.getElementById('noticeBody').value.trim(),
-    date: document.getElementById('noticeDate').value,
-    published: document.getElementById('noticePublished').checked
-  };
-
-  let result;
-  if (id) {
-    result = await client.from('notices').update(payload).eq('id', id);
-  } else {
-    result = await client.from('notices').insert(payload);
-  }
-
-  document.getElementById('noticeMsg').textContent = result.error ? result.error.message : "Notice saved successfully.";
-
-  if (!result.error) {
-    clearNoticeForm();
-    loadNotices();
-  }
-});
-
-document.getElementById('cancelNotice').addEventListener('click', clearNoticeForm);
+function editNotice(n) {
+  editingNoticeId = n.id;
+  document.getElementById('noticeTitle').value = n.title;
+  document.getElementById('noticeDate').value = n.notice_date || '';
+  document.getElementById('noticeBody').value = n.body || '';
+  document.getElementById('noticePublished').checked = n.published;
+  document.getElementById('noticeSubmitBtn').textContent = 'Update Notice';
+}
 
 function clearNoticeForm() {
-  document.getElementById('noticeId').value = '';
+  editingNoticeId = null;
   document.getElementById('noticeTitle').value = '';
+  document.getElementById('noticeDate').value = '';
   document.getElementById('noticeBody').value = '';
-  document.getElementById('noticeDate').value = new Date().toISOString().slice(0, 10);
   document.getElementById('noticePublished').checked = true;
+  const btn = document.getElementById('noticeSubmitBtn');
+  if (btn) btn.textContent = 'Publish Notice';
 }
 
 async function deleteNotice(id) {
-  if (!confirm('Delete this notice?')) return;
-
-  const { error } = await client.from('notices').delete().eq('id', id);
-  document.getElementById('noticeMsg').textContent = error ? error.message : "Notice deleted.";
-  loadNotices();
+  if (!confirm('Are you sure you want to delete this notice?')) return;
+  await client.from('notices').delete().eq('id', id);
+  loadAdminNotices();
 }
 
-/* ---------------- GALLERY ---------------- */
+/* ================= GALLERY & SLIDER MANAGEMENT ================= */
+const uploadGalleryBtn = document.getElementById('uploadGallery');
 
 async function loadGallery() {
+  const galleryGrid = document.getElementById('galleryGrid');
+  if (!galleryGrid) return;
+
   const { data, error } = await client
     .from('gallery')
     .select('*')
     .order('created_at', { ascending: false });
 
-  const grid = document.getElementById('galleryGrid');
-
   if (error) {
-    grid.innerHTML = `<p>${escapeHtml(error.message)}</p>`;
+    galleryGrid.innerHTML = `<p style="color:red">Error: ${escapeHtml(error.message)}</p>`;
     return;
   }
 
   if (!data || data.length === 0) {
-    grid.innerHTML = '<p>No photos uploaded yet.</p>';
+    galleryGrid.innerHTML = '<p>No photos uploaded yet.</p>';
     return;
   }
 
-  grid.innerHTML = data.map(photo => `
-    <div class="gallery-card">
-      <img src="${escapeHtml(photo.image_url)}" alt="${escapeHtml(photo.title || 'Gallery photo')}">
-      <strong>${escapeHtml(photo.title || '')}</strong>
-      <button class="danger" onclick="deleteGallery(${Number(photo.id)}, '${escapeHtml(photo.image_url)}')">Delete Photo</button>
+  galleryGrid.innerHTML = data.map(photo => `
+    <div style="border:1px solid #cbd5e1; border-radius:8px; padding:10px; background:#ffffff; display:flex; flex-direction:column; gap:8px;">
+      <img src="${escapeHtml(photo.image_url)}" style="width:100%; height:130px; object-fit:cover; border-radius:4px;" />
+      <strong style="font-size:0.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(photo.title || 'Untitled')}</strong>
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
+        <button style="padding:4px 8px; font-size:0.75rem; background:${photo.is_slider ? '#f97316' : '#64748b'}; color:white; border:none; border-radius:4px; cursor:pointer;" onclick="toggleSliderStatus(${Number(photo.id)}, ${Boolean(photo.is_slider)})">
+          ${photo.is_slider ? '★ In Slider' : '+ Add to Slider'}
+        </button>
+        <button class="danger" style="padding:4px 8px; font-size:0.75rem;" onclick="deleteGallery(${Number(photo.id)}, '${escapeHtml(photo.image_url)}')">Delete</button>
+      </div>
     </div>
   `).join('');
 }
 
-/* UPLOAD PHOTO */
-document.getElementById('uploadGallery')
-.addEventListener('click', async () => {
-  const fileInput = document.getElementById('galleryFile');
-  const titleInput = document.getElementById('galleryTitle');
-  const msg = document.getElementById('galleryMsg');
-  const file = fileInput.files[0];
+if (uploadGalleryBtn) {
+  uploadGalleryBtn.addEventListener('click', async () => {
+    const titleInput = document.getElementById('galleryTitle');
+    const fileInput = document.getElementById('galleryFile');
+    const isSliderInput = document.getElementById('galleryIsSlider');
+    const msg = document.getElementById('galleryMsg');
+    const file = fileInput.files[0];
 
-  if (!file) {
-    msg.textContent = "Please select a photo first.";
-    return;
-  }
+    if (!file) {
+      msg.textContent = 'Please choose a photo.';
+      return;
+    }
 
-  msg.textContent = "Uploading photo...";
+    msg.textContent = 'Uploading photo...';
 
-  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '-');
-  const filePath = Date.now() + '-' + safeName;
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const filePath = Date.now() + '_' + safeName;
 
-  const { error: uploadError } = await client.storage
-    .from('gallery')
-    .upload(filePath, file, {
-      cacheControl: '3600',
-      upsert: false,
-      contentType: file.type
-    });
+    const { error: uploadError } = await client.storage
+      .from('gallery')
+      .upload(filePath, file, { cacheControl: '3600', upsert: false });
 
-  if (uploadError) {
-    msg.textContent = uploadError.message;
-    return;
-  }
+    if (uploadError) {
+      msg.textContent = 'Upload failed: ' + uploadError.message;
+      return;
+    }
 
-  const { data: publicData } = client.storage
-    .from('gallery')
-    .getPublicUrl(filePath);
+    const { data: publicData } = client.storage.from('gallery').getPublicUrl(filePath);
+    const imageUrl = publicData.publicUrl;
+    const isSlider = isSliderInput ? isSliderInput.checked : false;
 
-  const imageUrl = publicData.publicUrl;
-
-  const { error: dbError } = await client
-    .from('gallery')
-    .insert({
+    const { error: dbError } = await client.from('gallery').insert({
       title: titleInput.value.trim(),
-      image_url: imageUrl
+      image_url: imageUrl,
+      is_slider: isSlider
     });
 
-  if (dbError) {
-    msg.textContent = dbError.message;
-    return;
+    if (dbError) {
+      msg.textContent = 'Database error: ' + dbError.message;
+      return;
+    }
+
+    msg.textContent = 'Photo uploaded successfully!';
+    titleInput.value = '';
+    fileInput.value = '';
+    if (isSliderInput) isSliderInput.checked = false;
+    loadGallery();
+  });
+}
+
+window.toggleSliderStatus = async function(id, currentStatus) {
+  const { error } = await client
+    .from('gallery')
+    .update({ is_slider: !currentStatus })
+    .eq('id', id);
+
+  if (error) {
+    alert('Error: ' + error.message);
+  } else {
+    loadGallery();
   }
+};
 
-  msg.textContent = "Photo uploaded successfully.";
-  titleInput.value = '';
-  fileInput.value = '';
-
-  loadGallery();
-});
-
-/* DELETE PHOTO */
 async function deleteGallery(id, imageUrl) {
   if (!confirm('Delete this photo?')) return;
-
   try {
     const url = new URL(imageUrl);
     const marker = '/storage/v1/object/public/gallery/';
     const index = url.pathname.indexOf(marker);
-
     if (index !== -1) {
-      const filePath = decodeURIComponent(
-        url.pathname.substring(index + marker.length)
-      );
-
+      const filePath = decodeURIComponent(url.pathname.substring(index + marker.length));
       await client.storage.from('gallery').remove([filePath]);
     }
+  } catch (e) {}
 
-    const { error } = await client
-      .from('gallery')
-      .delete()
-      .eq('id', id);
-
-    if (error) {
-      document.getElementById('galleryMsg').textContent = error.message;
-      return;
-    }
-
-    document.getElementById('galleryMsg').textContent = "Photo deleted.";
-    loadGallery();
-  } catch (err) {
-    document.getElementById('galleryMsg').textContent = err.message;
-  }
+  await client.from('gallery').delete().eq('id', id);
+  loadGallery();
 }
 
-/* ---------------- HELPERS ---------------- */
-
-function escapeHtml(value) {
-  return String(value ?? '')
-    .replace(/[&<>"']/g, c => ({
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#039;'
-    }[c]));
-}
-
-clearNoticeForm();
-checkSession();
 /* ================= DOCUMENT UPLOAD & MANAGEMENT ================= */
 const docForm = document.getElementById('docForm');
 
@@ -420,5 +343,14 @@ async function deleteDocument(id) {
   loadAdminDocuments();
 }
 
-// Load documents on admin startup
-loadAdminDocuments();
+/* ================= HELPERS ================= */
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+checkSession();
