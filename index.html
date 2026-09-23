@@ -26,55 +26,110 @@
       min-height: 100vh;
     }
 
-    /* Full-width Navbar */
+    /* Top Official Header with Logo and Titles */
+    .top-header {
+      background: #ffffff;
+      padding: 12px clamp(15px, 4vw, 45px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      border-bottom: 3px solid #f97316;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .header-logo {
+      width: 78px;
+      height: 78px;
+      object-fit: contain;
+    }
+    .header-titles h2 {
+      font-size: 1.15rem;
+      color: #1e293b;
+      margin: 0;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    .header-titles h1 {
+      font-size: 1.35rem;
+      color: #0b3c5d;
+      margin: 2px 0;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+    .header-titles p {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin: 0;
+      line-height: 1.3;
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      text-align: right;
+    }
+    .header-tagline {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+    .header-tagline span {
+      font-size: 0.78rem;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .header-tagline strong {
+      font-size: 0.95rem;
+      color: #0b3c5d;
+      font-weight: 700;
+    }
+
+    /* Navy Navbar */
     .navbar {
       position: sticky;
       top: 0;
       left: 0;
       width: 100%;
       z-index: 1000;
-      background: #ffffff;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+      background: #0b3c5d;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 14px clamp(15px, 4vw, 40px);
-    }
-    .nav-brand {
-      font-weight: 700;
-      font-size: 1.25rem;
-      color: #0b3c5d;
-      text-decoration: none;
-      white-space: nowrap;
-      cursor: pointer;
+      padding: 0 clamp(15px, 4vw, 45px);
     }
     .nav-links {
       display: flex;
-      gap: clamp(12px, 2vw, 22px);
       list-style: none;
       margin: 0;
       padding: 0;
       align-items: center;
-      white-space: nowrap;
+      flex-wrap: wrap;
     }
     .nav-links a {
+      display: block;
+      padding: 14px 18px;
       text-decoration: none;
-      color: #475569;
+      color: #ffffff;
       font-weight: 500;
-      font-size: 0.95rem;
-      transition: color 0.2s ease;
+      font-size: 0.92rem;
+      transition: background 0.2s ease, color 0.2s ease;
       cursor: pointer;
     }
     .nav-links a:hover,
     .nav-links a.active {
-      color: #0b3c5d;
-      font-weight: 600;
+      background: #072a42;
+      color: #38bdf8;
     }
 
     /* Dropdown */
     .dropdown {
       position: relative;
-      display: inline-block;
     }
     .dropdown-btn {
       cursor: pointer;
@@ -88,42 +143,114 @@
       top: 100%;
       left: 0;
       background-color: #ffffff;
-      min-width: 220px;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.12);
-      border-radius: 6px;
+      min-width: 230px;
+      box-shadow: 0 10px 22px rgba(0,0,0,0.15);
+      border-radius: 0 0 6px 6px;
       overflow: hidden;
       z-index: 1001;
       border: 1px solid #e2e8f0;
+      border-top: 3px solid #f97316;
     }
     .dropdown-content a {
-      color: #334155;
+      color: #334155 !important;
       padding: 10px 16px;
-      text-decoration: none;
-      display: block;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       border-bottom: 1px solid #f1f5f9;
-      text-align: left;
+      background: #fff;
     }
     .dropdown-content a:hover {
-      background-color: #f8fafc;
-      color: #0b3c5d;
+      background-color: #f8fafc !important;
+      color: #0b3c5d !important;
       font-weight: 600;
     }
     .dropdown:hover .dropdown-content {
       display: block;
     }
 
-    /* Hero Banner */
-    header.hero {
-      background: linear-gradient(135deg, #0b3c5d, #1d2731);
-      color: white;
-      padding: 60px 20px;
-      text-align: center;
+    /* Homepage Slider Carousel */
+    .slider-container {
+      position: relative;
+      width: 100%;
+      max-width: 100%;
+      height: 480px;
+      overflow: hidden;
+      background: #0f172a;
     }
-    header.hero h1 { margin-bottom: 10px; font-size: 2.5rem; }
-    header.hero p { font-size: 1.15rem; opacity: 0.92; max-width: 750px; margin: 0 auto; }
+    .slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.8s ease-in-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .slide.active {
+      opacity: 1;
+    }
+    .slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .slide-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 30px 25px 20px;
+      background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+      color: #ffffff;
+      text-align: left;
+    }
+    .slide-overlay h3 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .slider-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.45);
+      color: #fff;
+      border: none;
+      padding: 14px 18px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 10;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    .slider-btn:hover {
+      background: rgba(0, 0, 0, 0.8);
+    }
+    .slider-btn.prev { left: 15px; }
+    .slider-btn.next { right: 15px; }
+    .slider-dots {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      z-index: 10;
+    }
+    .dot {
+      width: 11px;
+      height: 11px;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .dot.active {
+      background: #f97316;
+      width: 24px;
+      border-radius: 6px;
+    }
 
-    /* Page View Controller (Hidden vs Active) */
+    /* Page View Controller */
     .page-view {
       display: none;
       flex: 1;
@@ -139,12 +266,12 @@
     }
     .content-card {
       background: #ffffff;
-      border-radius: 12px;
+      border-radius: 10px;
       padding: 28px;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
     }
 
-    /* Notice Board Items */
+    /* Notice Items */
     .notice-item {
       padding: 16px;
       border-radius: 8px;
@@ -164,7 +291,7 @@
     }
     .photo-card {
       position: relative;
-      border-radius: 12px;
+      border-radius: 10px;
       overflow: hidden;
       height: 230px;
       background: #e2e8f0;
@@ -219,17 +346,40 @@
     .footer-col a { color: #38bdf8; text-decoration: none; }
     .footer-bottom { max-width: 1200px; margin: 25px auto 0; text-align: center; font-size: 0.88rem; }
     .footer-bottom a { color: #64748b; text-decoration: none; }
+
+    @media (max-width: 768px) {
+      .top-header { flex-direction: column; align-items: flex-start; }
+      .header-right { align-items: flex-start; }
+      .slider-container { height: 260px; }
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
 </head>
 <body>
 
-  <!-- Navigation -->
+  <!-- Top Official Branding Header -->
+  <div class="top-header">
+    <div class="header-left">
+      <img src="https://nests.tribal.gov.in/assets/images/emrs_logo.png" alt="EMRS Logo" class="header-logo" onerror="this.src='school-campus.jpg'" />
+      <div class="header-titles">
+        <h2>एकलव्य आदर्श आवासीय विद्यालय, सबडेगा</h2>
+        <h1>Eklavya Model Residential School, Subdega</h1>
+        <p>National Education Society for Tribal Students (NESTS) | Ministry of Tribal Affairs, Govt. of India</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="header-tagline">
+        <span>Ministry of Tribal Affairs</span>
+        <strong>Tribal Transformation Through Education</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- Primary Navigation -->
   <nav class="navbar">
-    <a onclick="showPage('home-view')" class="nav-brand">EMRS Subdega</a>
     <ul class="nav-links">
-      <li><a onclick="showPage('home-view')">Home</a></li>
+      <li><a onclick="showPage('home-view')">HOME</a></li>
 
       <!-- Information Dropdown -->
       <li class="dropdown">
@@ -249,37 +399,47 @@
         </div>
       </li>
 
-      <li><a onclick="showPage('notices-view')">Notices</a></li>
-      <li><a onclick="showPage('gallery-view')">Gallery</a></li>
-      <li><a onclick="showPage('contact-view')">Contact</a></li>
-      <li><a href="admin/">Admin</a></li>
+      <li><a onclick="showPage('notices-view')">NOTICES</a></li>
+      <li><a onclick="showPage('gallery-view')">GALLERY</a></li>
+      <li><a onclick="showPage('contact-view')">CONTACT</a></li>
+      <li><a href="admin/">ADMIN PORTAL</a></li>
     </ul>
   </nav>
 
-  <!-- Hero Header -->
-  <header class="hero">
-    <h1>EMRS Subdega</h1>
-    <p>Eklavya Model Residential School, Subdega, Sundargarh, Odisha</p>
-  </header>
-
   <!-- ==================== 1. HOME VIEW ==================== -->
   <div id="home-view" class="page-view active">
+    <!-- Photo Slider / Carousel -->
+    <div class="slider-container" id="homeSlider">
+      <div class="slide active">
+        <img src="school-campus.jpg" alt="EMRS Subdega Campus" />
+        <div class="slide-overlay">
+          <h3>Welcome to EMRS Subdega</h3>
+          <p>Sundargarh, Odisha</p>
+        </div>
+      </div>
+
+      <button class="slider-btn prev" onclick="prevSlide()">&#10094;</button>
+      <button class="slider-btn next" onclick="nextSlide()">&#10095;</button>
+      <div class="slider-dots" id="sliderDots"></div>
+    </div>
+
+    <!-- Welcome Section -->
     <section class="content-container">
       <div class="content-card">
-        <h2 style="color: #0b3c5d; margin-bottom: 12px;">Welcome to EMRS Subdega</h2>
+        <h2 style="color: #0b3c5d; margin-bottom: 12px;">About Our Institution</h2>
         <p style="color: #475569; font-size: 1.05rem; margin-bottom: 16px;">
-          Eklavya Model Residential School (EMRS), Subdega is established under the Ministry of Tribal Affairs to impart quality CBSE education to talented tribal students in remote areas.
+          Eklavya Model Residential School (EMRS), Subdega, Sundargarh is established under the Ministry of Tribal Affairs, Government of India, to provide quality education to tribal students in remote areas.
         </p>
         <p style="color: #475569; font-size: 1rem;">
-          Use the top navigation bar to access official circulars, download mandatory disclosures, or browse our campus activity gallery.
+          Our focus is on the comprehensive development of students through high academic standards, sports, and cultural enrichment.
         </p>
       </div>
     </section>
 
-    <!-- Brief notices snapshot on Home -->
+    <!-- Recent Circulars on Home -->
     <section class="content-container">
       <div class="content-card" style="border-top: 4px solid #0b3c5d;">
-        <h2 style="color: #0b3c5d; font-size: 1.5rem; margin-bottom: 14px;">Latest Circulars & Updates</h2>
+        <h2 style="color: #0b3c5d; font-size: 1.5rem; margin-bottom: 14px;">Latest Circulars & Announcements</h2>
         <div id="homeNoticeList" style="display: flex; flex-direction: column; gap: 10px;">
           <p style="color: #64748b;">Loading recent notices...</p>
         </div>
@@ -340,12 +500,12 @@
     <div id="lightboxCaption" class="caption"></div>
   </div>
 
-  <!-- Site Footer -->
+  <!-- Footer -->
   <footer class="site-footer">
     <div class="footer-content">
       <div class="footer-col">
         <h3>EMRS Subdega</h3>
-        <p>A premier residential institution dedicated to quality CBSE education for tribal students under the Ministry of Tribal Affairs.</p>
+        <p>A premier residential institution dedicated to quality CBSE education for tribal students under the Ministry of Tribal Affairs, Govt. of India.</p>
       </div>
       <div class="footer-col">
         <h3>Campus Location</h3>
@@ -365,6 +525,9 @@
 
   <script>
     let allDocuments = [];
+    let galleryPhotos = [];
+    let currentSlideIdx = 0;
+    let sliderTimer = null;
     let client;
 
     function escapeHtml(value) {
@@ -376,19 +539,15 @@
         .replace(/'/g, '&#039;');
     }
 
-    /* Switch active view */
+    /* Page Switcher */
     window.showPage = function(viewId) {
-      document.querySelectorAll('.page-view').forEach(view => {
-        view.classList.remove('active');
-      });
+      document.querySelectorAll('.page-view').forEach(view => view.classList.remove('active'));
       const target = document.getElementById(viewId);
-      if (target) {
-        target.classList.add('active');
-      }
+      if (target) target.classList.add('active');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    /* Switch to document view and filter */
+    /* Documents Page Switcher & Filter */
     window.showDocPage = function(category) {
       showPage('documents-view');
       const listContainer = document.getElementById("documentList");
@@ -421,6 +580,79 @@
       `).join('');
     };
 
+    /* Carousel / Slider Engine (Filters Selected is_slider Photos) */
+    function buildSlider(photos) {
+      const slider = document.getElementById('homeSlider');
+      const dotsContainer = document.getElementById('sliderDots');
+
+      // Only pick photos where is_slider === true; if none selected, fall back to default
+      const selectedSliderPhotos = (photos || []).filter(p => p.is_slider === true);
+
+      const slidesData = selectedSliderPhotos.length > 0
+        ? selectedSliderPhotos.map(p => ({ url: p.image_url, title: p.title || 'EMRS Subdega' }))
+        : [{ url: 'school-campus.jpg', title: 'EMRS Subdega Campus' }];
+
+      slider.querySelectorAll('.slide').forEach(s => s.remove());
+      dotsContainer.innerHTML = '';
+
+      slidesData.forEach((item, idx) => {
+        const slide = document.createElement('div');
+        slide.className = `slide ${idx === 0 ? 'active' : ''}`;
+        slide.innerHTML = `
+          <img src="${escapeHtml(item.url)}" alt="${escapeHtml(item.title)}" />
+          <div class="slide-overlay">
+            <h3>${escapeHtml(item.title)}</h3>
+            <p>EMRS Subdega, Sundargarh, Odisha</p>
+          </div>
+        `;
+        slider.appendChild(slide);
+
+        const dot = document.createElement('div');
+        dot.className = `dot ${idx === 0 ? 'active' : ''}`;
+        dot.onclick = () => goToSlide(idx);
+        dotsContainer.appendChild(dot);
+      });
+
+      startAutoSlider(slidesData.length);
+    }
+
+    function goToSlide(idx) {
+      const slides = document.querySelectorAll('.slide');
+      const dots = document.querySelectorAll('.dot');
+      if (slides.length === 0) return;
+
+      slides[currentSlideIdx].classList.remove('active');
+      if (dots[currentSlideIdx]) dots[currentSlideIdx].classList.remove('active');
+
+      currentSlideIdx = (idx + slides.length) % slides.length;
+
+      slides[currentSlideIdx].classList.add('active');
+      if (dots[currentSlideIdx]) dots[currentSlideIdx].classList.add('active');
+    }
+
+    window.nextSlide = function() {
+      const slides = document.querySelectorAll('.slide');
+      goToSlide(currentSlideIdx + 1);
+      resetAutoSlider(slides.length);
+    };
+
+    window.prevSlide = function() {
+      const slides = document.querySelectorAll('.slide');
+      goToSlide(currentSlideIdx - 1);
+      resetAutoSlider(slides.length);
+    };
+
+    function startAutoSlider(total) {
+      if (sliderTimer) clearInterval(sliderTimer);
+      sliderTimer = setInterval(() => {
+        goToSlide(currentSlideIdx + 1);
+      }, 5000);
+    }
+
+    function resetAutoSlider(total) {
+      startAutoSlider(total);
+    }
+
     document.addEventListener("DOMContentLoaded", async () => {
       client = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
       const grid = document.getElementById("publicGalleryGrid");
@@ -438,9 +670,7 @@
           .select("*")
           .order("created_at", { ascending: false });
 
-        if (!error && data) {
-          allDocuments = data;
-        }
+        if (!error && data) allDocuments = data;
       }
 
       // 2. Fetch Notices
@@ -472,7 +702,7 @@
         if (homeNoticeContainer) homeNoticeContainer.innerHTML = itemsHtml;
       }
 
-      // 3. Fetch Gallery
+      // 3. Fetch Gallery & populate Slider
       async function loadGallery() {
         const { data, error } = await client
           .from("gallery")
@@ -480,6 +710,12 @@
           .order("created_at", { ascending: false });
 
         if (!error && data && data.length > 0) {
+          galleryPhotos = data;
+
+          // Build slider with only is_slider === true photos
+          buildSlider(galleryPhotos);
+
+          // Build public gallery with all photos
           grid.innerHTML = data.map(photo => `
             <div class="photo-card" data-url="${escapeHtml(photo.image_url)}" data-title="${escapeHtml(photo.title || '')}">
               <img src="${escapeHtml(photo.image_url)}" alt="${escapeHtml(photo.title || 'School photo')}" loading="lazy" />
@@ -496,6 +732,7 @@
           });
         } else {
           grid.innerHTML = "<p>No photos uploaded yet.</p>";
+          buildSlider([]);
         }
       }
 
