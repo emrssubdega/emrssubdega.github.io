@@ -4,7 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EMRS Subdega - Eklavya Model Residential School</title>
-  
+
+  <!-- External Supabase Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
@@ -171,7 +175,7 @@
     .tab-section {
       width: 100%;
       flex: 1;
-      min-height: 450px;
+      min-height: 480px;
     }
 
     /* Carousel */
@@ -319,12 +323,9 @@
     }
   </style>
 
-  <!-- Libraries -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
-
-  <!-- Self-Contained Router & Render Engine -->
+  <!-- Navigation & Rendering Engine -->
   <script>
+    window.client = null;
     window.allDocuments = [];
     window.allGallery = [];
     window.allNotices = [];
@@ -412,7 +413,7 @@
       if (!grid) return;
 
       if (!window.allGallery || window.allGallery.length === 0) {
-        grid.innerHTML = '<p style="color:#64748b; grid-column: 1 / -1;">No photos uploaded yet.</p>';
+        grid.innerHTML = '<p style="color:#64748b; grid-column: 1 / -1; padding: 30px;">No photos uploaded yet. Upload images via the Admin Portal.</p>';
         return;
       }
 
@@ -533,6 +534,4 @@
           Eklavya Model Residential School (EMRS), Subdega, Sundargarh is established under the Ministry of Tribal Affairs, Government of India, to provide quality education to tribal students in remote areas.
         </p>
         <p style="color: #475569; font-size: 1rem;">
-          Our focus is on the comprehensive development of students through high academic standards, sports, and cultural enrichment.
-        </p>
-      </div>
+          Our focus is on the comprehensive development of students through hi
