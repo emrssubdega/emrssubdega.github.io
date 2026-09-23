@@ -329,3 +329,96 @@ function escapeHtml(value) {
 
 clearNoticeForm();
 checkSession();
+/* ================= DOCUMENT UPLOAD & MANAGEMENT ================= */
+const docForm = document.getElementById('docForm');
+
+async function loadAdminDocuments() {
+  const listContainer = document.getElementById('adminDocList');
+  if (!listContainer) return;
+
+  const { data, error } = await client
+    .from('documents')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    listContainer.innerHTML = `<p style="color:red">Error: ${escapeHtml(error.message)}</p>`;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    listContainer.innerHTML = '<p>No documents uploaded yet.</p>';
+    return;
+  }
+
+  listContainer.innerHTML = data.map(doc => `
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#f1f5f9; border-radius:6px; margin-bottom:6px;">
+      <div>
+        <strong>${escapeHtml(doc.title)}</strong>
+        <span style="font-size:0.85rem; color:#64748b; margin-left:8px;">[${escapeHtml(doc.category)}]</span>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <a href="${escapeHtml(doc.file_url)}" target="_blank" style="font-size:0.85rem; color:#0284c7;">View</a>
+        <button class="danger" style="padding:4px 8px; font-size:0.8rem;" onclick="deleteDocument(${Number(doc.id)})">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+if (docForm) {
+  docForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const titleInput = document.getElementById('docTitle');
+    const categoryInput = document.getElementById('docCategory');
+    const fileInput = document.getElementById('docFile');
+    const msg = document.getElementById('docMsg');
+    const file = fileInput.files[0];
+
+    if (!file) {
+      msg.textContent = 'Please choose a file.';
+      return;
+    }
+
+    msg.textContent = 'Uploading document...';
+
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const filePath = Date.now() + '_' + safeName;
+
+    const { error: uploadError } = await client.storage
+      .from('documents')
+      .upload(filePath, file, { cacheControl: '3600', upsert: false });
+
+    if (uploadError) {
+      msg.textContent = 'Upload failed: ' + uploadError.message;
+      return;
+    }
+
+    const { data: publicData } = client.storage.from('documents').getPublicUrl(filePath);
+    const fileUrl = publicData.publicUrl;
+
+    const { error: dbError } = await client.from('documents').insert({
+      title: titleInput.value.trim(),
+      category: categoryInput.value,
+      file_url: fileUrl
+    });
+
+    if (dbError) {
+      msg.textContent = 'Database error: ' + dbError.message;
+      return;
+    }
+
+    msg.textContent = 'Document uploaded successfully!';
+    titleInput.value = '';
+    fileInput.value = '';
+    loadAdminDocuments();
+  });
+}
+
+async function deleteDocument(id) {
+  if (!confirm('Are you sure you want to delete this document?')) return;
+  await client.from('documents').delete().eq('id', id);
+  loadAdminDocuments();
+}
+
+// Load documents on admin startup
+loadAdminDocuments();
