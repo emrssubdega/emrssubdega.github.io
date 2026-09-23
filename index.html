@@ -4,6 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EMRS Subdega - Eklavya Model Residential School</title>
+  
+  <!-- Supabase Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
@@ -20,6 +25,7 @@
       min-height: 100vh;
     }
 
+    /* Top Official Header */
     .top-header {
       background: #ffffff;
       padding: 12px clamp(15px, 4vw, 45px);
@@ -88,6 +94,7 @@
       font-weight: 700;
     }
 
+    /* Navbar */
     .navbar {
       position: sticky;
       top: 0;
@@ -109,7 +116,7 @@
       align-items: center;
       flex-wrap: wrap;
     }
-    .nav-links a, .nav-links button.nav-link-btn {
+    .nav-links button.nav-link-btn, .nav-links a {
       display: block;
       background: none;
       border: none;
@@ -123,12 +130,12 @@
       font-family: inherit;
     }
     .nav-links a:hover,
-    .nav-links a.active,
     .nav-links button.nav-link-btn:hover {
       background: #072a42;
       color: #38bdf8;
     }
 
+    /* Dropdown */
     .dropdown { position: relative; }
     .dropdown-btn { cursor: pointer; display: flex; align-items: center; gap: 4px; }
     .dropdown-content {
@@ -166,6 +173,7 @@
 
     .tab-section { width: 100%; flex: 1; }
 
+    /* Carousel */
     .slider-container {
       position: relative;
       width: 100%;
@@ -309,10 +317,18 @@
     }
   </style>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
-
+  <!-- Instant Engine Script -->
   <script>
+    // 1. Initialize client immediately onto global window
+    window.client = null;
+    try {
+      if (window.supabase && window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
+        window.client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+      }
+    } catch(e) {
+      console.error("Supabase init error:", e);
+    }
+
     window.allDocuments = [];
     window.currentDocCategory = 'ALL';
 
@@ -388,6 +404,7 @@
 </head>
 <body>
 
+  <!-- Top Header -->
   <div class="top-header">
     <div class="header-left">
       <img src="logo.png" alt="EMRS Logo" class="header-logo" onerror="this.src='https://nests.tribal.gov.in/assets/images/emrs_logo.png'" />
@@ -407,6 +424,7 @@
     </div>
   </div>
 
+  <!-- Navbar -->
   <nav class="navbar">
     <div class="nav-links">
       <button type="button" class="nav-link-btn" onclick="window.goToTab('tab-home')">HOME</button>
@@ -512,14 +530,4 @@
   <div id="tab-gallery" class="tab-section" style="display: none;">
     <section class="content-container" style="text-align: center;">
       <h2 style="color: #0b3c5d; font-size: 2.2rem; margin-bottom: 8px;">Photo Gallery</h2>
-      <p style="color: #64748b; margin-bottom: 35px;">Moments, activities, and campus life</p>
-      <div id="publicGalleryGrid" class="gallery-grid"></div>
-    </section>
-  </div>
-
-  <!-- 5. CONTACT VIEW -->
-  <div id="tab-contact" class="tab-section" style="display: none;">
-    <section class="content-container">
-      <div class="content-card" style="border-top: 4px solid #0b3c5d;">
-        <h2 style="color: #0b3c5d; font-size: 1.8rem; margin-bottom: 12px;">Contact Us</h2>
-        <p style="color: #475569; margin-bottom: 12px;"><str
+      <p style="col
