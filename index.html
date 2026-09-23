@@ -10,7 +10,6 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      scroll-behavior: smooth;
     }
     html, body {
       width: 100%;
@@ -22,6 +21,9 @@
       color: #333;
       background: #f8fafc;
       line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
 
     /* Full-width Navbar */
@@ -37,7 +39,6 @@
       justify-content: space-between;
       align-items: center;
       padding: 14px clamp(15px, 4vw, 40px);
-      box-sizing: border-box;
     }
     .nav-brand {
       font-weight: 700;
@@ -45,6 +46,7 @@
       color: #0b3c5d;
       text-decoration: none;
       white-space: nowrap;
+      cursor: pointer;
     }
     .nav-links {
       display: flex;
@@ -61,9 +63,12 @@
       font-weight: 500;
       font-size: 0.95rem;
       transition: color 0.2s ease;
+      cursor: pointer;
     }
-    .nav-links a:hover {
+    .nav-links a:hover,
+    .nav-links a.active {
       color: #0b3c5d;
+      font-weight: 600;
     }
 
     /* Dropdown */
@@ -108,17 +113,25 @@
       display: block;
     }
 
-    /* Hero */
+    /* Hero Banner */
     header.hero {
       background: linear-gradient(135deg, #0b3c5d, #1d2731);
       color: white;
-      padding: 70px 20px;
+      padding: 60px 20px;
       text-align: center;
     }
-    header.hero h1 { margin-bottom: 10px; font-size: 2.6rem; }
+    header.hero h1 { margin-bottom: 10px; font-size: 2.5rem; }
     header.hero p { font-size: 1.15rem; opacity: 0.92; max-width: 750px; margin: 0 auto; }
 
-    /* Sections */
+    /* Page View Controller (Hidden vs Active) */
+    .page-view {
+      display: none;
+      flex: 1;
+    }
+    .page-view.active {
+      display: block;
+    }
+
     .content-container {
       max-width: 1200px;
       margin: 35px auto;
@@ -190,7 +203,7 @@
       background: #0f172a;
       color: #94a3b8;
       padding: 50px 20px 25px;
-      margin-top: 60px;
+      margin-top: auto;
     }
     .footer-content {
       max-width: 1200px;
@@ -214,31 +227,31 @@
 
   <!-- Navigation -->
   <nav class="navbar">
-    <a href="#" class="nav-brand">EMRS Subdega</a>
+    <a onclick="showPage('home-view')" class="nav-brand">EMRS Subdega</a>
     <ul class="nav-links">
-      <li><a href="#">Home</a></li>
+      <li><a onclick="showPage('home-view')">Home</a></li>
 
       <!-- Information Dropdown -->
       <li class="dropdown">
-        <a href="javascript:void(0)" class="dropdown-btn">INFORMATION ▾</a>
+        <a class="dropdown-btn">INFORMATION ▾</a>
         <div class="dropdown-content">
-          <a href="#documents" onclick="filterDocs('Mandatory Disclosure')">Mandatory Disclosure</a>
-          <a href="#documents" onclick="filterDocs('General Notice')">General Notice</a>
-          <a href="#documents" onclick="filterDocs('Exam Notice')">Exam Notice</a>
-          <a href="#documents" onclick="filterDocs('Rules & Regulations')">Rules & Regulations</a>
-          <a href="#documents" onclick="filterDocs('Committees')">Committees</a>
-          <a href="#documents" onclick="filterDocs('Recent Activities')">Recent Activities</a>
-          <a href="#documents" onclick="filterDocs('Result Analysis')">Result Analysis</a>
-          <a href="#documents" onclick="filterDocs('Transfer Certificate')">Transfer Certificate</a>
-          <a href="#documents" onclick="filterDocs('Admission Notice')">Admission Notice</a>
-          <a href="#documents" onclick="filterDocs('Tenders')">Tenders</a>
-          <a href="#documents" onclick="filterDocs('Career')">Career</a>
+          <a onclick="showDocPage('Mandatory Disclosure')">Mandatory Disclosure</a>
+          <a onclick="showDocPage('General Notice')">General Notice</a>
+          <a onclick="showDocPage('Exam Notice')">Exam Notice</a>
+          <a onclick="showDocPage('Rules & Regulations')">Rules & Regulations</a>
+          <a onclick="showDocPage('Committees')">Committees</a>
+          <a onclick="showDocPage('Recent Activities')">Recent Activities</a>
+          <a onclick="showDocPage('Result Analysis')">Result Analysis</a>
+          <a onclick="showDocPage('Transfer Certificate')">Transfer Certificate</a>
+          <a onclick="showDocPage('Admission Notice')">Admission Notice</a>
+          <a onclick="showDocPage('Tenders')">Tenders</a>
+          <a onclick="showDocPage('Career')">Career</a>
         </div>
       </li>
 
-      <li><a href="#notices">Notices</a></li>
-      <li><a href="#gallery">Gallery</a></li>
-      <li><a href="#contact">Contact</a></li>
+      <li><a onclick="showPage('notices-view')">Notices</a></li>
+      <li><a onclick="showPage('gallery-view')">Gallery</a></li>
+      <li><a onclick="showPage('contact-view')">Contact</a></li>
       <li><a href="admin/">Admin</a></li>
     </ul>
   </nav>
@@ -249,49 +262,86 @@
     <p>Eklavya Model Residential School, Subdega, Sundargarh, Odisha</p>
   </header>
 
-  <!-- Document Archive Section -->
-  <section class="content-container" id="documents">
-    <div class="content-card" style="border-top: 4px solid #0284c7;">
-      <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; margin-bottom: 12px;">
-        <h2 id="docHeading" style="color: #0b3c5d; font-size: 1.8rem;">School Documents & Disclosures</h2>
-        <button onclick="renderDocList(allDocuments, 'All Documents')" style="background: none; border: 1px solid #0284c7; color: #0284c7; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">View All</button>
+  <!-- ==================== 1. HOME VIEW ==================== -->
+  <div id="home-view" class="page-view active">
+    <section class="content-container">
+      <div class="content-card">
+        <h2 style="color: #0b3c5d; margin-bottom: 12px;">Welcome to EMRS Subdega</h2>
+        <p style="color: #475569; font-size: 1.05rem; margin-bottom: 16px;">
+          Eklavya Model Residential School (EMRS), Subdega is established under the Ministry of Tribal Affairs to impart quality CBSE education to talented tribal students in remote areas.
+        </p>
+        <p style="color: #475569; font-size: 1rem;">
+          Use the top navigation bar to access official circulars, download mandatory disclosures, or browse our campus activity gallery.
+        </p>
       </div>
-      <p id="docSub" style="color: #64748b; font-size: 0.95rem; margin-bottom: 20px;">Browse official school circulars and records</p>
-      <div id="documentList" style="display: flex; flex-direction: column; gap: 10px;">
-        <p style="color: #64748b;">Loading files...</p>
+    </section>
+
+    <!-- Brief notices snapshot on Home -->
+    <section class="content-container">
+      <div class="content-card" style="border-top: 4px solid #0b3c5d;">
+        <h2 style="color: #0b3c5d; font-size: 1.5rem; margin-bottom: 14px;">Latest Circulars & Updates</h2>
+        <div id="homeNoticeList" style="display: flex; flex-direction: column; gap: 10px;">
+          <p style="color: #64748b;">Loading recent notices...</p>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </div>
 
-  <!-- Notice Board -->
-  <section class="content-container" id="notices">
-    <div class="content-card" style="border-top: 4px solid #0b3c5d;">
-      <h2 style="color: #0b3c5d; font-size: 1.8rem; margin-bottom: 6px;">Notice Board & Circulars</h2>
-      <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 20px;">Important announcements, admissions, and schedules</p>
-      <div id="noticeList" style="display: flex; flex-direction: column; gap: 14px;">
-        <p style="color: #64748b;">Loading notices...</p>
+  <!-- ==================== 2. INFORMATION / DOCUMENTS VIEW ==================== -->
+  <div id="documents-view" class="page-view">
+    <section class="content-container">
+      <div class="content-card" style="border-top: 4px solid #0284c7;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; margin-bottom: 8px;">
+          <h2 id="docHeading" style="color: #0b3c5d; font-size: 1.8rem;">Documents</h2>
+          <button onclick="showDocPage('ALL')" style="background: none; border: 1px solid #0284c7; color: #0284c7; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">View All Documents</button>
+        </div>
+        <p id="docSub" style="color: #64748b; font-size: 0.95rem; margin-bottom: 22px;">Official records and circulars</p>
+        <div id="documentList" style="display: flex; flex-direction: column; gap: 10px;"></div>
       </div>
-    </div>
-  </section>
+    </section>
+  </div>
 
-  <!-- Gallery Section -->
-  <section class="content-container" id="gallery" style="text-align: center;">
-    <h2 style="color: #0b3c5d; font-size: 2.2rem; margin-bottom: 8px;">Photo Gallery</h2>
-    <p style="color: #64748b; margin-bottom: 35px;">Moments, activities, and campus life</p>
-    <div id="publicGalleryGrid" class="gallery-grid">
-      <p>Loading photos...</p>
-    </div>
-  </section>
+  <!-- ==================== 3. NOTICES VIEW ==================== -->
+  <div id="notices-view" class="page-view">
+    <section class="content-container">
+      <div class="content-card" style="border-top: 4px solid #0b3c5d;">
+        <h2 style="color: #0b3c5d; font-size: 1.8rem; margin-bottom: 6px;">Notice Board & Circulars</h2>
+        <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 20px;">All academic announcements, admissions, and schedules</p>
+        <div id="noticeList" style="display: flex; flex-direction: column; gap: 14px;"></div>
+      </div>
+    </section>
+  </div>
 
-  <!-- Lightbox Popup -->
+  <!-- ==================== 4. GALLERY VIEW ==================== -->
+  <div id="gallery-view" class="page-view">
+    <section class="content-container" style="text-align: center;">
+      <h2 style="color: #0b3c5d; font-size: 2.2rem; margin-bottom: 8px;">Photo Gallery</h2>
+      <p style="color: #64748b; margin-bottom: 35px;">Moments, activities, and campus life</p>
+      <div id="publicGalleryGrid" class="gallery-grid"></div>
+    </section>
+  </div>
+
+  <!-- ==================== 5. CONTACT VIEW ==================== -->
+  <div id="contact-view" class="page-view">
+    <section class="content-container">
+      <div class="content-card" style="border-top: 4px solid #0b3c5d;">
+        <h2 style="color: #0b3c5d; font-size: 1.8rem; margin-bottom: 12px;">Contact Us</h2>
+        <p style="color: #475569; margin-bottom: 12px;"><strong>Address:</strong> Eklavya Model Residential School, At/Po: Subdega, District: Sundargarh, Odisha - 770014</p>
+        <p style="color: #475569; margin-bottom: 12px;"><strong>Email:</strong> <a href="mailto:emrssubdega@gmail.com" style="color: #0284c7;">emrssubdega@gmail.com</a></p>
+        <p style="color: #475569;"><strong>Staff Portal:</strong> <a href="admin/" style="color: #0284c7;">Admin Dashboard Login</a></p>
+      </div>
+    </section>
+  </div>
+
+  <!-- Lightbox Modal -->
   <div id="lightbox" class="lightbox">
     <span class="close" id="closeBtn">&times;</span>
     <img id="lightboxImg" src="" alt="Popup Preview" />
     <div id="lightboxCaption" class="caption"></div>
   </div>
 
-  <!-- Footer -->
-  <footer class="site-footer" id="contact">
+  <!-- Site Footer -->
+  <footer class="site-footer">
     <div class="footer-content">
       <div class="footer-col">
         <h3>EMRS Subdega</h3>
@@ -326,16 +376,41 @@
         .replace(/'/g, '&#039;');
     }
 
-    function renderDocList(docs, title = "School Documents & Disclosures") {
+    /* Switch active view */
+    window.showPage = function(viewId) {
+      document.querySelectorAll('.page-view').forEach(view => {
+        view.classList.remove('active');
+      });
+      const target = document.getElementById(viewId);
+      if (target) {
+        target.classList.add('active');
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    /* Switch to document view and filter */
+    window.showDocPage = function(category) {
+      showPage('documents-view');
       const listContainer = document.getElementById("documentList");
-      document.getElementById("docHeading").textContent = title;
-      
-      if (!docs || docs.length === 0) {
-        listContainer.innerHTML = '<p style="color: #64748b; font-style: italic;">No documents uploaded in this category.</p>';
+      const heading = document.getElementById("docHeading");
+      const sub = document.getElementById("docSub");
+
+      let filtered = allDocuments;
+      if (category && category !== 'ALL') {
+        heading.textContent = category;
+        sub.textContent = `Official documents filed under ${category}`;
+        filtered = allDocuments.filter(d => d.category === category);
+      } else {
+        heading.textContent = "All Official Documents";
+        sub.textContent = "Complete archive of uploaded documents and circulars";
+      }
+
+      if (filtered.length === 0) {
+        listContainer.innerHTML = '<p style="color: #64748b; font-style: italic;">No documents uploaded in this category yet.</p>';
         return;
       }
 
-      listContainer.innerHTML = docs.map(doc => `
+      listContainer.innerHTML = filtered.map(doc => `
         <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 10px;">
           <div>
             <strong style="color: #0f172a; font-size: 1rem;">${escapeHtml(doc.title)}</strong>
@@ -344,17 +419,13 @@
           <a href="${escapeHtml(doc.file_url)}" target="_blank" download style="background: #0b3c5d; color: #ffffff; text-decoration: none; padding: 6px 14px; border-radius: 4px; font-size: 0.88rem; font-weight: 500;">Download / View PDF ↗</a>
         </div>
       `).join('');
-    }
-
-    window.filterDocs = function(category) {
-      const filtered = allDocuments.filter(d => d.category === category);
-      renderDocList(filtered, category);
     };
 
     document.addEventListener("DOMContentLoaded", async () => {
       client = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
       const grid = document.getElementById("publicGalleryGrid");
       const noticeContainer = document.getElementById("noticeList");
+      const homeNoticeContainer = document.getElementById("homeNoticeList");
       const lightbox = document.getElementById("lightbox");
       const lightboxImg = document.getElementById("lightboxImg");
       const lightboxCaption = document.getElementById("lightboxCaption");
@@ -369,9 +440,6 @@
 
         if (!error && data) {
           allDocuments = data;
-          renderDocList(allDocuments);
-        } else {
-          document.getElementById("documentList").innerHTML = `<p style="color:#ef4444">Error loading documents.</p>`;
         }
       }
 
@@ -383,17 +451,14 @@
           .eq("published", true)
           .order("notice_date", { ascending: false });
 
-        if (error) {
-          noticeContainer.innerHTML = `<p style="color:#ef4444">Error loading notices: ${escapeHtml(error.message)}</p>`;
+        if (error || !data || data.length === 0) {
+          const emptyHtml = `<p style="color: #64748b; font-style: italic;">No current circulars posted.</p>`;
+          if (noticeContainer) noticeContainer.innerHTML = emptyHtml;
+          if (homeNoticeContainer) homeNoticeContainer.innerHTML = emptyHtml;
           return;
         }
 
-        if (!data || data.length === 0) {
-          noticeContainer.innerHTML = `<p style="color: #64748b; font-style: italic;">No current announcements posted.</p>`;
-          return;
-        }
-
-        noticeContainer.innerHTML = data.map(item => `
+        const itemsHtml = data.map(item => `
           <div class="notice-item">
             <div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;">
               <span style="color:#0f172a; font-weight:600; font-size:1.05rem;">${escapeHtml(item.title)}</span>
@@ -402,6 +467,9 @@
             <p style="color:#475569; font-size:0.95rem; line-height:1.5;">${escapeHtml(item.body)}</p>
           </div>
         `).join("");
+
+        if (noticeContainer) noticeContainer.innerHTML = itemsHtml;
+        if (homeNoticeContainer) homeNoticeContainer.innerHTML = itemsHtml;
       }
 
       // 3. Fetch Gallery
@@ -436,9 +504,7 @@
         if (e.target === lightbox) lightbox.style.display = "none";
       });
 
-      loadDocuments();
-      loadNotices();
-      loadGallery();
+      await Promise.all([loadDocuments(), loadNotices(), loadGallery()]);
     });
   </script>
 </body>
