@@ -34,14 +34,27 @@
     .sidebar-btn-content { display: flex; align-items: center; gap: 12px; }
     .sidebar-btn:hover { background: #072a42; color: #38bdf8; }
     .sidebar-btn.active { background: #072a42; color: #ffffff; border-left-color: #f97316; }
-    .sidebar-footer { padding: 15px; border-top: 1px solid rgba(255, 255, 255, 0.12); }
-    .logout-btn { width: 100%; background: #ef4444; color: #ffffff; border: none; padding: 10px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
     .main-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow-y: auto; }
     .top-navbar { background: #ffffff; padding: 14px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; }
     .page-title { font-size: 1.25rem; font-weight: 800; color: #0b3c5d; }
-    .navbar-right-actions { display: flex; align-items: center; gap: 16px; }
-    .live-website-btn { display: inline-flex; align-items: center; gap: 6px; background: #0b3c5d; color: #ffffff; padding: 8px 16px; border-radius: 6px; font-size: 0.88rem; font-weight: 700; text-decoration: none; }
+    
+    /* Top Navbar Right Actions: User info, Live Website, Sign Out */
+    .navbar-right-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .live-website-btn {
+      display: inline-flex; align-items: center; gap: 6px; background: #0b3c5d; color: #ffffff;
+      padding: 8px 14px; border-radius: 6px; font-size: 0.86rem; font-weight: 700; text-decoration: none;
+      transition: background 0.2s;
+    }
+    .live-website-btn:hover { background: #072a42; }
+    
+    .top-logout-btn {
+      display: inline-flex; align-items: center; gap: 6px; background: #ef4444; color: #ffffff;
+      border: none; padding: 8px 14px; border-radius: 6px; font-size: 0.86rem; font-weight: 700;
+      cursor: pointer; transition: background 0.2s; font-family: inherit;
+    }
+    .top-logout-btn:hover { background: #dc2626; }
+
     .workspace-content { padding: 30px; max-width: 1200px; width: 100%; }
 
     .admin-tab-pane { display: none; }
@@ -134,23 +147,28 @@
           <div class="sidebar-btn-content"><span>🖼️</span> Photo Gallery</div>
         </button>
       </nav>
-      <div class="sidebar-footer">
-        <button type="button" id="logoutBtn" class="logout-btn"><span>🚪</span> Sign Out</button>
-      </div>
     </aside>
 
     <main class="main-panel">
+      <!-- TOP NAVBAR (WITH SIGN OUT BUTTON ON TOP RIGHT) -->
       <div class="top-navbar">
         <div class="page-title" id="pageTitleHeading">Dashboard Overview</div>
         <div class="navbar-right-actions">
-          <div class="user-info">Logged in as: <strong id="adminUserBadge">Admin</strong></div>
-          <a href="../" target="_blank" class="live-website-btn"><span>🌐</span> Live Website ↗</a>
+          <div class="user-info" style="font-size: 0.86rem; color: #64748b;">
+            Logged in: <strong id="adminUserBadge" style="color: #0b3c5d;">Admin</strong>
+          </div>
+          <a href="../" target="_blank" class="live-website-btn" title="Open public portal">
+            <span>🌐</span> Live Website ↗
+          </a>
+          <button type="button" id="logoutBtn" class="top-logout-btn" title="Sign out of admin session">
+            <span>🚪</span> Sign Out
+          </button>
         </div>
       </div>
 
       <div class="workspace-content">
 
-        <!-- TAB 0: DASHBOARD WITH ALL CAMPUS FIELDS RESTORED -->
+        <!-- TAB 0: DASHBOARD -->
         <div id="tab-dashboard" class="admin-tab-pane show">
           <div class="welcome-hero-card">
             <h2 class="hero-welcome-small">Welcome to</h2>
@@ -180,12 +198,12 @@
           </div>
         </div>
 
-        <!-- TAB 1: EDIT CAMPUS & DETAILS WITH ALL FIELDS RESTORED -->
+        <!-- TAB 1: EDIT CAMPUS & DETAILS -->
         <div id="tab-institution" class="admin-tab-pane">
           <div class="panel-card">
             <h3>Edit Campus & Institution Details</h3>
             <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">
-              Update any detail below. All affiliation and helpline fields are <strong>optional</strong> — leave any blank if you do not have them yet. Empty fields will automatically remain hidden on the live website.
+              Update any detail below. All affiliation and helpline fields are <strong>optional</strong> — leave any blank if you do not have them yet.
             </p>
             <form id="institutionForm">
               <div class="form-field"><label>Institution Name</label><input type="text" id="instName" placeholder="e.g. EMRS Subdega" /></div>
@@ -222,7 +240,6 @@
         <!-- TAB 2: STUDENT RESULTS -->
         <div id="tab-results-admin" class="admin-tab-pane">
           
-          <!-- BULK IMPORT & EXPORT EXCEL TOOL -->
           <div class="panel-card" style="border-top: 4px solid #0284c7; background: #f0f9ff;">
             <h3>
               <span>📊 Bulk Student Results Excel / CSV Tool</span>
@@ -267,7 +284,6 @@
             </div>
           </div>
 
-          <!-- BATCH PROMOTION TOOL -->
           <div class="panel-card" style="border-top: 4px solid #f97316; background: #fffaf5;">
             <h3>
               <span>⚡ Batch Promotion Tool</span>
@@ -351,7 +367,6 @@
                 <div class="form-field"><label>Section</label><input type="text" id="srSection" value="A" /></div>
               </div>
 
-              <!-- DYNAMIC EDITABLE SUBJECTS -->
               <div style="margin: 20px 0 10px; padding: 16px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
                   <h4 style="color:#0b3c5d; font-size:1rem; margin:0;">Editable Subjects & Marks Breakdown</h4>
@@ -377,7 +392,6 @@
             </form>
           </div>
 
-          <!-- ARCHIVE TABLE -->
           <div class="panel-card">
             <h3>Uploaded Results Archive</h3>
             <div class="table-responsive">
@@ -404,14 +418,17 @@
 
         </div>
 
-        <!-- TAB 3: STAFF -->
+        <!-- TAB 3: STAFF (WITH DYNAMIC EDIT / ADD MODE) -->
         <div id="tab-staff" class="admin-tab-pane">
-          <div class="panel-card">
-            <h3>Add New Staff Member</h3>
+          <div class="panel-card" id="staffFormPanel">
+            <h3 id="staffFormModeTitle">Add New Staff Member</h3>
             <form id="staffForm">
+              <input type="hidden" id="editingStaffId" value="" />
+              <input type="hidden" id="existingStaffPhotoUrl" value="" />
+
               <div class="form-grid-2">
-                <div class="form-field"><label>Full Name *</label><input type="text" id="staffName" required /></div>
-                <div class="form-field"><label>Employee ID *</label><input type="text" id="staffEmpId" required /></div>
+                <div class="form-field"><label>Full Name *</label><input type="text" id="staffName" placeholder="Full Name" required /></div>
+                <div class="form-field"><label>Employee ID *</label><input type="text" id="staffEmpId" placeholder="Employee ID" required /></div>
                 <div class="form-field">
                   <label>Category *</label>
                   <select id="staffCategory" required>
@@ -422,24 +439,47 @@
                   </select>
                 </div>
                 <div class="form-field"><label>Designation *</label><select id="staffDesignation" required></select></div>
+                <div class="form-field"><label>Date of Joining in NESTS</label><input type="date" id="staffDojNests" /></div>
+                <div class="form-field"><label>Date of Joining in EMRS Subdega</label><input type="date" id="staffDojEmrs" /></div>
               </div>
-              <div class="form-field"><label>Staff Photo (Max 50 KB) *</label><input type="file" id="staffPhoto" accept="image/*" required /></div>
-              <button type="submit" id="saveStaffBtn" class="btn-submit">Add Staff Member</button>
+              
+              <div class="form-field">
+                <label id="staffPhotoLabel">Staff Photo (Max 50 KB, .jpg / .png) *</label>
+                <input type="file" id="staffPhoto" accept="image/*" />
+                <small id="staffPhotoHelp" style="color: #64748b;">Maximum file size allowed is 50 KB.</small>
+              </div>
+
+              <div style="display:flex; gap:10px; align-items:center;">
+                <button type="submit" id="saveStaffBtn" class="btn-submit">Add Staff Member</button>
+                <button type="button" id="cancelStaffEditBtn" onclick="resetStaffForm()" class="btn-submit" style="background:#64748b; display:none;">Cancel Edit</button>
+              </div>
               <p id="staffStatus" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
             </form>
           </div>
+
           <div class="panel-card">
             <h3>Current Staff Directory</h3>
             <div class="table-responsive">
               <table class="styled-table">
-                <thead><tr><th>Photo</th><th>Name</th><th>Emp ID</th><th>Category</th><th>Designation</th><th>Action</th></tr></thead>
-                <tbody id="staffTableBody"><tr><td colspan="6" style="text-align:center;">Loading...</td></tr></tbody>
+                <thead>
+                  <tr>
+                    <th>Photo</th>
+                    <th>Name</th>
+                    <th>Emp ID</th>
+                    <th>Category</th>
+                    <th>Designation</th>
+                    <th>DOJ NESTS</th>
+                    <th>DOJ EMRS</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="staffTableBody"><tr><td colspan="8" style="text-align:center;">Loading staff records...</td></tr></tbody>
               </table>
             </div>
           </div>
         </div>
 
-        <!-- TAB 4: DOCUMENTS (10 MATCHING CATEGORIES) -->
+        <!-- TAB 4: DOCUMENTS -->
         <div id="tab-docs" class="admin-tab-pane">
           <div class="panel-card">
             <h3>Upload Official Document</h3>
