@@ -409,7 +409,7 @@
     }
   </style>
 
-  <!-- Navigation & Rendering Engine -->
+  <!-- Immediate Global Engine -->
   <script>
     window.allDocuments = [];
     window.allGallery = [];
@@ -587,4 +587,364 @@
                 '<span class="staff-label">EMPLOYEE ID</span>' +
                 '<span class="staff-value">' + window.escapeHtml(empId) + '</span>' +
               '</div>' +
-              '<div
+              '<div class="staff-field" style="min-width: 130px;">' +
+                '<span class="staff-label">CATEGORY</span>' +
+                '<span><span class="staff-badge">' + cat + '</span></span>' +
+              '</div>' +
+              '<div class="staff-field" style="min-width: 190px;">' +
+                '<span class="staff-label">DESIGNATION</span>' +
+                '<span class="staff-value" style="color: #c2410c;">' + window.escapeHtml(desig) + '</span>' +
+              '</div>' +
+              '<div class="staff-field" style="min-width: 150px;">' +
+                '<span class="staff-label">DOJ IN NESTS</span>' +
+                '<span class="staff-value">' + window.escapeHtml(dojNests) + '</span>' +
+              '</div>' +
+              '<div class="staff-field" style="min-width: 160px;">' +
+                '<span class="staff-label">DOJ IN EMRS SUBDEGA</span>' +
+                '<span class="staff-value">' + window.escapeHtml(dojEmrs) + '</span>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+      });
+    };
+  </script>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <div class="top-header">
+    <div class="header-left">
+      <img src="logo.png" alt="EMRS Logo" class="header-logo" onerror="this.src='https://nests.tribal.gov.in/assets/images/emrs_logo.png'" />
+      <div class="header-titles">
+        <h2>एकलव्य आदर्श आवासीय विद्यालय, सबडेगा</h2>
+        <h1>EKLAVYA MODEL RESIDENTIAL SCHOOL, SUBDEGA</h1>
+        <p>National Education Society for Tribal Students (NESTS) | Ministry of Tribal Affairs, Govt. of India</p>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="header-tagline">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" alt="National Emblem" style="height: 48px; width: auto; margin-bottom: 4px; object-fit: contain;" />
+        <strong class="ministry-title">MINISTRY OF TRIBAL AFFAIRS</strong>
+        <strong class="tagline-sub">Tribal Transformation Through Education</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-links">
+      <button type="button" class="nav-link-btn" onclick="window.goToTab('tab-home')">HOME</button>
+      <div class="dropdown">
+        <button type="button" class="nav-link-btn dropdown-btn">INFORMATION ▾</button>
+        <div class="dropdown-content">
+          <button type="button" onclick="window.openDocCategory('Mandatory Disclosure')">Mandatory Disclosure</button>
+          <button type="button" onclick="window.openDocCategory('General Notice')">General Notice</button>
+          <button type="button" onclick="window.openDocCategory('Exam Notice')">Exam Notice</button>
+          <button type="button" onclick="window.openDocCategory('Rules & Regulations')">Rules & Regulations</button>
+          <button type="button" onclick="window.openDocCategory('Committees')">Committees</button>
+          <button type="button" onclick="window.goToTab('tab-staff')">Staff Detail</button>
+          <button type="button" onclick="window.openDocCategory('Result Analysis')">Result Analysis</button>
+          <button type="button" onclick="window.openDocCategory('Transfer Certificate')">Transfer Certificate</button>
+          <button type="button" onclick="window.openDocCategory('Admission Notice')">Admission Notice</button>
+          <button type="button" onclick="window.openDocCategory('Tenders')">Tenders</button>
+          <button type="button" onclick="window.openDocCategory('Career')">Career</button>
+        </div>
+      </div>
+      <button type="button" class="nav-link-btn" onclick="window.goToTab('tab-notices')">NOTICES</button>
+      <button type="button" class="nav-link-btn" onclick="window.goToTab('tab-gallery')">GALLERY</button>
+      <button type="button" class="nav-link-btn" onclick="window.goToTab('tab-staff')">STAFF DETAIL</button>
+      <button type="button" class="nav-link-btn" onclick="window.goToTab('tab-contact')">CONTACT</button>
+      <a href="admin/" style="display:block;">ADMIN PORTAL</a>
+    </div>
+  </nav>
+
+  <!-- 1. HOME VIEW -->
+  <section id="tab-home" class="tab-section" style="display: block;">
+    <div class="slider-container" id="homeSlider">
+      <div class="slide active">
+        <img src="school-campus.jpg" alt="EMRS Subdega Campus" />
+        <div class="slide-overlay">
+          <h3>Welcome to EMRS Subdega</h3>
+          <p>Sundargarh, Odisha</p>
+        </div>
+      </div>
+      <button type="button" class="slider-btn prev" id="sliderPrev">&#10094;</button>
+      <button type="button" class="slider-btn next" id="sliderNext">&#10095;</button>
+      <div class="slider-dots" id="sliderDots"></div>
+    </div>
+
+    <div class="content-container">
+      <div class="content-card">
+        <h2 style="color: #0b3c5d; margin-bottom: 12px;">About Our Institution</h2>
+        <p style="color: #475569; font-size: 1.05rem; margin-bottom: 16px;">
+          Eklavya Model Residential School (EMRS), Subdega, Sundargarh is established under the Ministry of Tribal Affairs, Government of India, to provide quality education to tribal students in remote areas.
+        </p>
+        <p style="color: #475569; font-size: 1rem;">
+          Our focus is on the comprehensive development of students through high academic standards, sports, and cultural enrichment.
+        </p>
+      </div>
+    </div>
+
+    <div class="content-container">
+      <div class="content-card" style="border-top: 4px solid #0b3c5d;">
+        <h2 style="color: #0b3c5d; font-size: 1.5rem; margin-bottom: 14px;">Latest Circulars & Announcements</h2>
+        <div id="homeNoticeList" style="display: flex; flex-direction: column; gap: 10px;">
+          <p style="color: #64748b;">Loading recent notices...</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. DOCUMENTS VIEW -->
+  <section id="tab-documents" class="tab-section" style="display: none;">
+    <div class="content-container">
+      <div class="content-card" style="border-top: 4px solid #0284c7; padding: 25px 30px;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; margin-bottom: 8px;">
+          <h2 id="docHeading" style="color: #0b3c5d; font-size: 1.8rem;">General Circulars</h2>
+          <button type="button" onclick="window.openDocCategory('ALL')" style="background: none; border: 1px solid #0284c7; color: #0284c7; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">View All Documents</button>
+        </div>
+        <p id="docSub" style="color: #64748b; font-size: 0.95rem; margin-bottom: 22px;">Official records and circulars</p>
+        
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.92rem;">
+            <thead>
+              <tr style="background: #7a8fa6; color: #ffffff;">
+                <th style="padding: 12px 14px; width: 14%; border: 1px solid #cbd5e1; text-align: center;">Circular No.</th>
+                <th style="padding: 12px 14px; width: 14%; border: 1px solid #cbd5e1; text-align: center;">Date</th>
+                <th style="padding: 12px 16px; width: 58%; border: 1px solid #cbd5e1;">Subject</th>
+                <th style="padding: 12px 14px; width: 14%; border: 1px solid #cbd5e1; text-align: center;">Download</th>
+              </tr>
+            </thead>
+            <tbody id="documentList"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. NOTICES VIEW -->
+  <section id="tab-notices" class="tab-section" style="display: none;">
+    <div class="content-container">
+      <div class="content-card" style="border-top: 4px solid #0b3c5d;">
+        <h2 style="color: #0b3c5d; font-size: 1.8rem; margin-bottom: 6px;">Notice Board & Circulars</h2>
+        <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 20px;">All academic announcements, admissions, and schedules</p>
+        <div id="noticeList" style="display: flex; flex-direction: column; gap: 14px;"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. GALLERY VIEW -->
+  <section id="tab-gallery" class="tab-section" style="display: none;">
+    <div class="content-container" style="text-align: center;">
+      <h2 style="color: #0b3c5d; font-size: 2.2rem; margin-bottom: 8px;">Photo Gallery</h2>
+      <p style="color: #64748b; margin-bottom: 20px;">Moments, activities, and campus life</p>
+      <div id="publicGalleryGrid" class="gallery-grid"></div>
+    </div>
+  </section>
+
+  <!-- 5. STAFF DETAIL VIEW (4 CATEGORIES, HORIZONTAL ROWS, CAPITAL LETTERS) -->
+  <section id="tab-staff" class="tab-section" style="display: none;">
+    <div class="content-container">
+      <div class="content-card" style="border-top: 4px solid #0b3c5d;">
+        <h2 style="color: #0b3c5d; font-size: 1.9rem; margin-bottom: 4px; text-transform: uppercase;">STAFF DETAILS</h2>
+        <p style="color: #64748b; margin-bottom: 30px; font-weight: 600; text-transform: uppercase;">FACULTY AND ADMINISTRATIVE STAFF OF EMRS SUBDEGA</p>
+
+        <!-- Category 1: PRINCIPAL -->
+        <div class="staff-category-block">
+          <div class="staff-category-title">1. PRINCIPAL</div>
+          <div id="staff-list-principal" class="staff-row-list"></div>
+        </div>
+
+        <!-- Category 2: PGT -->
+        <div class="staff-category-block">
+          <div class="staff-category-title">2. PGT</div>
+          <div id="staff-list-pgt" class="staff-row-list"></div>
+        </div>
+
+        <!-- Category 3: TGT -->
+        <div class="staff-category-block">
+          <div class="staff-category-title">3. TGT</div>
+          <div id="staff-list-tgt" class="staff-row-list"></div>
+        </div>
+
+        <!-- Category 4: NON-TEACHING -->
+        <div class="staff-category-block">
+          <div class="staff-category-title">4. NON-TEACHING</div>
+          <div id="staff-list-nonteaching" class="staff-row-list"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. CONTACT VIEW -->
+  <section id="tab-contact" class="tab-section" style="display: none;">
+    <div class="content-container">
+      <div class="content-card" style="border-top: 4px solid #0b3c5d;">
+        <h2 style="color: #0b3c5d; font-size: 1.8rem; margin-bottom: 12px;">Contact Us</h2>
+        <p style="color: #475569; margin-bottom: 12px;"><strong>Address:</strong> Eklavya Model Residential School, At/Po: Subdega, District: Sundargarh, Odisha - 770014</p>
+        <p style="color: #475569; margin-bottom: 12px;"><strong>Email:</strong> <a href="mailto:emrssubdega@gmail.com" style="color: #0284c7;">emrssubdega@gmail.com</a></p>
+        <p style="color: #475569;"><strong>Staff Portal:</strong> <a href="admin/" style="color: #0284c7;">Admin Dashboard Login</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox">
+    <span class="close" id="closeBtn">&times;</span>
+    <img id="lightboxImg" src="" alt="Popup Preview" />
+    <div id="lightboxCaption" class="caption"></div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div class="footer-col">
+        <h3>EMRS Subdega</h3>
+        <p>A premier residential institution dedicated to quality CBSE education for tribal students under the Ministry of Tribal Affairs, Govt. of India.</p>
+      </div>
+      <div class="footer-col">
+        <h3>Campus Location</h3>
+        <p>At/Po: Subdega, District: Sundargarh, Odisha - 770014</p>
+      </div>
+      <div class="footer-col">
+        <h3>Contact & Portal</h3>
+        <p>Email: <a href="mailto:emrssubdega@gmail.com">emrssubdega@gmail.com</a></p>
+        <p>Portal: <a href="admin/">Staff & Admin Login</a></p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; EMRS Subdega. All rights reserved. | <a href="admin/">Admin Login</a></p>
+    </div>
+  </footer>
+
+  <!-- Asynchronous Initialization & Fetch Engine -->
+  <script>
+    var currentSlideIdx = 0;
+    var sliderTimer = null;
+
+    function buildSlider(photos) {
+      var slider = document.getElementById('homeSlider');
+      var dotsContainer = document.getElementById('sliderDots');
+      if (!slider || !dotsContainer) return;
+
+      var selected = (photos || []).filter(function(p) { return p.is_slider === true; });
+      var slidesData = selected.length > 0
+        ? selected.map(function(p) { return { url: p.image_url, title: p.title || 'EMRS Subdega' }; })
+        : [{ url: 'school-campus.jpg', title: 'EMRS Subdega Campus' }];
+
+      var existing = slider.querySelectorAll('.slide');
+      for (var i = 0; i < existing.length; i++) existing[i].remove();
+      dotsContainer.innerHTML = '';
+
+      slidesData.forEach(function(item, idx) {
+        var slide = document.createElement('div');
+        slide.className = 'slide ' + (idx === 0 ? 'active' : '');
+        slide.innerHTML = '<img src="' + item.url + '" alt="' + (item.title || '') + '" />' +
+          '<div class="slide-overlay">' +
+            '<h3>' + (item.title || '') + '</h3>' +
+            '<p>EMRS Subdega, Sundargarh, Odisha</p>' +
+          '</div>';
+        slider.appendChild(slide);
+
+        var dot = document.createElement('div');
+        dot.className = 'dot ' + (idx === 0 ? 'active' : '');
+        dot.onclick = function() { goToSlide(idx); };
+        dotsContainer.appendChild(dot);
+      });
+
+      startAutoSlider(slidesData.length);
+    }
+
+    function goToSlide(idx) {
+      var slides = document.querySelectorAll('.slide');
+      var dots = document.querySelectorAll('.dot');
+      if (slides.length === 0) return;
+
+      if (slides[currentSlideIdx]) slides[currentSlideIdx].classList.remove('active');
+      if (dots[currentSlideIdx]) dots[currentSlideIdx].classList.remove('active');
+
+      currentSlideIdx = (idx + slides.length) % slides.length;
+
+      if (slides[currentSlideIdx]) slides[currentSlideIdx].classList.add('active');
+      if (dots[currentSlideIdx]) dots[currentSlideIdx].classList.add('active');
+    }
+
+    function startAutoSlider(total) {
+      if (sliderTimer) clearInterval(sliderTimer);
+      sliderTimer = setInterval(function() { goToSlide(currentSlideIdx + 1); }, 5000);
+    }
+
+    async function ensureClientAndFetch() {
+      if (!window.client) {
+        var targetUrl = window.SUPABASE_URL || "https://eukhcbxrxzhpwfizoqun.supabase.co";
+        var targetKey = window.SUPABASE_ANON_KEY;
+
+        if (window.supabase && targetUrl && targetKey) {
+          window.client = window.supabase.createClient(targetUrl, targetKey);
+        } else {
+          setTimeout(ensureClientAndFetch, 50);
+          return;
+        }
+      }
+
+      // 1. Fetch Documents
+      try {
+        var dRes = await window.client.from("documents").select("*").order("created_at", { ascending: false });
+        if (dRes && dRes.data) {
+          window.allDocuments = dRes.data;
+          window.renderDocuments();
+        }
+      } catch(e) {}
+
+      // 2. Fetch Notices
+      try {
+        var nRes = await window.client.from("notices").select("*").order("notice_date", { ascending: false });
+        if (nRes && nRes.data) {
+          window.allNotices = nRes.data;
+          window.renderNotices();
+        }
+      } catch(e) {}
+
+      // 3. Fetch Photos
+      try {
+        var gRes = await window.client.from("gallery").select("*").order("created_at", { ascending: false });
+        if (gRes && gRes.data) {
+          window.allGallery = gRes.data;
+          buildSlider(window.allGallery);
+          window.renderGallery();
+        } else {
+          buildSlider([]);
+        }
+      } catch(e) {
+        buildSlider([]);
+      }
+
+      // 4. Fetch Staff Details
+      try {
+        var sRes = await window.client.from("staff").select("*").order("created_at", { ascending: true });
+        if (sRes && sRes.data) {
+          window.allStaff = sRes.data;
+          window.renderStaff();
+        }
+      } catch(e) {}
+    }
+
+    window.addEventListener("DOMContentLoaded", function() {
+      var prevBtn = document.getElementById('sliderPrev');
+      var nextBtn = document.getElementById('sliderNext');
+      if (prevBtn) prevBtn.addEventListener('click', function() { goToSlide(currentSlideIdx - 1); });
+      if (nextBtn) nextBtn.addEventListener('click', function() { goToSlide(currentSlideIdx + 1); });
+
+      var closeBtn = document.getElementById("closeBtn");
+      var lb = document.getElementById("lightbox");
+      if (closeBtn && lb) {
+        closeBtn.addEventListener("click", function() { lb.style.display = "none"; });
+        lb.addEventListener("click", function(e) { if (e.target === lb) lb.style.display = "none"; });
+      }
+
+      ensureClientAndFetch();
+    });
+  </script>
+</body>
+</html>
