@@ -103,11 +103,17 @@
       cursor: pointer;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 12px;
       transition: all 0.2s ease;
       font-family: inherit;
       border-left: 4px solid transparent;
       text-decoration: none;
+    }
+    .sidebar-btn-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
     .sidebar-btn:hover {
       background: #072a42;
@@ -117,6 +123,14 @@
       background: #072a42;
       color: #ffffff;
       border-left-color: #f97316;
+    }
+    .badge-counter {
+      background: #f97316;
+      color: #ffffff;
+      font-size: 0.72rem;
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-weight: 700;
     }
     .sidebar-footer {
       padding: 15px;
@@ -456,22 +470,26 @@
       </div>
       <nav class="sidebar-menu">
         <button type="button" class="sidebar-btn active" onclick="switchAdminTab('tab-dashboard', this)">
-          <span>📊</span> Dashboard
+          <div class="sidebar-btn-content"><span>📊</span> Dashboard</div>
         </button>
         <button type="button" class="sidebar-btn" onclick="switchAdminTab('tab-institution', this)">
-          <span>🏫</span> Campus & Details
+          <div class="sidebar-btn-content"><span>🏫</span> Campus & Details</div>
+        </button>
+        <button type="button" class="sidebar-btn" onclick="switchAdminTab('tab-enquiries', this)">
+          <div class="sidebar-btn-content"><span>📬</span> Enquiries</div>
+          <span id="enquiryCountBadge" class="badge-counter" style="display: none;">0</span>
         </button>
         <button type="button" class="sidebar-btn" onclick="switchAdminTab('tab-staff', this)">
-          <span>👥</span> Staff Details
+          <div class="sidebar-btn-content"><span>👥</span> Staff Details</div>
         </button>
         <button type="button" class="sidebar-btn" onclick="switchAdminTab('tab-docs', this)">
-          <span>📁</span> Documents
+          <div class="sidebar-btn-content"><span>📁</span> Documents</div>
         </button>
         <button type="button" class="sidebar-btn" onclick="switchAdminTab('tab-notices', this)">
-          <span>📢</span> Notices
+          <div class="sidebar-btn-content"><span>📢</span> Notices</div>
         </button>
         <button type="button" class="sidebar-btn" onclick="switchAdminTab('tab-gallery', this)">
-          <span>🖼️</span> Photo Gallery
+          <div class="sidebar-btn-content"><span>🖼️</span> Photo Gallery</div>
         </button>
       </nav>
       <div class="sidebar-footer">
@@ -535,7 +553,6 @@
                 <span class="val" id="viewInstEmail">emrssubdega@gmail.com</span>
               </div>
 
-              <!-- Part B Optional Fields in Dashboard View -->
               <div class="profile-info-item">
                 <span class="label">CBSE Affiliation No.</span>
                 <span class="val" id="viewInstCbseAff">-</span>
@@ -565,12 +582,12 @@
 
         </div>
 
-        <!-- TAB 1: EDIT CAMPUS & INSTITUTION DETAILS (WITH OPTIONAL PART B FIELDS) -->
+        <!-- TAB 1: EDIT CAMPUS & INSTITUTION DETAILS -->
         <div id="tab-institution" class="admin-tab-pane">
           <div class="panel-card">
             <h3>Edit Campus & Institution Details</h3>
             <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">
-              Update any detail below. All new affiliation/contact fields are <strong>optional</strong> — leave any blank if you do not have them yet. Empty fields will automatically remain hidden on the live website.
+              Update any detail below. All new affiliation/contact fields are <strong>optional</strong> — leave any blank if you do not have them yet.
             </p>
             <form id="institutionForm">
               <div class="form-field">
@@ -604,7 +621,6 @@
                 </div>
               </div>
 
-              <!-- Part B Specific Fields (Completely Optional) -->
               <div class="form-grid-2">
                 <div class="form-field">
                   <label>CBSE Affiliation No. (Optional)</label>
@@ -638,7 +654,40 @@
           </div>
         </div>
 
-        <!-- TAB 2: STAFF DETAILS -->
+        <!-- TAB 2: ENQUIRIES & MESSAGES (OPTION 2) -->
+        <div id="tab-enquiries" class="admin-tab-pane">
+          <div class="panel-card">
+            <h3>
+              <span>📬 Admission & Public Enquiries</span>
+              <button type="button" class="btn-submit" style="padding: 6px 14px; font-size: 0.85rem;" onclick="loadAdminEnquiries()">
+                🔄 Refresh
+              </button>
+            </h3>
+            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 16px;">
+              Parent and visitor queries submitted from the public portal.
+            </p>
+            <div class="table-responsive">
+              <table class="styled-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Type</th>
+                    <th>Message</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="enquiryTableBody">
+                  <tr><td colspan="7" style="text-align: center; color: #64748b;">Loading enquiries...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: STAFF DETAILS -->
         <div id="tab-staff" class="admin-tab-pane">
           <div class="panel-card">
             <h3>Add New Staff Member</h3>
@@ -710,7 +759,7 @@
           </div>
         </div>
 
-        <!-- TAB 3: DOCUMENTS -->
+        <!-- TAB 4: DOCUMENTS -->
         <div id="tab-docs" class="admin-tab-pane">
           <div class="panel-card">
             <h3>Upload Official Document / Circular</h3>
@@ -775,7 +824,7 @@
           </div>
         </div>
 
-        <!-- TAB 4: NOTICES -->
+        <!-- TAB 5: NOTICES -->
         <div id="tab-notices" class="admin-tab-pane">
           <div class="panel-card">
             <h3>Publish School Announcement</h3>
@@ -819,7 +868,7 @@
           </div>
         </div>
 
-        <!-- TAB 5: GALLERY -->
+        <!-- TAB 6: GALLERY -->
         <div id="tab-gallery" class="admin-tab-pane">
           <div class="panel-card">
             <h3>Add Photo to Gallery</h3>
