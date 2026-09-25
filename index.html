@@ -239,7 +239,7 @@
     }
     .dot.active { background: #f97316; width: 24px; border-radius: 6px; }
 
-    .content-container { max-width: 1200px; margin: 35px auto; padding: 0 20px; }
+    .content-container { max-width: 1250px; margin: 35px auto; padding: 0 20px; }
     .content-card {
       background: #ffffff;
       border-radius: 10px;
@@ -283,7 +283,7 @@
       font-size: 0.95rem;
     }
 
-    /* Staff Details Horizontal Row Styling (ALL CAPITAL) */
+    /* Staff Details Horizontal Row Styling (PHOTO RIGHT, SINGLE LINE, NATURAL PROPORTION) */
     .staff-category-block {
       margin-bottom: 45px;
     }
@@ -303,45 +303,38 @@
     .staff-row-list {
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 16px;
     }
     .staff-horizontal-card {
       background: #ffffff;
       border: 1px solid #e2e8f0;
       border-left: 5px solid #0b3c5d;
       border-radius: 8px;
-      padding: 14px 20px;
+      padding: 16px 20px;
       display: flex;
       align-items: center;
-      gap: 24px;
+      justify-content: space-between;
+      gap: 20px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-      transition: transform 0.2s, box-shadow 0.2s;
+      overflow-x: auto;
     }
     .staff-horizontal-card:hover {
-      transform: translateY(-2px);
       box-shadow: 0 6px 16px rgba(0,0,0,0.08);
     }
-    .staff-photo {
-      width: 75px;
-      height: 90px;
-      object-fit: cover;
-      border-radius: 6px;
-      border: 1px solid #cbd5e1;
-      background: #f1f5f9;
-      flex-shrink: 0;
-    }
-    .staff-info-row {
+    /* All text items in exact single line */
+    .staff-fields-row {
       display: flex;
-      flex-wrap: wrap;
       align-items: center;
-      width: 100%;
-      column-gap: 24px;
-      row-gap: 8px;
+      flex-wrap: nowrap;
+      gap: 28px;
+      flex: 1;
       text-transform: uppercase;
+      white-space: nowrap;
     }
     .staff-field {
       display: flex;
       flex-direction: column;
+      gap: 3px;
     }
     .staff-label {
       font-size: 0.68rem;
@@ -366,6 +359,26 @@
       border-radius: 4px;
       font-size: 0.8rem;
       font-weight: 700;
+    }
+    /* Photo on the Right with natural original proportions */
+    .staff-photo-wrapper {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      background: #f8fafc;
+    }
+    .staff-photo {
+      max-height: 90px;
+      max-width: 90px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: 4px;
+      display: block;
     }
 
     .lightbox {
@@ -398,14 +411,15 @@
     .footer-bottom { max-width: 1200px; margin: 25px auto 0; text-align: center; font-size: 0.88rem; }
     .footer-bottom a { color: #64748b; text-decoration: none; }
 
-    @media (max-width: 768px) {
+    @media (max-width: 900px) {
       .top-header { flex-direction: column; align-items: flex-start; }
       .header-right { align-items: flex-start; }
       .header-tagline { align-items: flex-start; }
       .navbar { justify-content: flex-start; }
       .slider-container { height: 260px; }
       .staff-horizontal-card { flex-direction: column; align-items: flex-start; gap: 14px; }
-      .staff-info-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .staff-fields-row { flex-direction: column; align-items: flex-start; gap: 10px; white-space: normal; }
+      .staff-photo-wrapper { align-self: flex-start; }
     }
   </style>
 
@@ -549,7 +563,7 @@
       if (hCont) hCont.innerHTML = html;
     };
 
-    // RENDER STAFF DETAILS (ALL CAPITAL LETTERS, 4 CATEGORIES, HORIZONTAL ROWS)
+    // RENDER STAFF DETAILS (PHOTO ON THE RIGHT, STRICT SINGLE LINE, NATURAL RATIO, ALL CAPS)
     window.renderStaff = function() {
       var categories = ['PRINCIPAL', 'PGT', 'TGT', 'NON-TEACHING'];
       var staffData = window.allStaff || [];
@@ -577,32 +591,34 @@
           var dojEmrs = String(s.doj_emrs || '-').toUpperCase();
 
           return '<div class="staff-horizontal-card">' +
-            '<img src="' + photoSrc + '" alt="' + name + '" class="staff-photo" />' +
-            '<div class="staff-info-row">' +
-              '<div class="staff-field" style="min-width: 180px;">' +
+            '<div class="staff-fields-row">' +
+              '<div class="staff-field">' +
                 '<span class="staff-label">NAME</span>' +
                 '<span class="staff-value highlight">' + window.escapeHtml(name) + '</span>' +
               '</div>' +
-              '<div class="staff-field" style="min-width: 140px;">' +
+              '<div class="staff-field">' +
                 '<span class="staff-label">EMPLOYEE ID</span>' +
                 '<span class="staff-value">' + window.escapeHtml(empId) + '</span>' +
               '</div>' +
-              '<div class="staff-field" style="min-width: 130px;">' +
+              '<div class="staff-field">' +
                 '<span class="staff-label">CATEGORY</span>' +
                 '<span><span class="staff-badge">' + cat + '</span></span>' +
               '</div>' +
-              '<div class="staff-field" style="min-width: 190px;">' +
+              '<div class="staff-field">' +
                 '<span class="staff-label">DESIGNATION</span>' +
                 '<span class="staff-value" style="color: #c2410c;">' + window.escapeHtml(desig) + '</span>' +
               '</div>' +
-              '<div class="staff-field" style="min-width: 150px;">' +
+              '<div class="staff-field">' +
                 '<span class="staff-label">DOJ IN NESTS</span>' +
                 '<span class="staff-value">' + window.escapeHtml(dojNests) + '</span>' +
               '</div>' +
-              '<div class="staff-field" style="min-width: 160px;">' +
+              '<div class="staff-field">' +
                 '<span class="staff-label">DOJ IN EMRS SUBDEGA</span>' +
                 '<span class="staff-value">' + window.escapeHtml(dojEmrs) + '</span>' +
               '</div>' +
+            '</div>' +
+            '<div class="staff-photo-wrapper">' +
+              '<img src="' + photoSrc + '" alt="' + name + '" class="staff-photo" />' +
             '</div>' +
           '</div>';
         }).join('');
@@ -632,7 +648,7 @@
     </div>
   </div>
 
-  <!-- Navbar: STAFF DETAIL is cleanly housed inside INFORMATION ▾ -->
+  <!-- Navbar -->
   <nav class="navbar">
     <div class="nav-links">
       <button type="button" class="nav-link-btn" onclick="window.goToTab('tab-home')">HOME</button>
@@ -743,7 +759,7 @@
     </div>
   </section>
 
-  <!-- 5. STAFF DETAIL VIEW (4 CATEGORIES, HORIZONTAL ROWS, CAPITAL LETTERS) -->
+  <!-- 5. STAFF DETAIL VIEW (PHOTO ON RIGHT, EXACT SINGLE LINE, ALL CAPS) -->
   <section id="tab-staff" class="tab-section" style="display: none;">
     <div class="content-container">
       <div class="content-card" style="border-top: 4px solid #0b3c5d;">
