@@ -28,6 +28,45 @@ function formatDateDMY(dateStr) {
   return dateStr;
 }
 
+// Helper: Convert YYYY-MM-DD into formal English words
+function convertDateToWords(dateStr) {
+  if (!dateStr) return '';
+  var parts = dateStr.split('-');
+  if (parts.length !== 3) return dateStr;
+  var y = parseInt(parts[0], 10);
+  var m = parseInt(parts[1], 10);
+  var d = parseInt(parts[2], 10);
+
+  var days = ["", "First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth", "Ninth", "Tenth",
+    "Eleventh", "Twelfth", "Thirteenth", "Fourteenth", "Fifteenth", "Sixteenth", "Seventeenth", "Eighteenth", "Nineteenth", "Twentieth",
+    "Twenty-First", "Twenty-Second", "Twenty-Third", "Twenty-Fourth", "Twenty-Fifth", "Twenty-Sixth", "Twenty-Seventh", "Twenty-Eighth", "Twenty-Ninth", "Thirtieth", "Thirty-First"];
+  var months = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  
+  var ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+  var tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+
+  function numToWords(n) {
+    if (n < 20) return ones[n];
+    if (n < 100) return tens[Math.floor(n / 10)] + (n % 10 !== 0 ? " " + ones[n % 10] : "");
+    if (n < 1000) return ones[Math.floor(n / 100)] + " Hundred" + (n % 100 !== 0 ? " " + numToWords(n % 100) : "");
+    if (n < 1000000) return numToWords(Math.floor(n / 1000)) + " Thousand" + (n % 1000 !== 0 ? " " + numToWords(n % 1000) : "");
+    return String(n);
+  }
+
+  var dayWord = (d >= 1 && d <= 31) ? days[d] : String(d);
+  var monthWord = (m >= 1 && m <= 12) ? months[m] : String(m);
+  var yearWord = numToWords(y);
+
+  return (dayWord + " " + monthWord + " " + yearWord).toUpperCase();
+}
+
+window.autoFillDobWords = function(dateStr) {
+  var target = document.getElementById("srDobWords");
+  if (target && dateStr) {
+    target.value = convertDateToWords(dateStr);
+  }
+};
+
 window.switchAdminTab = function(tabId, btn) {
   var panes = document.querySelectorAll(".admin-tab-pane");
   panes.forEach(function(p) { p.classList.remove("show"); });
@@ -71,7 +110,7 @@ function loadAllAdminData() {
   loadAdminStaff();
 }
 
-// ---------------- CORRECTION 4: DYNAMIC CUSTOM SUBJECT EDITOR ----------------
+// ---------------- DYNAMIC CUSTOM SUBJECT EDITOR ----------------
 var DEFAULT_SUBJECTS = ["English", "Hindi", "Mathematics", "Science", "Social Science"];
 
 window.addNewSubjectRow = function(name, max, marks) {
@@ -97,7 +136,7 @@ function initDefaultSubjects() {
   });
 }
 
-// ---------------- 1. STUDENT RESULTS CRUD & EDIT (CORRECTION 4 & 5) ----------------
+// ---------------- 1. STUDENT RESULTS CRUD & EDIT ----------------
 var studentResultForm = document.getElementById("studentResultForm");
 if (studentResultForm) {
   studentResultForm.addEventListener("submit", async function(e) {
@@ -106,7 +145,6 @@ if (studentResultForm) {
     status.style.color = "#0284c7";
     status.textContent = "Calculating and saving result...";
 
-    // Collect dynamic subjects
     var subRows = document.querySelectorAll("#dynamicSubjectsContainer .subject-row");
     if (subRows.length === 0) {
       status.style.color = "#dc2626";
@@ -139,11 +177,17 @@ if (studentResultForm) {
     var overallPercent = maxTotal > 0 ? (totalMarks / maxTotal) * 100 : 0;
     var overallGrade = overallPercent >= 90 ? 'A1' : (overallPercent >= 80 ? 'A2' : (overallPercent >= 70 ? 'B1' : (overallPercent >= 60 ? 'B2' : (overallPercent >= 50 ? 'C' : 'D'))));
 
+    var dobVal = document.getElementById("srDob").value;
+    var dobWords = document.getElementById("srDobWords").value.trim() || convertDateToWords(dobVal);
     var recordId = document.getElementById("editingRecordId").value.trim();
+
     var record = {
       roll_no: document.getElementById("srRoll").value.trim(),
       student_name: document.getElementById("srName").value.trim(),
-      dob: document.getElementById("srDob").value,
+      father_name: document.getElementById("srFatherName").value.trim(),
+      mother_name: document.getElementById("srMotherName").value.trim(),
+      dob: dobVal,
+      dob_in_words: dobWords,
       academic_session: document.getElementById("srSession").value,
       class_name: document.getElementById("srClass").value,
       section: document.getElementById("srSection").value.trim() || 'A',
@@ -157,10 +201,8 @@ if (studentResultForm) {
 
     var res;
     if (recordId) {
-      // UPDATE EXISTING RECORD (Correction 5)
       res = await client.from("student_results").update(record).eq("id", recordId);
     } else {
-      // INSERT NEW RECORD
       res = await client.from("student_results").insert([record]);
     }
 
@@ -176,7 +218,6 @@ if (studentResultForm) {
   });
 }
 
-// CORRECTION 5: EDIT BUTTON ACTION
 window.editStudentResult = async function(id) {
   var res = await client.from("student_results").select("*").eq("id", id).maybeSingle();
   if (res.error || !res.data) {
@@ -188,13 +229,15 @@ window.editStudentResult = async function(id) {
   document.getElementById("editingRecordId").value = d.id;
   document.getElementById("srRoll").value = d.roll_no;
   document.getElementById("srName").value = d.student_name;
+  document.getElementById("srFatherName").value = d.father_name || '';
+  document.getElementById("srMotherName").value = d.mother_name || '';
   document.getElementById("srDob").value = d.dob;
+  document.getElementById("srDobWords").value = d.dob_in_words || convertDateToWords(d.dob);
   document.getElementById("srSession").value = d.academic_session;
   document.getElementById("srClass").value = d.class_name;
   document.getElementById("srSection").value = d.section || 'A';
   document.getElementById("srStatus").value = d.result_status || 'PASSED';
 
-  // Populate dynamic subjects for this student
   var container = document.getElementById("dynamicSubjectsContainer");
   container.innerHTML = "";
   var subs = d.subjects || [];
@@ -206,7 +249,6 @@ window.editStudentResult = async function(id) {
     initDefaultSubjects();
   }
 
-  // Update UI into Editing Mode
   document.getElementById("formModeTitle").textContent = "✏️ Edit Student Result: " + d.student_name;
   document.getElementById("srSubmitBtn").textContent = "Update Result";
   document.getElementById("srCancelEditBtn").style.display = "inline-block";
@@ -233,6 +275,7 @@ async function loadAdminStudentResults() {
         return '<tr>' +
           '<td><strong>' + s.roll_no + '</strong></td>' +
           '<td>' + s.student_name + '</td>' +
+          '<td>' + (s.father_name || '-') + '</td>' +
           '<td>' + s.class_name + '</td>' +
           '<td>' + s.academic_session + '</td>' +
           '<td>' + s.total_marks + '/' + s.max_marks + '</td>' +
@@ -245,7 +288,7 @@ async function loadAdminStudentResults() {
         '</tr>';
       }).join("");
     } else {
-      tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #64748b;">No student results uploaded yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #64748b;">No student results uploaded yet.</td></tr>';
     }
   }
 }
@@ -256,7 +299,7 @@ window.deleteStudentResult = async function(id) {
   loadAdminStudentResults();
 };
 
-// ---------------- CORRECTION 3: EXCEL / CSV EXPORT & IMPORT ----------------
+// ---------------- EXCEL / CSV EXPORT & IMPORT ----------------
 window.exportClassResultsCSV = async function() {
   var targetClass = document.getElementById("bulkClassSelect").value;
   var targetSession = document.getElementById("bulkSessionSelect").value;
@@ -267,7 +310,7 @@ window.exportClassResultsCSV = async function() {
 
   var rows = res.data || [];
   var csvContent = "data:text/csv;charset=utf-8,";
-  csvContent += "roll_no,student_name,dob,academic_session,class_name,section,english,hindi,mathematics,science,social_science,result_status\n";
+  csvContent += "roll_no,student_name,father_name,mother_name,dob,academic_session,class_name,section,english,hindi,mathematics,science,social_science,result_status\n";
 
   if (rows.length > 0) {
     rows.forEach(function(r) {
@@ -282,6 +325,8 @@ window.exportClassResultsCSV = async function() {
       csvContent += [
         '"' + r.roll_no + '"',
         '"' + r.student_name + '"',
+        '"' + (r.father_name || '') + '"',
+        '"' + (r.mother_name || '') + '"',
         r.dob,
         r.academic_session,
         r.class_name,
@@ -291,8 +336,7 @@ window.exportClassResultsCSV = async function() {
       ].join(",") + "\n";
     });
   } else {
-    // Sample template row
-    csvContent += "01,Sample Student Name,2013-05-15," + targetSession + "," + targetClass + ",A,85,78,92,88,81,PASSED\n";
+    csvContent += "01,Sample Student Name,Father Name,Mother Name,2013-05-15," + targetSession + "," + targetClass + ",A,85,78,92,88,81,PASSED\n";
   }
 
   var encodedUri = encodeURI(csvContent);
@@ -328,22 +372,23 @@ window.importClassResultsCSV = function() {
     }
 
     var records = [];
-    // Start from index 1 to skip CSV header
     for (var i = 1; i < lines.length; i++) {
       var cols = lines[i].split(",").map(function(c) { return c.replace(/^["']|["']$/g, "").trim(); });
-      if (cols.length >= 5) {
+      if (cols.length >= 7) {
         var roll = cols[0];
         var name = cols[1];
-        var dob = cols[2];
-        var session = cols[3];
-        var cls = cols[4];
-        var sec = cols[5] || 'A';
-        var eng = parseFloat(cols[6]) || 0;
-        var hin = parseFloat(cols[7]) || 0;
-        var mat = parseFloat(cols[8]) || 0;
-        var sci = parseFloat(cols[9]) || 0;
-        var sst = parseFloat(cols[10]) || 0;
-        var stat = cols[11] || 'PASSED';
+        var father = cols[2] || '';
+        var mother = cols[3] || '';
+        var dob = cols[4];
+        var session = cols[5];
+        var cls = cols[6];
+        var sec = cols[7] || 'A';
+        var eng = parseFloat(cols[8]) || 0;
+        var hin = parseFloat(cols[9]) || 0;
+        var mat = parseFloat(cols[10]) || 0;
+        var sci = parseFloat(cols[11]) || 0;
+        var sst = parseFloat(cols[12]) || 0;
+        var stat = cols[13] || 'PASSED';
 
         var total = eng + hin + mat + sci + sst;
         var percent = Math.round((total / 500) * 1000) / 10;
@@ -352,7 +397,10 @@ window.importClassResultsCSV = function() {
         records.push({
           roll_no: roll,
           student_name: name,
+          father_name: father,
+          mother_name: mother,
           dob: dob,
+          dob_in_words: convertDateToWords(dob),
           academic_session: session,
           class_name: cls,
           section: sec,
