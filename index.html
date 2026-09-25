@@ -127,35 +127,15 @@
 
     /* Strict Full-Page A4 Print Configuration */
     @media print {
-      @page {
-        size: A4 portrait;
-        margin: 10mm 12mm;
-      }
-      html, body {
-        background: #ffffff !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-      }
+      @page { size: A4 portrait; margin: 10mm 12mm; }
+      html, body { background: #ffffff !important; margin: 0 !important; padding: 0 !important; width: 100% !important; height: 100% !important; }
       body * { visibility: hidden; }
       #studentMarksheetBlock, #studentMarksheetBlock * { visibility: visible; }
       #studentMarksheetBlock {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100% !important;
-        height: 98% !important;
-        max-width: 100% !important;
-        border: 4px double #0b3c5d !important;
-        padding: 35px 30px !important;
-        margin: 0 !important;
-        box-shadow: none !important;
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: space-between !important;
-        page-break-inside: avoid !important;
-        break-inside: avoid !important;
+        position: absolute; left: 0; top: 0; width: 100% !important; height: 98% !important; max-width: 100% !important;
+        border: 4px double #0b3c5d !important; padding: 35px 30px !important; margin: 0 !important;
+        box-shadow: none !important; display: flex !important; flex-direction: column !important; justify-content: space-between !important;
+        page-break-inside: avoid !important; break-inside: avoid !important;
       }
       .actions-row { display: none !important; }
       .marksheet-header h2 { font-size: 1.6rem !important; }
@@ -206,7 +186,6 @@
       return dateStr;
     };
 
-    // Helper: Convert YYYY-MM-DD into formal English words
     window.convertDateToWords = function(dateStr) {
       if (!dateStr) return '';
       var parts = dateStr.split('-');
@@ -219,7 +198,6 @@
         "Eleventh", "Twelfth", "Thirteenth", "Fourteenth", "Fifteenth", "Sixteenth", "Seventeenth", "Eighteenth", "Nineteenth", "Twentieth",
         "Twenty-First", "Twenty-Second", "Twenty-Third", "Twenty-Fourth", "Twenty-Fifth", "Twenty-Sixth", "Twenty-Seventh", "Twenty-Eighth", "Twenty-Ninth", "Thirtieth", "Thirty-First"];
       var months = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-      
       var ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
       var tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
 
@@ -271,6 +249,7 @@
 
     window.addEventListener('popstate', window.applyHashRoute);
 
+    // Render Documents List
     window.renderDocuments = function() {
       var list = document.getElementById('documentList');
       var title = document.getElementById('docHeading');
@@ -282,14 +261,14 @@
 
       if (targetCat !== 'all') {
         if (title) title.textContent = window.currentDocCategory;
-        if (sub) sub.textContent = 'Official records and circulars filed under ' + window.currentDocCategory;
+        if (sub) sub.textContent = 'Official records filed under ' + window.currentDocCategory;
         matches = matches.filter(function(d) {
           var docCat = String(d.category || '').trim().toLowerCase();
           return docCat === targetCat || docCat.includes(targetCat) || targetCat.includes(docCat);
         });
       } else {
         if (title) title.textContent = 'All Official Documents';
-        if (sub) sub.textContent = 'Complete archive of uploaded documents and circulars';
+        if (sub) sub.textContent = 'Complete archive of uploaded documents';
       }
 
       if (!matches || matches.length === 0) {
@@ -325,6 +304,7 @@
       window.renderDocuments();
     };
 
+    // Render Public Photo Gallery
     window.renderGallery = function() {
       var grid = document.getElementById("publicGalleryGrid");
       if (!grid) return;
@@ -339,11 +319,12 @@
       }).join("");
     };
 
+    // Render Notice Board Only (No "Circulars" text)
     window.renderNotices = function() {
       var nCont = document.getElementById("noticeList");
       var hCont = document.getElementById("homeNoticeList");
       if (!window.allNotices || window.allNotices.length === 0) {
-        var empty = '<p style="color: #64748b; font-style: italic;">No current circulars posted.</p>';
+        var empty = '<p style="color: #64748b; font-style: italic;">No current notices posted.</p>';
         if (nCont) nCont.innerHTML = empty;
         if (hCont) hCont.innerHTML = empty;
         return;
@@ -417,7 +398,7 @@
       }
     };
 
-    // SEARCH STUDENT RESULT & MARKSHEET (FULL A4 + FATHER/MOTHER/DOB IN WORDS)
+    // SEARCH STUDENT RESULT & MARKSHEET
     window.currentStudentResult = null;
     window.searchStudentResult = async function(e) {
       if (e) e.preventDefault();
@@ -588,7 +569,7 @@
     </div>
   </nav>
 
-  <!-- 1. HOME VIEW -->
+  <!-- 1. HOME VIEW (Notice Board Only - Circulars Removed) -->
   <section id="tab-home" class="tab-section" style="display: block;">
     <div class="slider-container" id="homeSlider">
       <div class="slide active">
@@ -617,15 +598,15 @@
 
     <div class="content-container">
       <div class="content-card" style="border-top: 4px solid #0b3c5d;">
-        <h2 style="color: #0b3c5d; font-size: 1.5rem; margin-bottom: 14px;">Latest Circulars & Announcements</h2>
+        <h2 style="color: #0b3c5d; font-size: 1.5rem; margin-bottom: 14px;">Notice Board</h2>
         <div id="homeNoticeList" style="display: flex; flex-direction: column; gap: 10px;">
-          <p style="color: #64748b;">Loading recent notices...</p>
+          <p style="color: #64748b;">Loading notices...</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 2. STUDENT RESULTS VIEW (FULL A4 FORMAT + DETAILS) -->
+  <!-- 2. STUDENT RESULTS VIEW -->
   <section id="tab-results" class="tab-section" style="display: none;">
     <div class="content-container">
       
@@ -669,10 +650,9 @@
         </form>
       </div>
 
-      <!-- Full-Page A4 Marksheet Output Block -->
+      <!-- Marksheet Output Block -->
       <div id="studentMarksheetBlock" class="marksheet-container">
         
-        <!-- Header -->
         <div class="marksheet-header">
           <h2>EKLAVYA MODEL RESIDENTIAL SCHOOL, SUBDEGA</h2>
           <p>AT/PO: SUBDEGA, DIST: SUNDARGARH, ODISHA - 770014</p>
@@ -680,7 +660,6 @@
           <h3 style="margin-top: 10px; color: #f97316; font-size: 1.2rem; letter-spacing: 1px; font-weight: 800;">ANNUAL PROGRESS & MARKS STATEMENT</h3>
         </div>
 
-        <!-- Student Meta Details Grid -->
         <div class="student-meta-grid">
           <div class="meta-item"><span class="lbl">Student Name</span><span class="val" id="msStudentName">-</span></div>
           <div class="meta-item"><span class="lbl">Roll Number</span><span class="val" id="msRollNo">-</span></div>
@@ -694,7 +673,6 @@
           <div class="meta-item" style="grid-column: span 2;"><span class="lbl">DOB In Words</span><span class="val" id="msDobWords">-</span></div>
         </div>
 
-        <!-- Academic Marks Table -->
         <table class="marks-table">
           <thead>
             <tr>
@@ -707,7 +685,6 @@
           <tbody id="msSubjectsBody"></tbody>
         </table>
 
-        <!-- Result Summary Box -->
         <div class="result-summary-box">
           <div>
             <div style="font-size: 0.82rem; color: #475569; font-weight: 700;">TOTAL MARKS</div>
@@ -729,14 +706,12 @@
 
         <p id="msPromotionNotice" style="margin-top: 14px; padding: 10px 14px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; color: #166534; font-size: 0.95rem; display: none;"></p>
 
-        <!-- Official Signatures Block (Positioned at bottom in print) -->
         <div class="signature-block" style="display: flex; justify-content: space-between; margin-top: 50px; padding: 0 30px; font-size: 0.92rem; font-weight: 700; color: #334155;">
           <div style="text-align: center; border-top: 1px solid #94a3b8; padding-top: 6px; width: 180px;">Class Teacher Signature</div>
           <div style="text-align: center; border-top: 1px solid #94a3b8; padding-top: 6px; width: 180px;">Exam In-Charge</div>
           <div style="text-align: center; border-top: 1px solid #94a3b8; padding-top: 6px; width: 180px;">Principal Signature</div>
         </div>
 
-        <!-- Action Buttons (Hidden on paper print) -->
         <div class="actions-row">
           <button type="button" onclick="window.printMarksheet()" class="btn-action-res">🖨️ Print Full A4 Marksheet</button>
           <button type="button" onclick="window.downloadCertificate()" class="btn-action-res" style="background:#0284c7;">📄 Download Certificate</button>
@@ -747,20 +722,20 @@
     </div>
   </section>
 
-  <!-- 3. DOCUMENTS VIEW -->
+  <!-- 3. DOCUMENTS VIEW (Notice Board Title) -->
   <section id="tab-documents" class="tab-section" style="display: none;">
     <div class="content-container">
       <div class="content-card" style="border-top: 4px solid #0284c7; padding: 25px 30px;">
         <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; margin-bottom: 8px;">
-          <h2 id="docHeading" style="color: #0b3c5d; font-size: 1.8rem;">General Circulars</h2>
+          <h2 id="docHeading" style="color: #0b3c5d; font-size: 1.8rem;">Official Documents</h2>
           <button type="button" onclick="window.openDocCategory('ALL')" style="background: none; border: 1px solid #0284c7; color: #0284c7; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">View All Documents</button>
         </div>
-        <p id="docSub" style="color: #64748b; font-size: 0.95rem; margin-bottom: 22px;">Official records and circulars</p>
+        <p id="docSub" style="color: #64748b; font-size: 0.95rem; margin-bottom: 22px;">Official institutional records</p>
         <div style="overflow-x: auto;">
           <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.92rem;">
             <thead>
               <tr style="background: #7a8fa6; color: #ffffff;">
-                <th style="padding: 12px 14px; width: 14%; border: 1px solid #cbd5e1; text-align: center;">Circular No.</th>
+                <th style="padding: 12px 14px; width: 14%; border: 1px solid #cbd5e1; text-align: center;">Document No.</th>
                 <th style="padding: 12px 14px; width: 14%; border: 1px solid #cbd5e1; text-align: center;">Date</th>
                 <th style="padding: 12px 16px; width: 58%; border: 1px solid #cbd5e1;">Subject</th>
                 <th style="padding: 12px 14px; width: 14%; border: 1px solid #cbd5e1; text-align: center;">Download</th>
@@ -773,11 +748,11 @@
     </div>
   </section>
 
-  <!-- 4. NOTICES VIEW -->
+  <!-- 4. NOTICES VIEW (Notice Board Only) -->
   <section id="tab-notices" class="tab-section" style="display: none;">
     <div class="content-container">
       <div class="content-card" style="border-top: 4px solid #0b3c5d;">
-        <h2 style="color: #0b3c5d; font-size: 1.8rem; margin-bottom: 6px;">Notice Board & Circulars</h2>
+        <h2 style="color: #0b3c5d; font-size: 1.8rem; margin-bottom: 6px;">Notice Board</h2>
         <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 20px;">All academic announcements, admissions, and schedules</p>
         <div id="noticeList" style="display: flex; flex-direction: column; gap: 14px;"></div>
       </div>
