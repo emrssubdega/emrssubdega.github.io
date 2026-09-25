@@ -71,13 +71,11 @@
     .btn-submit { background: #0b3c5d; color: #ffffff; border: none; padding: 11px 24px; font-size: 0.95rem; font-weight: 600; border-radius: 6px; cursor: pointer; }
     .btn-submit:hover { background: #072a42; }
 
-    /* Action Buttons in Archive */
     .btn-edit { background: #0284c7; color: #ffffff; border: none; padding: 5px 11px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; margin-right: 6px; font-weight: 600; }
     .btn-edit:hover { background: #0369a1; }
     .btn-delete { background: #ef4444; color: #ffffff; border: none; padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; }
     .btn-delete:hover { background: #dc2626; }
 
-    /* Dynamic Subject Rows */
     .subject-row { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
     .subject-row input { flex: 2; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 0.9rem; }
     .subject-row input.mark-input { flex: 1; text-align: center; }
@@ -199,7 +197,7 @@
               <span style="font-size:0.8rem; background:#bae6fd; color:#0369a1; padding:3px 8px; border-radius:4px;">Classwise Bulk Upload</span>
             </h3>
             <p style="color: #475569; font-size: 0.9rem; margin-bottom: 16px;">
-              Export class results to Excel/CSV, fill in student marks in bulk, and import them directly back into the database.
+              Export class results to Excel/CSV, fill in student marks and parent names in bulk, and import them directly back into the database.
             </p>
 
             <div style="display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end;">
@@ -279,7 +277,7 @@
             <p id="promoStatusMsg" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
           </div>
 
-          <!-- ADD & EDIT STUDENT RESULT FORM (Roll Number input has NO placeholder) -->
+          <!-- ADD & EDIT STUDENT RESULT FORM -->
           <div class="panel-card" id="studentFormPanel">
             <h3 id="formModeTitle">Add Student Marksheet</h3>
             <form id="studentResultForm">
@@ -288,7 +286,14 @@
               <div class="form-grid-3">
                 <div class="form-field"><label>Roll Number *</label><input type="text" id="srRoll" required /></div>
                 <div class="form-field"><label>Student Name *</label><input type="text" id="srName" placeholder="Full Name" required /></div>
-                <div class="form-field"><label>Date of Birth *</label><input type="date" id="srDob" required /></div>
+                <div class="form-field"><label>Date of Birth *</label><input type="date" id="srDob" onchange="autoFillDobWords(this.value)" required /></div>
+              </div>
+
+              <!-- Father's Name, Mother's Name & DOB in Words -->
+              <div class="form-grid-3">
+                <div class="form-field"><label>Father's Name</label><input type="text" id="srFatherName" placeholder="Father's Full Name" /></div>
+                <div class="form-field"><label>Mother's Name</label><input type="text" id="srMotherName" placeholder="Mother's Full Name" /></div>
+                <div class="form-field"><label>DOB in Words</label><input type="text" id="srDobWords" placeholder="Auto-generated or custom" /></div>
               </div>
 
               <div class="form-grid-3">
@@ -351,6 +356,7 @@
                   <tr>
                     <th>Roll No</th>
                     <th>Name</th>
+                    <th>Father Name</th>
                     <th>Class</th>
                     <th>Session</th>
                     <th>Total</th>
@@ -360,7 +366,7 @@
                   </tr>
                 </thead>
                 <tbody id="studentResultsTableBody">
-                  <tr><td colspan="8" style="text-align: center; color: #64748b;">Loading results...</td></tr>
+                  <tr><td colspan="9" style="text-align: center; color: #64748b;">Loading results...</td></tr>
                 </tbody>
               </table>
             </div>
