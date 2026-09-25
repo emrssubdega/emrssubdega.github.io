@@ -94,7 +94,7 @@
     .dot { width: 11px; height: 11px; background: rgba(255, 255, 255, 0.5); border-radius: 50%; cursor: pointer; }
     .dot.active { background: #f97316; width: 24px; border-radius: 6px; }
 
-    /* Results Search Card (Class Included - Point 2) */
+    /* Results Search Card */
     .results-search-card {
       background: #ffffff; border-radius: 12px; padding: 32px; border-top: 5px solid #0b3c5d; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); margin-bottom: 30px;
     }
@@ -106,7 +106,7 @@
     .btn-search-res { background: #0b3c5d; color: #ffffff; border: none; padding: 11px 26px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.95rem; margin-top: 20px; }
     .btn-search-res:hover { background: #072a42; }
 
-    /* Printable Single Page Marksheet (Point 1) */
+    /* Printable Single Page Marksheet */
     .marksheet-container {
       background: #ffffff; border: 2px solid #0b3c5d; border-radius: 8px; padding: 25px 25px; margin-top: 25px; display: none; box-shadow: 0 4px 16px rgba(0,0,0,0.06); max-width: 900px; margin-left: auto; margin-right: auto;
     }
@@ -341,7 +341,7 @@
       }
     };
 
-    // SEARCH STUDENT RESULT & MARKSHEET (CLASS FILTER INCLUDED - Point 2)
+    // SEARCH STUDENT RESULT & MARKSHEET
     window.currentStudentResult = null;
     window.searchStudentResult = async function(e) {
       if (e) e.preventDefault();
@@ -356,7 +356,6 @@
       status.textContent = 'Searching student records...';
       outCard.style.display = 'none';
 
-      // Queries strictly with Class + Roll + Session + DOB (Prevents collision across classes)
       var query = window.client.from('student_results').select('*')
         .eq('roll_no', roll)
         .eq('class_name', selectedClass)
@@ -476,14 +475,13 @@
     </div>
   </div>
 
-  <!-- Navbar -->
+  <!-- Navbar (Single RESULTS link retained, removed from INFORMATION dropdown) -->
   <nav class="navbar">
     <div class="nav-links">
       <button type="button" class="nav-link-btn" onclick="window.goToTab('tab-home')">HOME</button>
       <div class="dropdown">
         <button type="button" class="nav-link-btn dropdown-btn">INFORMATION ▾</button>
         <div class="dropdown-content">
-          <button type="button" onclick="window.goToTab('tab-results')">Student Results & Marksheet</button>
           <button type="button" onclick="window.openDocCategory('Mandatory Disclosure')">Mandatory Disclosure</button>
           <button type="button" onclick="window.openDocCategory('General Notice')">General Notice</button>
           <button type="button" onclick="window.openDocCategory('Exam Notice')">Exam Notice</button>
@@ -504,7 +502,7 @@
     </div>
   </nav>
 
-  <!-- 1. HOME VIEW -->
+  <!-- 1. HOME VIEW (Middle Banner completely removed) -->
   <section id="tab-home" class="tab-section" style="display: block;">
     <div class="slider-container" id="homeSlider">
       <div class="slide active">
@@ -531,17 +529,6 @@
       </div>
     </div>
 
-    <!-- Quick Results Banner -->
-    <div class="content-container">
-      <div class="content-card" style="border-left: 6px solid #0284c7; background: #f0f9ff; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
-        <div>
-          <h3 style="color:#0b3c5d; margin-bottom:4px;">🎓 Annual Student Examination Results</h3>
-          <p style="color:#475569; font-size:0.95rem; margin:0;">Download official digital marksheets and passing certificates.</p>
-        </div>
-        <button type="button" onclick="window.goToTab('tab-results')" class="btn-action-res" style="background:#0b3c5d; padding:10px 22px;">Check Result ↗</button>
-      </div>
-    </div>
-
     <div class="content-container">
       <div class="content-card" style="border-top: 4px solid #0b3c5d;">
         <h2 style="color: #0b3c5d; font-size: 1.5rem; margin-bottom: 14px;">Latest Circulars & Announcements</h2>
@@ -552,7 +539,7 @@
     </div>
   </section>
 
-  <!-- 2. STUDENT RESULTS VIEW (CORRECTION 2: CLASS FILTER INCLUDED) -->
+  <!-- 2. STUDENT RESULTS VIEW -->
   <section id="tab-results" class="tab-section" style="display: none;">
     <div class="content-container">
       
@@ -596,7 +583,7 @@
         </form>
       </div>
 
-      <!-- Marksheet Output Block (CORRECTION 1: STRICT SINGLE PAGE PRINT) -->
+      <!-- Marksheet Output Block -->
       <div id="studentMarksheetBlock" class="marksheet-container">
         
         <div class="marksheet-header">
@@ -646,7 +633,6 @@
 
         <p id="msPromotionNotice" style="margin-top: 12px; padding: 8px 12px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 4px; color: #166534; font-size: 0.85rem; display: none;"></p>
 
-        <!-- Signature Space for Single Page Print -->
         <div style="display: flex; justify-content: space-between; margin-top: 35px; padding: 0 20px; font-size: 0.85rem; font-weight: 700; color: #334155;">
           <div>Class Teacher Signature</div>
           <div>Exam In-Charge</div>
