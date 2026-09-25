@@ -6,46 +6,13 @@ if (window.supabase && window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
 
 // 40 Official Designations
 var DESIGNATIONS = [
-  "PRINCIPAL",
-  "PGT ENGLISH",
-  "PGT HINDI",
-  "PGT MATHS",
-  "PGT CHEMISTRY",
-  "PGT PHYSICS",
-  "PGT BIOLOGY",
-  "PGT HISTORY",
-  "PGT GEOGRAPHY",
-  "PGT COMMERCE",
-  "PGT ECONOMICS",
-  "PGT COMPUTE SCIENCE",
-  "PGT ODIA",
-  "TGT HINDI",
-  "TGT ENGLISH",
-  "TGT MATHS",
-  "TGT ODIA",
-  "TGT SOCIAL SCIENCE",
-  "TGT SCIENCE",
-  "TGT MUSIC",
-  "TGT ART",
-  "PET FEMALE",
-  "PET MALE",
-  "LIBRARIAN",
-  "ACCOUNTANT",
-  "COUNSELLOR",
-  "HOSTEL WARDEN FEMALE",
-  "HOSTEL WARDEN MALE",
-  "STAFF NURSE",
-  "CATERING ASSISTANT",
-  "SENIOR SECRETARIAT ASSISTANT",
-  "JUNIOR SECRETARIAT ASSISTANT",
-  "COOK",
-  "ELECTRICIAN-cum-PLUMBER",
-  "DRIVER",
-  "LAB ATTENDANT",
-  "MESS HELPER",
-  "SWEEPER",
-  "CHOWKIDAR",
-  "GARDENER"
+  "PRINCIPAL", "PGT ENGLISH", "PGT HINDI", "PGT MATHS", "PGT CHEMISTRY", "PGT PHYSICS", "PGT BIOLOGY",
+  "PGT HISTORY", "PGT GEOGRAPHY", "PGT COMMERCE", "PGT ECONOMICS", "PGT COMPUTE SCIENCE", "PGT ODIA",
+  "TGT HINDI", "TGT ENGLISH", "TGT MATHS", "TGT ODIA", "TGT SOCIAL SCIENCE", "TGT SCIENCE", "TGT MUSIC",
+  "TGT ART", "PET FEMALE", "PET MALE", "LIBRARIAN", "ACCOUNTANT", "COUNSELLOR", "HOSTEL WARDEN FEMALE",
+  "HOSTEL WARDEN MALE", "STAFF NURSE", "CATERING ASSISTANT", "SENIOR SECRETARIAT ASSISTANT",
+  "JUNIOR SECRETARIAT ASSISTANT", "COOK", "ELECTRICIAN-cum-PLUMBER", "DRIVER", "LAB ATTENDANT",
+  "MESS HELPER", "SWEEPER", "CHOWKIDAR", "GARDENER"
 ];
 
 function populateDesignations() {
@@ -56,17 +23,13 @@ function populateDesignations() {
   }).join("");
 }
 
-// Helper: Format YYYY-MM-DD to DD-MM-YYYY
 function formatDateDMY(dateStr) {
   if (!dateStr || dateStr === '-') return '-';
   var parts = dateStr.split('-');
-  if (parts.length === 3) {
-    return parts[2] + '-' + parts[1] + '-' + parts[0];
-  }
+  if (parts.length === 3) return parts[2] + '-' + parts[1] + '-' + parts[0];
   return dateStr;
 }
 
-// Left Sidebar Tab Switcher
 window.switchAdminTab = function(tabId, btn) {
   var panes = document.querySelectorAll(".admin-tab-pane");
   panes.forEach(function(p) { p.classList.remove("show"); });
@@ -79,16 +42,11 @@ window.switchAdminTab = function(tabId, btn) {
   if (btn) btn.classList.add("active");
 
   var heading = document.getElementById("pageTitleHeading");
-  if (heading && btn) {
-    heading.textContent = btn.textContent.trim().replace(/^[^a-zA-Z0-9]+/, '');
-  }
+  if (heading && btn) heading.textContent = btn.textContent.trim().replace(/^[^a-zA-Z0-9]+/, '');
 
-  if (tabId === 'tab-enquiries') {
-    loadAdminEnquiries();
-  }
+  if (tabId === 'tab-results-admin') loadAdminStudentResults();
 };
 
-// Check Session
 async function checkSession() {
   if (!client) return;
   var sessionRes = await client.auth.getSession();
@@ -111,61 +69,12 @@ async function checkSession() {
 
 function loadAllAdminData() {
   loadInstitutionDetails();
-  loadAdminEnquiries();
+  loadAdminStudentResults();
   loadAdminStaff();
-  loadAdminDocs();
-  loadAdminNotices();
-  loadAdminGallery();
 }
 
 document.addEventListener("DOMContentLoaded", function() {
   populateDesignations();
-
-  var showForgotBtn = document.getElementById("showForgotBtn");
-  var backToLoginBtn = document.getElementById("backToLoginBtn");
-  var loginSection = document.getElementById("loginSection");
-  var forgotSection = document.getElementById("forgotSection");
-  var sendResetBtn = document.getElementById("sendResetBtn");
-  var resetMsg = document.getElementById("resetMsg");
-
-  if (showForgotBtn) {
-    showForgotBtn.addEventListener("click", function() {
-      loginSection.style.display = "none";
-      forgotSection.style.display = "block";
-    });
-  }
-
-  if (backToLoginBtn) {
-    backToLoginBtn.addEventListener("click", function() {
-      forgotSection.style.display = "none";
-      loginSection.style.display = "block";
-    });
-  }
-
-  if (sendResetBtn) {
-    sendResetBtn.addEventListener("click", async function() {
-      var email = document.getElementById("resetEmail").value.trim();
-      if (!email) {
-        resetMsg.style.color = "#dc2626";
-        resetMsg.textContent = "Please enter your email.";
-        return;
-      }
-      resetMsg.style.color = "#0284c7";
-      resetMsg.textContent = "Sending reset link...";
-
-      var res = await client.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + "/admin/"
-      });
-
-      if (res.error) {
-        resetMsg.style.color = "#dc2626";
-        resetMsg.textContent = "Error: " + res.error.message;
-      } else {
-        resetMsg.style.color = "#16a34a";
-        resetMsg.textContent = "Password reset email sent! Check your inbox.";
-      }
-    });
-  }
 
   var loginBtn = document.getElementById("loginBtn");
   if (loginBtn) {
@@ -176,12 +85,8 @@ document.addEventListener("DOMContentLoaded", function() {
       msg.textContent = "Signing in...";
 
       var res = await client.auth.signInWithPassword({ email: email, password: password });
-      if (res.error) {
-        msg.textContent = "Login failed: " + res.error.message;
-      } else {
-        msg.textContent = "";
-        checkSession();
-      }
+      if (res.error) msg.textContent = "Login failed: " + res.error.message;
+      else { msg.textContent = ""; checkSession(); }
     });
   }
 
@@ -196,51 +101,32 @@ document.addEventListener("DOMContentLoaded", function() {
   checkSession();
 });
 
-// ---------------- 0. INSTITUTION DETAILS CRUD ----------------
+// ---------------- 0. INSTITUTION DETAILS ----------------
 var institutionForm = document.getElementById("institutionForm");
 if (institutionForm) {
   institutionForm.addEventListener("submit", async function(e) {
     e.preventDefault();
     var status = document.getElementById("instStatus");
     status.style.color = "#0284c7";
-    status.textContent = "Saving details...";
-
-    var name = document.getElementById("instName").value.trim();
-    var loc = document.getElementById("instLocation").value.trim();
-    var gov = document.getElementById("instGovBody").value.trim();
-    var curr = document.getElementById("instCurriculum").value.trim();
-    var email = document.getElementById("instEmail").value.trim();
-    var phone = document.getElementById("instOfficePhone").value.trim();
-    var cbseAff = document.getElementById("instCbseAff").value.trim();
-    var schCode = document.getElementById("instSchoolCode").value.trim();
-    var udise = document.getElementById("instUdise").value.trim();
-    var session = document.getElementById("instSession").value.trim();
-    var principal = document.getElementById("instPrincipal").value.trim();
+    status.textContent = "Saving...";
 
     var res = await client.from("institution_details").upsert([{
       id: "primary",
-      institution_name: name,
-      location: loc,
-      governing_body: gov,
-      curriculum: curr,
-      official_email: email,
-      office_phone: phone,
-      cbse_affiliation_no: cbseAff,
-      school_code: schCode,
-      udise_code: udise,
-      academic_session: session,
-      principal_name: principal,
+      institution_name: document.getElementById("instName").value.trim(),
+      location: document.getElementById("instLocation").value.trim(),
+      governing_body: document.getElementById("instGovBody").value.trim(),
+      curriculum: document.getElementById("instCurriculum").value.trim(),
+      official_email: document.getElementById("instEmail").value.trim(),
+      office_phone: document.getElementById("instOfficePhone").value.trim(),
+      cbse_affiliation_no: document.getElementById("instCbseAff").value.trim(),
+      school_code: document.getElementById("instSchoolCode").value.trim(),
+      udise_code: document.getElementById("instUdise").value.trim(),
+      academic_session: document.getElementById("instSession").value.trim(),
       updated_at: new Date().toISOString()
     }]);
 
-    if (res.error) {
-      status.style.color = "#dc2626";
-      status.textContent = "Error: " + res.error.message;
-    } else {
-      status.style.color = "#16a34a";
-      status.textContent = "Institutional details updated successfully!";
-      loadInstitutionDetails();
-    }
+    if (res.error) { status.style.color = "#dc2626"; status.textContent = res.error.message; }
+    else { status.style.color = "#16a34a"; status.textContent = "Saved successfully!"; loadInstitutionDetails(); }
   });
 }
 
@@ -249,19 +135,12 @@ async function loadInstitutionDetails() {
   var res = await client.from("institution_details").select("*").eq("id", "primary").maybeSingle();
   if (res.data) {
     var d = res.data;
-
     function setDashVal(elId, val) {
       var el = document.getElementById(elId);
       if (!el) return;
-      if (val && String(val).trim()) {
-        el.textContent = val;
-        el.classList.remove("empty");
-      } else {
-        el.textContent = "(Not set - hidden on live site)";
-        el.classList.add("empty");
-      }
+      if (val && String(val).trim()) { el.textContent = val; el.classList.remove("empty"); }
+      else { el.textContent = "-"; el.classList.add("empty"); }
     }
-
     setDashVal("viewInstName", d.institution_name);
     setDashVal("viewInstLoc", d.location);
     setDashVal("viewInstGov", d.governing_body);
@@ -269,9 +148,6 @@ async function loadInstitutionDetails() {
     setDashVal("viewInstEmail", d.official_email);
     setDashVal("viewInstCbseAff", d.cbse_affiliation_no);
     setDashVal("viewInstSchCode", d.school_code);
-    setDashVal("viewInstUdise", d.udise_code);
-    setDashVal("viewInstPhone", d.office_phone);
-    setDashVal("viewInstPrincipal", d.principal_name);
     setDashVal("viewInstSession", d.academic_session);
 
     if (document.getElementById("instName")) document.getElementById("instName").value = d.institution_name || "";
@@ -284,51 +160,150 @@ async function loadInstitutionDetails() {
     if (document.getElementById("instSchoolCode")) document.getElementById("instSchoolCode").value = d.school_code || "";
     if (document.getElementById("instUdise")) document.getElementById("instUdise").value = d.udise_code || "";
     if (document.getElementById("instSession")) document.getElementById("instSession").value = d.academic_session || "";
-    if (document.getElementById("instPrincipal")) document.getElementById("instPrincipal").value = d.principal_name || "";
   }
 }
 
-// ---------------- 1. ENQUIRIES CRUD (OPTION 2) ----------------
-async function loadAdminEnquiries() {
-  var tbody = document.getElementById("enquiryTableBody");
-  var badge = document.getElementById("enquiryCountBadge");
+// ---------------- 1. STUDENT RESULTS & OPTION A PROMOTION ----------------
+var studentResultForm = document.getElementById("studentResultForm");
+if (studentResultForm) {
+  studentResultForm.addEventListener("submit", async function(e) {
+    e.preventDefault();
+    var status = document.getElementById("srStatusMsg");
+    status.style.color = "#0284c7";
+    status.textContent = "Calculating and saving result...";
+
+    var eng = parseFloat(document.getElementById("subEnglish").value) || 0;
+    var hin = parseFloat(document.getElementById("subHindi").value) || 0;
+    var mat = parseFloat(document.getElementById("subMaths").value) || 0;
+    var sci = parseFloat(document.getElementById("subScience").value) || 0;
+    var sst = parseFloat(document.getElementById("subSst").value) || 0;
+
+    var total = eng + hin + mat + sci + sst;
+    var percent = (total / 500) * 100;
+    var grade = percent >= 90 ? 'A1' : (percent >= 80 ? 'A2' : (percent >= 70 ? 'B1' : (percent >= 60 ? 'B2' : (percent >= 50 ? 'C' : 'D'))));
+
+    var subjectsArr = [
+      { name: "English", max: 100, marks: eng, grade: eng >= 80 ? 'A' : 'B' },
+      { name: "Hindi", max: 100, marks: hin, grade: hin >= 80 ? 'A' : 'B' },
+      { name: "Mathematics", max: 100, marks: mat, grade: mat >= 80 ? 'A' : 'B' },
+      { name: "Science", max: 100, marks: sci, grade: sci >= 80 ? 'A' : 'B' },
+      { name: "Social Science", max: 100, marks: sst, grade: sst >= 80 ? 'A' : 'B' }
+    ];
+
+    var record = {
+      roll_no: document.getElementById("srRoll").value.trim(),
+      student_name: document.getElementById("srName").value.trim(),
+      dob: document.getElementById("srDob").value,
+      academic_session: document.getElementById("srSession").value,
+      class_name: document.getElementById("srClass").value,
+      section: document.getElementById("srSection").value.trim() || 'A',
+      subjects: subjectsArr,
+      total_marks: total,
+      max_marks: 500,
+      percentage: Math.round(percent * 10) / 10,
+      grade: grade,
+      result_status: document.getElementById("srStatus").value
+    };
+
+    var res = await client.from("student_results").insert([record]);
+    if (res.error) {
+      status.style.color = "#dc2626";
+      status.textContent = "Error saving result: " + res.error.message;
+    } else {
+      status.style.color = "#16a34a";
+      status.textContent = "Student result recorded successfully!";
+      studentResultForm.reset();
+      loadAdminStudentResults();
+    }
+  });
+}
+
+async function loadAdminStudentResults() {
+  var tbody = document.getElementById("studentResultsTableBody");
   if (!tbody || !client) return;
 
-  var res = await client.from("enquiries").select("*").order("created_at", { ascending: false });
+  var res = await client.from("student_results").select("*").order("created_at", { ascending: false });
   if (res.data) {
-    if (badge) {
-      if (res.data.length > 0) {
-        badge.textContent = res.data.length;
-        badge.style.display = "inline-block";
-      } else {
-        badge.style.display = "none";
-      }
-    }
-
     if (res.data.length > 0) {
-      tbody.innerHTML = res.data.map(function(enq) {
-        var rawDate = enq.created_at ? enq.created_at.split('T')[0] : '-';
-        var dmyDate = formatDateDMY(rawDate);
+      tbody.innerHTML = res.data.map(function(s) {
         return '<tr>' +
-          '<td>' + dmyDate + '</td>' +
-          '<td><strong>' + (enq.name || '') + '</strong></td>' +
-          '<td><a href="tel:' + (enq.phone || '') + '" style="color:#0284c7; text-decoration:none; font-weight:600;">' + (enq.phone || '') + '</a></td>' +
-          '<td>' + (enq.email ? '<a href="mailto:' + enq.email + '" style="color:#0284c7;">' + enq.email + '</a>' : '-') + '</td>' +
-          '<td><span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-weight:700; font-size:0.8rem;">' + (enq.enquiry_type || 'General') + '</span></td>' +
-          '<td style="text-align:left; max-width:280px; word-break:break-word;">' + (enq.message || '') + '</td>' +
-          '<td><button type="button" class="btn-delete" onclick="deleteEnquiry(\'' + enq.id + '\')">Delete</button></td>' +
+          '<td><strong>' + s.roll_no + '</strong></td>' +
+          '<td>' + s.student_name + '</td>' +
+          '<td>' + s.class_name + '</td>' +
+          '<td>' + s.academic_session + '</td>' +
+          '<td>' + s.total_marks + '/' + s.max_marks + '</td>' +
+          '<td>' + s.percentage + '%</td>' +
+          '<td><span style="color:' + (s.result_status === 'PASSED' ? '#16a34a' : '#dc2626') + '; font-weight:700;">' + s.result_status + '</span></td>' +
+          '<td>' + (s.promoted_to_class ? (s.promoted_to_class + ' (' + s.promoted_session + ')') : '-') + '</td>' +
+          '<td><button type="button" class="btn-delete" onclick="deleteStudentResult(\'' + s.id + '\')">Delete</button></td>' +
         '</tr>';
       }).join("");
     } else {
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #64748b;">No enquiries submitted yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #64748b;">No student results uploaded yet.</td></tr>';
     }
   }
 }
 
-window.deleteEnquiry = async function(id) {
-  if (!confirm("Are you sure you want to delete this enquiry?")) return;
-  await client.from("enquiries").delete().eq("id", id);
-  loadAdminEnquiries();
+window.deleteStudentResult = async function(id) {
+  if (!confirm("Are you sure you want to delete this result entry?")) return;
+  await client.from("student_results").delete().eq("id", id);
+  loadAdminStudentResults();
+};
+
+// OPTION A: BATCH PROMOTION LOGIC
+window.executeBatchPromotion = async function() {
+  var fromSession = document.getElementById("promoFromSession").value;
+  var fromClass = document.getElementById("promoFromClass").value;
+  var toClass = document.getElementById("promoToClass").value;
+  var toSession = document.getElementById("promoToSession").value.trim();
+  var msg = document.getElementById("promoStatusMsg");
+
+  if (!toSession) {
+    alert("Please enter the Target New Session (e.g. 2026-2027).");
+    return;
+  }
+
+  var confirmMsg = "Are you sure you want to promote all PASSED students from " + fromClass + " (" + fromSession + ") to " + toClass + " (" + toSession + ")?\n\nExisting records in other classes will remain untouched.";
+  if (!confirm(confirmMsg)) return;
+
+  msg.style.color = "#0284c7";
+  msg.textContent = "Processing batch promotion...";
+
+  // 1. Fetch all passed students in source batch
+  var fetchRes = await client.from("student_results").select("*")
+    .eq("academic_session", fromSession)
+    .eq("class_name", fromClass)
+    .eq("result_status", "PASSED");
+
+  if (fetchRes.error) {
+    msg.style.color = "#dc2626";
+    msg.textContent = "Error fetching batch: " + fetchRes.error.message;
+    return;
+  }
+
+  var students = fetchRes.data || [];
+  if (students.length === 0) {
+    msg.style.color = "#dc2626";
+    msg.textContent = "No passed students found in " + fromClass + " (" + fromSession + ").";
+    return;
+  }
+
+  // 2. Tag promotion on original records so marksheets show promotion
+  var updateRes = await client.from("student_results")
+    .update({ promoted_to_class: toClass, promoted_session: toSession })
+    .eq("academic_session", fromSession)
+    .eq("class_name", fromClass)
+    .eq("result_status", "PASSED");
+
+  if (updateRes.error) {
+    msg.style.color = "#dc2626";
+    msg.textContent = "Could not update promotion tag: " + updateRes.error.message;
+    return;
+  }
+
+  msg.style.color = "#16a34a";
+  msg.textContent = "Success! " + students.length + " students from " + fromClass + " have been promoted to " + toClass + " for Session " + toSession + ".";
+  loadAdminStudentResults();
 };
 
 // ---------------- 2. STAFF CRUD ----------------
@@ -338,7 +313,7 @@ if (staffForm) {
     e.preventDefault();
     var status = document.getElementById("staffStatus");
     status.style.color = "#0284c7";
-    status.textContent = "Validating and saving staff record...";
+    status.textContent = "Saving staff...";
 
     var name = document.getElementById("staffName").value.trim().toUpperCase();
     var empId = document.getElementById("staffEmpId").value.trim().toUpperCase();
@@ -348,43 +323,28 @@ if (staffForm) {
     var dojEmrs = document.getElementById("staffDojEmrs").value || null;
     var photoFile = document.getElementById("staffPhoto").files[0];
 
-    if (!photoFile) {
-      status.style.color = "#dc2626";
-      status.textContent = "Please select a photo.";
-      return;
-    }
-
+    if (!photoFile) return;
     if (photoFile.size > 51200) {
       status.style.color = "#dc2626";
-      status.textContent = "File too large (" + Math.round(photoFile.size / 1024) + " KB). Photo must be under 50 KB!";
+      status.textContent = "Photo must be under 50 KB!";
       return;
     }
 
     try {
       var fileExt = photoFile.name.split('.').pop();
-      var filePath = "staff_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7) + "." + fileExt;
-
-      var upRes = await client.storage.from("staff-photos").upload(filePath, photoFile, {
-        cacheControl: "3600",
-        upsert: true
-      });
+      var filePath = "staff_" + Date.now() + "." + fileExt;
+      var upRes = await client.storage.from("staff-photos").upload(filePath, photoFile, { upsert: true });
       if (upRes.error) throw upRes.error;
 
       var pub = client.storage.from("staff-photos").getPublicUrl(filePath);
-
       var ins = await client.from("staff").insert([{
-        name: name,
-        employee_id: empId,
-        category: category,
-        designation: designation,
-        doj_nests: dojNests,
-        doj_emrs: dojEmrs,
-        photo_url: pub.data.publicUrl
+        name: name, employee_id: empId, category: category, designation: designation,
+        doj_nests: dojNests, doj_emrs: dojEmrs, photo_url: pub.data.publicUrl
       }]);
       if (ins.error) throw ins.error;
 
       status.style.color = "#16a34a";
-      status.textContent = "Staff member successfully added!";
+      status.textContent = "Staff saved!";
       staffForm.reset();
       loadAdminStaff();
     } catch(err) {
@@ -396,222 +356,21 @@ if (staffForm) {
 
 async function loadAdminStaff() {
   var tbody = document.getElementById("staffTableBody");
-  if (!tbody) return;
-
+  if (!tbody || !client) return;
   var res = await client.from("staff").select("*").order("created_at", { ascending: false });
   if (res.data) {
-    if (res.data.length > 0) {
-      tbody.innerHTML = res.data.map(function(s) {
-        return '<tr>' +
-          '<td><img src="' + (s.photo_url || '') + '" style="max-height:55px; max-width:55px; width:auto; height:auto; object-fit:contain; border-radius:4px; border:1px solid #cbd5e1;" /></td>' +
-          '<td><strong>' + (s.name || '') + '</strong></td>' +
-          '<td>' + (s.employee_id || '') + '</td>' +
-          '<td><span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-weight:700; font-size:0.8rem;">' + (s.category || '') + '</span></td>' +
-          '<td>' + (s.designation || '') + '</td>' +
-          '<td>' + formatDateDMY(s.doj_nests) + '</td>' +
-          '<td>' + formatDateDMY(s.doj_emrs) + '</td>' +
-          '<td><button type="button" class="btn-delete" onclick="deleteStaff(\'' + s.id + '\')">Delete</button></td>' +
-        '</tr>';
-      }).join("");
-    } else {
-      tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #64748b;">No staff records yet.</td></tr>';
-    }
+    tbody.innerHTML = res.data.map(function(s) {
+      return '<tr>' +
+        '<td><img src="' + (s.photo_url || '') + '" style="max-height:50px; max-width:50px;" /></td>' +
+        '<td>' + s.name + '</td><td>' + s.employee_id + '</td><td>' + s.category + '</td><td>' + s.designation + '</td>' +
+        '<td><button type="button" class="btn-delete" onclick="deleteStaff(\'' + s.id + '\')">Delete</button></td>' +
+      '</tr>';
+    }).join("");
   }
 }
 
 window.deleteStaff = async function(id) {
-  if (!confirm("Are you sure you want to delete this staff member?")) return;
+  if (!confirm("Delete staff member?")) return;
   await client.from("staff").delete().eq("id", id);
   loadAdminStaff();
-};
-
-// ---------------- 3. DOCUMENTS CRUD ----------------
-var docForm = document.getElementById("docForm");
-if (docForm) {
-  docForm.addEventListener("submit", async function(e) {
-    e.preventDefault();
-    var status = document.getElementById("docStatus");
-    status.style.color = "#0284c7";
-    status.textContent = "Uploading document...";
-
-    var circNo = document.getElementById("docCircularNo").value.trim();
-    var docDate = document.getElementById("docDate").value || null;
-    var category = document.getElementById("docCategory").value;
-    var title = document.getElementById("docTitle").value.trim();
-    var file = document.getElementById("docFile").files[0];
-
-    if (!file) return;
-
-    try {
-      var filePath = "docs_" + Date.now() + "_" + file.name.replace(/[^a-zA-Z0-9.]/g, "_");
-      var upRes = await client.storage.from("documents").upload(filePath, file);
-      if (upRes.error) throw upRes.error;
-
-      var pub = client.storage.from("documents").getPublicUrl(filePath);
-      var ins = await client.from("documents").insert([{
-        circular_no: circNo,
-        doc_date: docDate,
-        category: category,
-        title: title,
-        file_url: pub.data.publicUrl
-      }]);
-      if (ins.error) throw ins.error;
-
-      status.style.color = "#16a34a";
-      status.textContent = "Document uploaded successfully!";
-      docForm.reset();
-      loadAdminDocs();
-    } catch(err) {
-      status.style.color = "#dc2626";
-      status.textContent = "Error: " + err.message;
-    }
-  });
-}
-
-async function loadAdminDocs() {
-  var tbody = document.getElementById("docTableBody");
-  if (!tbody) return;
-
-  var res = await client.from("documents").select("*").order("created_at", { ascending: false });
-  if (res.data) {
-    if (res.data.length > 0) {
-      tbody.innerHTML = res.data.map(function(d) {
-        return '<tr>' +
-          '<td>' + (d.circular_no || '-') + '</td>' +
-          '<td>' + formatDateDMY(d.doc_date) + '</td>' +
-          '<td>' + (d.category || '-') + '</td>' +
-          '<td>' + (d.title || '-') + '</td>' +
-          '<td><a href="' + d.file_url + '" target="_blank" style="color:#0284c7; font-weight:600;">Download</a></td>' +
-          '<td><button type="button" class="btn-delete" onclick="deleteDoc(\'' + d.id + '\')">Delete</button></td>' +
-        '</tr>';
-      }).join("");
-    } else {
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #64748b;">No documents uploaded.</td></tr>';
-    }
-  }
-}
-
-window.deleteDoc = async function(id) {
-  if (!confirm("Delete this document?")) return;
-  await client.from("documents").delete().eq("id", id);
-  loadAdminDocs();
-};
-
-// ---------------- 4. NOTICES CRUD ----------------
-var noticeForm = document.getElementById("noticeForm");
-if (noticeForm) {
-  noticeForm.addEventListener("submit", async function(e) {
-    e.preventDefault();
-    var status = document.getElementById("noticeStatus");
-    status.style.color = "#0284c7";
-    status.textContent = "Publishing notice...";
-
-    var title = document.getElementById("noticeTitle").value.trim();
-    var date = document.getElementById("noticeDate").value;
-    var body = document.getElementById("noticeBody").value.trim();
-
-    var ins = await client.from("notices").insert([{ title: title, notice_date: date, body: body }]);
-    if (ins.error) {
-      status.style.color = "#dc2626";
-      status.textContent = "Error: " + ins.error.message;
-    } else {
-      status.style.color = "#16a34a";
-      status.textContent = "Notice published successfully!";
-      noticeForm.reset();
-      loadAdminNotices();
-    }
-  });
-}
-
-async function loadAdminNotices() {
-  var tbody = document.getElementById("noticeTableBody");
-  if (!tbody) return;
-
-  var res = await client.from("notices").select("*").order("notice_date", { ascending: false });
-  if (res.data) {
-    if (res.data.length > 0) {
-      tbody.innerHTML = res.data.map(function(n) {
-        return '<tr>' +
-          '<td>' + formatDateDMY(n.notice_date) + '</td>' +
-          '<td><strong>' + (n.title || '') + '</strong></td>' +
-          '<td>' + (n.body || '') + '</td>' +
-          '<td><button type="button" class="btn-delete" onclick="deleteNotice(\'' + n.id + '\')">Delete</button></td>' +
-        '</tr>';
-      }).join("");
-    } else {
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748b;">No notices posted.</td></tr>';
-    }
-  }
-}
-
-window.deleteNotice = async function(id) {
-  if (!confirm("Delete this notice?")) return;
-  await client.from("notices").delete().eq("id", id);
-  loadAdminNotices();
-};
-
-// ---------------- 5. GALLERY CRUD ----------------
-var galleryForm = document.getElementById("galleryForm");
-if (galleryForm) {
-  galleryForm.addEventListener("submit", async function(e) {
-    e.preventDefault();
-    var status = document.getElementById("photoStatus");
-    status.style.color = "#0284c7";
-    status.textContent = "Uploading image...";
-
-    var title = document.getElementById("photoTitle").value.trim();
-    var file = document.getElementById("photoFile").files[0];
-    var isSlider = document.getElementById("photoIsSlider").checked;
-
-    if (!file) return;
-
-    try {
-      var filePath = "gallery_" + Date.now() + "_" + file.name.replace(/[^a-zA-Z0-9.]/g, "_");
-      var upRes = await client.storage.from("gallery").upload(filePath, file);
-      if (upRes.error) throw upRes.error;
-
-      var pub = client.storage.from("gallery").getPublicUrl(filePath);
-      var ins = await client.from("gallery").insert([{
-        title: title,
-        image_url: pub.data.publicUrl,
-        is_slider: isSlider
-      }]);
-      if (ins.error) throw ins.error;
-
-      status.style.color = "#16a34a";
-      status.textContent = "Photo uploaded successfully!";
-      galleryForm.reset();
-      loadAdminGallery();
-    } catch(err) {
-      status.style.color = "#dc2626";
-      status.textContent = "Error: " + err.message;
-    }
-  });
-}
-
-async function loadAdminGallery() {
-  var tbody = document.getElementById("galleryTableBody");
-  if (!tbody) return;
-
-  var res = await client.from("gallery").select("*").order("created_at", { ascending: false });
-  if (res.data) {
-    if (res.data.length > 0) {
-      tbody.innerHTML = res.data.map(function(g) {
-        return '<tr>' +
-          '<td><img src="' + g.image_url + '" style="width:60px; height:45px; object-fit:cover; border-radius:4px;" /></td>' +
-          '<td>' + (g.title || '-') + '</td>' +
-          '<td>' + (g.is_slider ? 'Yes' : 'No') + '</td>' +
-          '<td><button type="button" class="btn-delete" onclick="deleteGallery(\'' + g.id + '\')">Delete</button></td>' +
-        '</tr>';
-      }).join("");
-    } else {
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748b;">No photos uploaded.</td></tr>';
-    }
-  }
-}
-
-window.deleteGallery = async function(id) {
-  if (!confirm("Delete this photo?")) return;
-  await client.from("gallery").delete().eq("id", id);
-  loadAdminGallery();
 };
