@@ -4,7 +4,7 @@ if (window.supabase && window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
   client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
 }
 
-// 40 Designations list
+// 40 Official Designations
 var DESIGNATIONS = [
   "PRINCIPAL",
   "PGT ENGLISH",
@@ -56,20 +56,34 @@ function populateDesignations() {
   }).join("");
 }
 
-// Tab Switcher function
+// Left Sidebar Tab Switcher
 window.switchAdminTab = function(tabId, btn) {
   var panes = document.querySelectorAll(".admin-tab-pane");
   panes.forEach(function(p) { p.classList.remove("show"); });
 
-  var btns = document.querySelectorAll(".tab-nav-btn");
+  var btns = document.querySelectorAll(".sidebar-btn");
   btns.forEach(function(b) { b.classList.remove("active"); });
 
   var activePane = document.getElementById(tabId);
   if (activePane) activePane.classList.add("show");
   if (btn) btn.classList.add("active");
+
+  var heading = document.getElementById("pageTitleHeading");
+  if (heading && btn) {
+    heading.textContent = btn.textContent.trim().replace(/^[^a-zA-Z0-9]+/, '');
+  }
 };
 
-// Check Session & Auth
+window.jumpToTab = function(tabId) {
+  var btns = document.querySelectorAll(".sidebar-btn");
+  btns.forEach(function(b) {
+    if (b.getAttribute("onclick") && b.getAttribute("onclick").includes(tabId)) {
+      b.click();
+    }
+  });
+};
+
+// Check Session
 async function checkSession() {
   if (!client) return;
   var sessionRes = await client.auth.getSession();
@@ -77,17 +91,16 @@ async function checkSession() {
 
   var loginView = document.getElementById("loginView");
   var dashboardView = document.getElementById("dashboardView");
-  var logoutBtn = document.getElementById("logoutBtn");
+  var userBadge = document.getElementById("adminUserBadge");
 
   if (session) {
     if (loginView) loginView.style.display = "none";
-    if (dashboardView) dashboardView.style.display = "block";
-    if (logoutBtn) logoutBtn.style.display = "inline-block";
+    if (dashboardView) dashboardView.style.display = "flex";
+    if (userBadge) userBadge.textContent = session.user.email;
     loadAllAdminData();
   } else {
-    if (loginView) loginView.style.display = "block";
+    if (loginView) loginView.style.display = "flex";
     if (dashboardView) dashboardView.style.display = "none";
-    if (logoutBtn) logoutBtn.style.display = "none";
   }
 }
 
@@ -179,7 +192,7 @@ document.addEventListener("DOMContentLoaded", function() {
   checkSession();
 });
 
-// ---------------- 1. STAFF CRUD (50 KB Validation + UPPERCASE) ----------------
+// ---------------- 1. STAFF CRUD ----------------
 var staffForm = document.getElementById("staffForm");
 if (staffForm) {
   staffForm.addEventListener("submit", async function(e) {
@@ -198,7 +211,7 @@ if (staffForm) {
 
     if (!photoFile) {
       status.style.color = "#dc2626";
-      status.textContent = "Please select a staff photo.";
+      status.textContent = "Please select a photo.";
       return;
     }
 
@@ -244,23 +257,28 @@ if (staffForm) {
 
 async function loadAdminStaff() {
   var tbody = document.getElementById("staffTableBody");
+  var countEl = document.getElementById("dashCountStaff");
   if (!tbody) return;
+
   var res = await client.from("staff").select("*").order("created_at", { ascending: false });
-  if (res.data && res.data.length > 0) {
-    tbody.innerHTML = res.data.map(function(s) {
-      return '<tr>' +
-        '<td><img src="' + (s.photo_url || '') + '" style="width:40px; height:50px; object-fit:cover; border-radius:4px; border:1px solid #cbd5e1;" /></td>' +
-        '<td><strong>' + (s.name || '') + '</strong></td>' +
-        '<td>' + (s.employee_id || '') + '</td>' +
-        '<td><span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-weight:700; font-size:0.8rem;">' + (s.category || '') + '</span></td>' +
-        '<td>' + (s.designation || '') + '</td>' +
-        '<td>' + (s.doj_nests || '-') + '</td>' +
-        '<td>' + (s.doj_emrs || '-') + '</td>' +
-        '<td><button type="button" class="btn-delete" onclick="deleteStaff(\'' + s.id + '\')">Delete</button></td>' +
-      '</tr>';
-    }).join("");
-  } else {
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #64748b;">No staff records yet.</td></tr>';
+  if (res.data) {
+    if (countEl) countEl.textContent = res.data.length;
+    if (res.data.length > 0) {
+      tbody.innerHTML = res.data.map(function(s) {
+        return '<tr>' +
+          '<td><img src="' + (s.photo_url || '') + '" style="max-height:55px; max-width:55px; width:auto; height:auto; object-fit:contain; border-radius:4px; border:1px solid #cbd5e1;" /></td>' +
+          '<td><strong>' + (s.name || '') + '</strong></td>' +
+          '<td>' + (s.employee_id || '') + '</td>' +
+          '<td><span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-weight:700; font-size:0.8rem;">' + (s.category || '') + '</span></td>' +
+          '<td>' + (s.designation || '') + '</td>' +
+          '<td>' + (s.doj_nests || '-') + '</td>' +
+          '<td>' + (s.doj_emrs || '-') + '</td>' +
+          '<td><button type="button" class="btn-delete" onclick="deleteStaff(\'' + s.id + '\')">Delete</button></td>' +
+        '</tr>';
+      }).join("");
+    } else {
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #64748b;">No staff records yet.</td></tr>';
+    }
   }
 }
 
@@ -315,21 +333,26 @@ if (docForm) {
 
 async function loadAdminDocs() {
   var tbody = document.getElementById("docTableBody");
+  var countEl = document.getElementById("dashCountDocs");
   if (!tbody) return;
+
   var res = await client.from("documents").select("*").order("created_at", { ascending: false });
-  if (res.data && res.data.length > 0) {
-    tbody.innerHTML = res.data.map(function(d) {
-      return '<tr>' +
-        '<td>' + (d.circular_no || '-') + '</td>' +
-        '<td>' + (d.doc_date || '-') + '</td>' +
-        '<td>' + (d.category || '-') + '</td>' +
-        '<td>' + (d.title || '-') + '</td>' +
-        '<td><a href="' + d.file_url + '" target="_blank" style="color:#0284c7; font-weight:600;">Download</a></td>' +
-        '<td><button type="button" class="btn-delete" onclick="deleteDoc(\'' + d.id + '\')">Delete</button></td>' +
-      '</tr>';
-    }).join("");
-  } else {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #64748b;">No documents uploaded.</td></tr>';
+  if (res.data) {
+    if (countEl) countEl.textContent = res.data.length;
+    if (res.data.length > 0) {
+      tbody.innerHTML = res.data.map(function(d) {
+        return '<tr>' +
+          '<td>' + (d.circular_no || '-') + '</td>' +
+          '<td>' + (d.doc_date || '-') + '</td>' +
+          '<td>' + (d.category || '-') + '</td>' +
+          '<td>' + (d.title || '-') + '</td>' +
+          '<td><a href="' + d.file_url + '" target="_blank" style="color:#0284c7; font-weight:600;">Download</a></td>' +
+          '<td><button type="button" class="btn-delete" onclick="deleteDoc(\'' + d.id + '\')">Delete</button></td>' +
+        '</tr>';
+      }).join("");
+    } else {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #64748b;">No documents uploaded.</td></tr>';
+    }
   }
 }
 
@@ -367,19 +390,24 @@ if (noticeForm) {
 
 async function loadAdminNotices() {
   var tbody = document.getElementById("noticeTableBody");
+  var countEl = document.getElementById("dashCountNotices");
   if (!tbody) return;
+
   var res = await client.from("notices").select("*").order("notice_date", { ascending: false });
-  if (res.data && res.data.length > 0) {
-    tbody.innerHTML = res.data.map(function(n) {
-      return '<tr>' +
-        '<td>' + (n.notice_date || '-') + '</td>' +
-        '<td><strong>' + (n.title || '') + '</strong></td>' +
-        '<td>' + (n.body || '') + '</td>' +
-        '<td><button type="button" class="btn-delete" onclick="deleteNotice(\'' + n.id + '\')">Delete</button></td>' +
-      '</tr>';
-    }).join("");
-  } else {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748b;">No notices posted.</td></tr>';
+  if (res.data) {
+    if (countEl) countEl.textContent = res.data.length;
+    if (res.data.length > 0) {
+      tbody.innerHTML = res.data.map(function(n) {
+        return '<tr>' +
+          '<td>' + (n.notice_date || '-') + '</td>' +
+          '<td><strong>' + (n.title || '') + '</strong></td>' +
+          '<td>' + (n.body || '') + '</td>' +
+          '<td><button type="button" class="btn-delete" onclick="deleteNotice(\'' + n.id + '\')">Delete</button></td>' +
+        '</tr>';
+      }).join("");
+    } else {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748b;">No notices posted.</td></tr>';
+    }
   }
 }
 
@@ -430,19 +458,24 @@ if (galleryForm) {
 
 async function loadAdminGallery() {
   var tbody = document.getElementById("galleryTableBody");
+  var countEl = document.getElementById("dashCountGallery");
   if (!tbody) return;
+
   var res = await client.from("gallery").select("*").order("created_at", { ascending: false });
-  if (res.data && res.data.length > 0) {
-    tbody.innerHTML = res.data.map(function(g) {
-      return '<tr>' +
-        '<td><img src="' + g.image_url + '" style="width:60px; height:45px; object-fit:cover; border-radius:4px;" /></td>' +
-        '<td>' + (g.title || '-') + '</td>' +
-        '<td>' + (g.is_slider ? 'Yes' : 'No') + '</td>' +
-        '<td><button type="button" class="btn-delete" onclick="deleteGallery(\'' + g.id + '\')">Delete</button></td>' +
-      '</tr>';
-    }).join("");
-  } else {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748b;">No photos uploaded.</td></tr>';
+  if (res.data) {
+    if (countEl) countEl.textContent = res.data.length;
+    if (res.data.length > 0) {
+      tbody.innerHTML = res.data.map(function(g) {
+        return '<tr>' +
+          '<td><img src="' + g.image_url + '" style="width:60px; height:45px; object-fit:cover; border-radius:4px;" /></td>' +
+          '<td>' + (g.title || '-') + '</td>' +
+          '<td>' + (g.is_slider ? 'Yes' : 'No') + '</td>' +
+          '<td><button type="button" class="btn-delete" onclick="deleteGallery(\'' + g.id + '\')">Delete</button></td>' +
+        '</tr>';
+      }).join("");
+    } else {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748b;">No photos uploaded.</td></tr>';
+    }
   }
 }
 
