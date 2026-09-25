@@ -222,21 +222,41 @@
       justify-content: space-between;
     }
 
-    /* Welcome Hero Banner */
+    /* ========================================================
+       CENTERED ELEGANT WELCOME HERO BANNER
+       ======================================================== */
     .welcome-hero-card {
       background: linear-gradient(135deg, #0b3c5d 0%, #072a42 100%);
       color: #ffffff;
       border-radius: 12px;
-      padding: 36px 32px;
+      padding: 40px 30px;
       margin-bottom: 28px;
       position: relative;
       overflow: hidden;
-      border-left: 6px solid #f97316;
+      border-top: 4px solid #f97316;
       box-shadow: 0 8px 24px rgba(11, 60, 93, 0.18);
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
       align-items: center;
-      gap: 25px;
+      text-align: center;
+      gap: 10px;
+    }
+    .hero-welcome-small {
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: #93c5fd;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin: 0;
+    }
+    .hero-school-title {
+      font-size: 1.9rem;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      color: #ffffff;
+      text-transform: uppercase;
+      line-height: 1.3;
+      margin: 0;
     }
     .hero-badge-pill {
       display: inline-flex;
@@ -244,51 +264,21 @@
       gap: 6px;
       background: rgba(255, 255, 255, 0.12);
       color: #fed7aa;
-      padding: 4px 12px;
+      padding: 6px 16px;
       border-radius: 20px;
-      font-size: 0.78rem;
+      font-size: 0.82rem;
       font-weight: 700;
       letter-spacing: 0.8px;
       text-transform: uppercase;
-      margin-bottom: 10px;
-      border: 1px solid rgba(254, 215, 170, 0.3);
-    }
-    .hero-title {
-      font-size: 2rem;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      color: #ffffff;
-      margin-bottom: 6px;
-      line-height: 1.2;
+      margin-top: 6px;
+      border: 1px solid rgba(254, 215, 170, 0.35);
     }
     .hero-sub {
       font-size: 0.95rem;
       color: #cbd5e1;
       max-width: 650px;
       line-height: 1.5;
-    }
-    .hero-right-details {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      text-align: right;
-      gap: 6px;
-      flex-shrink: 0;
-    }
-    .hero-live-badge {
-      font-size: 0.92rem;
-      font-weight: 700;
-      color: #f8fafc;
-      background: rgba(0, 0, 0, 0.25);
-      padding: 6px 14px;
-      border-radius: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .hero-motto {
-      font-size: 0.78rem;
-      color: #94a3b8;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
+      margin-top: 6px;
     }
 
     /* Institutional Details Display */
@@ -413,8 +403,7 @@
       .sidebar-btn { width: auto; padding: 10px 14px; }
       .top-navbar { flex-direction: column; align-items: flex-start; gap: 10px; }
       .navbar-right-actions { width: 100%; justify-content: space-between; }
-      .welcome-hero-card { flex-direction: column; align-items: flex-start; }
-      .hero-right-details { align-items: flex-start; }
+      .hero-school-title { font-size: 1.4rem; }
       .profile-info-item { flex-direction: column; align-items: flex-start; gap: 4px; }
     }
   </style>
@@ -511,20 +500,15 @@
 
       <div class="workspace-content">
 
-        <!-- TAB 0: DASHBOARD OVERVIEW (CLEAN & BEAUTIFUL) -->
+        <!-- TAB 0: DASHBOARD OVERVIEW (CENTERED HERO BANNER) -->
         <div id="tab-dashboard" class="admin-tab-pane show">
           
-          <!-- Welcome Hero Banner -->
+          <!-- Redesigned Centered Welcome Hero Banner -->
           <div class="welcome-hero-card">
-            <div>
-              <div class="hero-badge-pill">🏛️ NESTS • Ministry of Tribal Affairs</div>
-              <h1 class="hero-title">Welcome to EMRS Subdega</h1>
-              <p class="hero-sub">Official Content Management System. Manage staff faculty directory, circulars, student announcements, and school gallery.</p>
-            </div>
-            <div class="hero-right-details">
-              <div class="hero-live-badge">EMRS Subdega, Sundargarh</div>
-              <div class="hero-motto">Tribal Transformation Through Education</div>
-            </div>
+            <h2 class="hero-welcome-small">Welcome to</h2>
+            <h1 class="hero-school-title">EKLAVYA MODEL RESIDENTIAL SCHOOL, SUBDEGA</h1>
+            <div class="hero-badge-pill">🏛️ NESTS • MINISTRY OF TRIBAL AFFAIRS</div>
+            <p class="hero-sub">Official Content Management System. Manage staff faculty directory, circulars, student announcements, and school gallery.</p>
           </div>
 
           <!-- Campus & Institutional Details View -->
@@ -561,7 +545,7 @@
 
         </div>
 
-        <!-- TAB 1: EDIT CAMPUS & INSTITUTION DETAILS (NEW DEDICATED TAB) -->
+        <!-- TAB 1: EDIT CAMPUS & INSTITUTION DETAILS -->
         <div id="tab-institution" class="admin-tab-pane">
           <div class="panel-card">
             <h3>Edit Campus & Institution Details</h3>
