@@ -93,7 +93,7 @@
       font-weight: 700;
     }
 
-    /* Navbar (CONTACT US REMOVED) */
+    /* Navbar */
     .navbar {
       position: sticky;
       top: 0;
@@ -417,6 +417,71 @@
       display: block;
     }
 
+    /* Public Enquiry Form Styling (Option 2) */
+    .enquiry-form-card {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 30px;
+      border-top: 4px solid #f97316;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    }
+    .enquiry-form-card h2 {
+      color: #0b3c5d;
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+    .enquiry-form-card p.form-desc {
+      color: #64748b;
+      font-size: 0.95rem;
+      margin-bottom: 22px;
+    }
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .form-field label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .form-field input, .form-field select, .form-field textarea {
+      padding: 10px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      outline: none;
+      font-family: inherit;
+    }
+    .form-field input:focus, .form-field select:focus, .form-field textarea:focus {
+      border-color: #0b3c5d;
+      box-shadow: 0 0 0 2px rgba(11, 60, 93, 0.1);
+    }
+    .btn-submit-enquiry {
+      background: #0b3c5d;
+      color: #ffffff;
+      border: none;
+      padding: 12px 28px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s ease;
+    }
+    .btn-submit-enquiry:hover {
+      background: #072a42;
+    }
+
     .lightbox {
       display: none;
       position: fixed;
@@ -704,7 +769,7 @@
       });
     };
 
-    // RENDER DYNAMIC INSTITUTION DETAILS DIRECTLY LINKED TO DATABASE
+    // RENDER DYNAMIC INSTITUTION DETAILS
     window.renderInstitutionDetails = function(data) {
       if (!data) return;
       var name = data.institution_name || 'EMRS Subdega';
@@ -716,7 +781,6 @@
       var phone = (data.office_phone || '').trim();
       var session = (data.academic_session || '').trim();
 
-      // Home Badges Strip (Only filled items shown)
       var strip = document.getElementById('instBadgeStrip');
       if (strip) {
         var badges = [];
@@ -733,7 +797,6 @@
         }
       }
 
-      // Footer Dynamic Details (Directly linked to Campus Details database table)
       var fName = document.getElementById('footerSchoolName');
       var fAddr = document.getElementById('footerAddress');
       var fEmail = document.getElementById('footerEmail');
@@ -793,7 +856,7 @@
     </div>
   </div>
 
-  <!-- Navbar (Cleanly configured without Contact Us link) -->
+  <!-- Navbar -->
   <nav class="navbar">
     <div class="nav-links">
       <button type="button" class="nav-link-btn" onclick="window.goToTab('tab-home')">HOME</button>
@@ -845,6 +908,51 @@
         </p>
         
         <div id="instBadgeStrip" class="inst-badge-strip" style="display: none;"></div>
+      </div>
+    </div>
+
+    <!-- Option 2: Public Admission & General Enquiry Form -->
+    <div class="content-container">
+      <div class="enquiry-form-card">
+        <h2>Admission & General Enquiry</h2>
+        <p class="form-desc">Have a question regarding admissions, academic curriculum, or hostel facilities? Submit your enquiry below and our office will get in touch with you.</p>
+        
+        <form id="publicEnquiryForm">
+          <div class="form-grid-2">
+            <div class="form-field">
+              <label>Applicant / Guardian Name *</label>
+              <input type="text" id="enqName" placeholder="Full Name" required />
+            </div>
+            <div class="form-field">
+              <label>Contact Phone Number *</label>
+              <input type="tel" id="enqPhone" placeholder="10-digit mobile number" required pattern="[0-9]{10}" />
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-field">
+              <label>Email Address (Optional)</label>
+              <input type="email" id="enqEmail" placeholder="name@example.com" />
+            </div>
+            <div class="form-field">
+              <label>Enquiry Type *</label>
+              <select id="enqType" required>
+                <option value="Admission Enquiry">Admission Enquiry (Class VI)</option>
+                <option value="Hostel & Facilities">Hostel & Residential Facilities</option>
+                <option value="Academic Curriculum">Academic & CBSE Curriculum</option>
+                <option value="General Query">General Query</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label>Message / Question *</label>
+            <textarea id="enqMessage" rows="4" placeholder="Please write your query details here..." required></textarea>
+          </div>
+
+          <button type="submit" id="enqSubmitBtn" class="btn-submit-enquiry">Submit Enquiry</button>
+          <p id="enqStatusMsg" style="margin-top: 12px; font-weight: 600; font-size: 0.95rem;"></p>
+        </form>
       </div>
     </div>
 
@@ -946,7 +1054,7 @@
     <div id="lightboxCaption" class="caption"></div>
   </div>
 
-  <!-- Footer (CONTACT US CONFIGURED WITH ADDRESS DIRECTLY ABOVE SCHOOL MAIL) -->
+  <!-- Footer -->
   <footer class="site-footer">
     <div class="footer-content">
       
@@ -959,7 +1067,7 @@
         </p>
       </div>
 
-      <!-- Column 2: Contact Us (Address directly above Email, no Portal line, no Campus Location header) -->
+      <!-- Column 2: Contact Us -->
       <div class="footer-col">
         <h3>Contact Us</h3>
         <p id="footerAddress" style="color: #e2e8f0; font-weight: 500;">Subdega, Sundargarh, Odisha - 770014</p>
@@ -1031,6 +1139,48 @@
       sliderTimer = setInterval(function() { goToSlide(currentSlideIdx + 1); }, 5000);
     }
 
+    // Public Enquiry Submission Engine (Option 2)
+    function setupEnquiryForm() {
+      var form = document.getElementById('publicEnquiryForm');
+      if (!form) return;
+
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        var msgEl = document.getElementById('enqStatusMsg');
+        var btn = document.getElementById('enqSubmitBtn');
+        msgEl.style.color = '#0284c7';
+        msgEl.textContent = 'Submitting your enquiry...';
+        btn.disabled = true;
+
+        var name = document.getElementById('enqName').value.trim();
+        var phone = document.getElementById('enqPhone').value.trim();
+        var email = document.getElementById('enqEmail').value.trim() || null;
+        var type = document.getElementById('enqType').value;
+        var msg = document.getElementById('enqMessage').value.trim();
+
+        try {
+          var ins = await window.client.from('enquiries').insert([{
+            name: name,
+            phone: phone,
+            email: email,
+            enquiry_type: type,
+            message: msg
+          }]);
+
+          if (ins.error) throw ins.error;
+
+          msgEl.style.color = '#16a34a';
+          msgEl.textContent = 'Thank you! Your enquiry has been received. Our office will contact you soon.';
+          form.reset();
+        } catch(err) {
+          msgEl.style.color = '#dc2626';
+          msgEl.textContent = 'Could not submit enquiry: ' + err.message;
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    }
+
     async function ensureClientAndFetch() {
       if (!window.client) {
         var targetUrl = window.SUPABASE_URL || "https://eukhcbxrxzhpwfizoqun.supabase.co";
@@ -1043,6 +1193,8 @@
           return;
         }
       }
+
+      setupEnquiryForm();
 
       // 1. Fetch Dynamic Campus & Institution Details
       try {
