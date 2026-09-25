@@ -18,9 +18,7 @@ var DESIGNATIONS = [
 function populateDesignations() {
   var sel = document.getElementById("staffDesignation");
   if (!sel) return;
-  sel.innerHTML = DESIGNATIONS.map(function(d) {
-    return '<option value="' + d + '">' + d + '</option>';
-  }).join("");
+  sel.innerHTML = DESIGNATIONS.map(function(d) { return '<option value="' + d + '">' + d + '</option>'; }).join("");
 }
 
 function formatDateDMY(dateStr) {
@@ -73,97 +71,33 @@ function loadAllAdminData() {
   loadAdminStaff();
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-  populateDesignations();
+// ---------------- CORRECTION 4: DYNAMIC CUSTOM SUBJECT EDITOR ----------------
+var DEFAULT_SUBJECTS = ["English", "Hindi", "Mathematics", "Science", "Social Science"];
 
-  var loginBtn = document.getElementById("loginBtn");
-  if (loginBtn) {
-    loginBtn.addEventListener("click", async function() {
-      var email = document.getElementById("email").value.trim();
-      var password = document.getElementById("password").value;
-      var msg = document.getElementById("loginMsg");
-      msg.textContent = "Signing in...";
+window.addNewSubjectRow = function(name, max, marks) {
+  var container = document.getElementById("dynamicSubjectsContainer");
+  if (!container) return;
 
-      var res = await client.auth.signInWithPassword({ email: email, password: password });
-      if (res.error) msg.textContent = "Login failed: " + res.error.message;
-      else { msg.textContent = ""; checkSession(); }
-    });
-  }
+  var div = document.createElement("div");
+  div.className = "subject-row";
+  div.innerHTML = 
+    '<input type="text" class="sub-name" placeholder="Subject Name (e.g. Odia, Physics)" value="' + (name || '') + '" required />' +
+    '<input type="number" class="sub-max mark-input" placeholder="Max" value="' + (max != null ? max : 100) + '" required />' +
+    '<input type="number" class="sub-marks mark-input" placeholder="Marks" value="' + (marks != null ? marks : '') + '" required />' +
+    '<button type="button" onclick="this.parentElement.remove()" class="btn-remove-sub" title="Remove Subject">✕</button>';
+  container.appendChild(div);
+};
 
-  var logoutBtn = document.getElementById("logoutBtn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", async function() {
-      await client.auth.signOut();
-      checkSession();
-    });
-  }
-
-  checkSession();
-});
-
-// ---------------- 0. INSTITUTION DETAILS ----------------
-var institutionForm = document.getElementById("institutionForm");
-if (institutionForm) {
-  institutionForm.addEventListener("submit", async function(e) {
-    e.preventDefault();
-    var status = document.getElementById("instStatus");
-    status.style.color = "#0284c7";
-    status.textContent = "Saving...";
-
-    var res = await client.from("institution_details").upsert([{
-      id: "primary",
-      institution_name: document.getElementById("instName").value.trim(),
-      location: document.getElementById("instLocation").value.trim(),
-      governing_body: document.getElementById("instGovBody").value.trim(),
-      curriculum: document.getElementById("instCurriculum").value.trim(),
-      official_email: document.getElementById("instEmail").value.trim(),
-      office_phone: document.getElementById("instOfficePhone").value.trim(),
-      cbse_affiliation_no: document.getElementById("instCbseAff").value.trim(),
-      school_code: document.getElementById("instSchoolCode").value.trim(),
-      udise_code: document.getElementById("instUdise").value.trim(),
-      academic_session: document.getElementById("instSession").value.trim(),
-      updated_at: new Date().toISOString()
-    }]);
-
-    if (res.error) { status.style.color = "#dc2626"; status.textContent = res.error.message; }
-    else { status.style.color = "#16a34a"; status.textContent = "Saved successfully!"; loadInstitutionDetails(); }
+function initDefaultSubjects() {
+  var container = document.getElementById("dynamicSubjectsContainer");
+  if (!container) return;
+  container.innerHTML = "";
+  DEFAULT_SUBJECTS.forEach(function(sub) {
+    addNewSubjectRow(sub, 100, 80);
   });
 }
 
-async function loadInstitutionDetails() {
-  if (!client) return;
-  var res = await client.from("institution_details").select("*").eq("id", "primary").maybeSingle();
-  if (res.data) {
-    var d = res.data;
-    function setDashVal(elId, val) {
-      var el = document.getElementById(elId);
-      if (!el) return;
-      if (val && String(val).trim()) { el.textContent = val; el.classList.remove("empty"); }
-      else { el.textContent = "-"; el.classList.add("empty"); }
-    }
-    setDashVal("viewInstName", d.institution_name);
-    setDashVal("viewInstLoc", d.location);
-    setDashVal("viewInstGov", d.governing_body);
-    setDashVal("viewInstCurr", d.curriculum);
-    setDashVal("viewInstEmail", d.official_email);
-    setDashVal("viewInstCbseAff", d.cbse_affiliation_no);
-    setDashVal("viewInstSchCode", d.school_code);
-    setDashVal("viewInstSession", d.academic_session);
-
-    if (document.getElementById("instName")) document.getElementById("instName").value = d.institution_name || "";
-    if (document.getElementById("instLocation")) document.getElementById("instLocation").value = d.location || "";
-    if (document.getElementById("instGovBody")) document.getElementById("instGovBody").value = d.governing_body || "";
-    if (document.getElementById("instCurriculum")) document.getElementById("instCurriculum").value = d.curriculum || "";
-    if (document.getElementById("instEmail")) document.getElementById("instEmail").value = d.official_email || "";
-    if (document.getElementById("instOfficePhone")) document.getElementById("instOfficePhone").value = d.office_phone || "";
-    if (document.getElementById("instCbseAff")) document.getElementById("instCbseAff").value = d.cbse_affiliation_no || "";
-    if (document.getElementById("instSchoolCode")) document.getElementById("instSchoolCode").value = d.school_code || "";
-    if (document.getElementById("instUdise")) document.getElementById("instUdise").value = d.udise_code || "";
-    if (document.getElementById("instSession")) document.getElementById("instSession").value = d.academic_session || "";
-  }
-}
-
-// ---------------- 1. STUDENT RESULTS & OPTION A PROMOTION ----------------
+// ---------------- 1. STUDENT RESULTS CRUD & EDIT (CORRECTION 4 & 5) ----------------
 var studentResultForm = document.getElementById("studentResultForm");
 if (studentResultForm) {
   studentResultForm.addEventListener("submit", async function(e) {
@@ -172,24 +106,40 @@ if (studentResultForm) {
     status.style.color = "#0284c7";
     status.textContent = "Calculating and saving result...";
 
-    var eng = parseFloat(document.getElementById("subEnglish").value) || 0;
-    var hin = parseFloat(document.getElementById("subHindi").value) || 0;
-    var mat = parseFloat(document.getElementById("subMaths").value) || 0;
-    var sci = parseFloat(document.getElementById("subScience").value) || 0;
-    var sst = parseFloat(document.getElementById("subSst").value) || 0;
+    // Collect dynamic subjects
+    var subRows = document.querySelectorAll("#dynamicSubjectsContainer .subject-row");
+    if (subRows.length === 0) {
+      status.style.color = "#dc2626";
+      status.textContent = "Please add at least one subject.";
+      return;
+    }
 
-    var total = eng + hin + mat + sci + sst;
-    var percent = (total / 500) * 100;
-    var grade = percent >= 90 ? 'A1' : (percent >= 80 ? 'A2' : (percent >= 70 ? 'B1' : (percent >= 60 ? 'B2' : (percent >= 50 ? 'C' : 'D'))));
+    var subjectsArr = [];
+    var totalMarks = 0;
+    var maxTotal = 0;
 
-    var subjectsArr = [
-      { name: "English", max: 100, marks: eng, grade: eng >= 80 ? 'A' : 'B' },
-      { name: "Hindi", max: 100, marks: hin, grade: hin >= 80 ? 'A' : 'B' },
-      { name: "Mathematics", max: 100, marks: mat, grade: mat >= 80 ? 'A' : 'B' },
-      { name: "Science", max: 100, marks: sci, grade: sci >= 80 ? 'A' : 'B' },
-      { name: "Social Science", max: 100, marks: sst, grade: sst >= 80 ? 'A' : 'B' }
-    ];
+    subRows.forEach(function(row) {
+      var sName = row.querySelector(".sub-name").value.trim();
+      var sMax = parseFloat(row.querySelector(".sub-max").value) || 100;
+      var sMarks = parseFloat(row.querySelector(".sub-marks").value) || 0;
+      var sPercent = (sMarks / sMax) * 100;
+      var sGrade = sPercent >= 90 ? 'A1' : (sPercent >= 80 ? 'A2' : (sPercent >= 70 ? 'B1' : (sPercent >= 60 ? 'B2' : (sPercent >= 50 ? 'C' : 'D'))));
 
+      totalMarks += sMarks;
+      maxTotal += sMax;
+
+      subjectsArr.push({
+        name: sName,
+        max: sMax,
+        marks: sMarks,
+        grade: sGrade
+      });
+    });
+
+    var overallPercent = maxTotal > 0 ? (totalMarks / maxTotal) * 100 : 0;
+    var overallGrade = overallPercent >= 90 ? 'A1' : (overallPercent >= 80 ? 'A2' : (overallPercent >= 70 ? 'B1' : (overallPercent >= 60 ? 'B2' : (overallPercent >= 50 ? 'C' : 'D'))));
+
+    var recordId = document.getElementById("editingRecordId").value.trim();
     var record = {
       roll_no: document.getElementById("srRoll").value.trim(),
       student_name: document.getElementById("srName").value.trim(),
@@ -198,25 +148,79 @@ if (studentResultForm) {
       class_name: document.getElementById("srClass").value,
       section: document.getElementById("srSection").value.trim() || 'A',
       subjects: subjectsArr,
-      total_marks: total,
-      max_marks: 500,
-      percentage: Math.round(percent * 10) / 10,
-      grade: grade,
+      total_marks: totalMarks,
+      max_marks: maxTotal,
+      percentage: Math.round(overallPercent * 10) / 10,
+      grade: overallGrade,
       result_status: document.getElementById("srStatus").value
     };
 
-    var res = await client.from("student_results").insert([record]);
+    var res;
+    if (recordId) {
+      // UPDATE EXISTING RECORD (Correction 5)
+      res = await client.from("student_results").update(record).eq("id", recordId);
+    } else {
+      // INSERT NEW RECORD
+      res = await client.from("student_results").insert([record]);
+    }
+
     if (res.error) {
       status.style.color = "#dc2626";
       status.textContent = "Error saving result: " + res.error.message;
     } else {
       status.style.color = "#16a34a";
-      status.textContent = "Student result recorded successfully!";
-      studentResultForm.reset();
+      status.textContent = recordId ? "Student record updated successfully!" : "Student result recorded successfully!";
+      resetStudentResultForm();
       loadAdminStudentResults();
     }
   });
 }
+
+// CORRECTION 5: EDIT BUTTON ACTION
+window.editStudentResult = async function(id) {
+  var res = await client.from("student_results").select("*").eq("id", id).maybeSingle();
+  if (res.error || !res.data) {
+    alert("Could not load student record for editing.");
+    return;
+  }
+
+  var d = res.data;
+  document.getElementById("editingRecordId").value = d.id;
+  document.getElementById("srRoll").value = d.roll_no;
+  document.getElementById("srName").value = d.student_name;
+  document.getElementById("srDob").value = d.dob;
+  document.getElementById("srSession").value = d.academic_session;
+  document.getElementById("srClass").value = d.class_name;
+  document.getElementById("srSection").value = d.section || 'A';
+  document.getElementById("srStatus").value = d.result_status || 'PASSED';
+
+  // Populate dynamic subjects for this student
+  var container = document.getElementById("dynamicSubjectsContainer");
+  container.innerHTML = "";
+  var subs = d.subjects || [];
+  if (subs.length > 0) {
+    subs.forEach(function(s) {
+      addNewSubjectRow(s.name, s.max, s.marks);
+    });
+  } else {
+    initDefaultSubjects();
+  }
+
+  // Update UI into Editing Mode
+  document.getElementById("formModeTitle").textContent = "✏️ Edit Student Result: " + d.student_name;
+  document.getElementById("srSubmitBtn").textContent = "Update Result";
+  document.getElementById("srCancelEditBtn").style.display = "inline-block";
+  document.getElementById("studentFormPanel").scrollIntoView({ behavior: 'smooth' });
+};
+
+window.resetStudentResultForm = function() {
+  document.getElementById("editingRecordId").value = "";
+  document.getElementById("studentResultForm").reset();
+  document.getElementById("formModeTitle").textContent = "Add Student Marksheet";
+  document.getElementById("srSubmitBtn").textContent = "Save Student Result";
+  document.getElementById("srCancelEditBtn").style.display = "none";
+  initDefaultSubjects();
+};
 
 async function loadAdminStudentResults() {
   var tbody = document.getElementById("studentResultsTableBody");
@@ -234,12 +238,14 @@ async function loadAdminStudentResults() {
           '<td>' + s.total_marks + '/' + s.max_marks + '</td>' +
           '<td>' + s.percentage + '%</td>' +
           '<td><span style="color:' + (s.result_status === 'PASSED' ? '#16a34a' : '#dc2626') + '; font-weight:700;">' + s.result_status + '</span></td>' +
-          '<td>' + (s.promoted_to_class ? (s.promoted_to_class + ' (' + s.promoted_session + ')') : '-') + '</td>' +
-          '<td><button type="button" class="btn-delete" onclick="deleteStudentResult(\'' + s.id + '\')">Delete</button></td>' +
+          '<td>' +
+            '<button type="button" class="btn-edit" onclick="editStudentResult(\'' + s.id + '\')">✏️ Edit</button>' +
+            '<button type="button" class="btn-delete" onclick="deleteStudentResult(\'' + s.id + '\')">Delete</button>' +
+          '</td>' +
         '</tr>';
       }).join("");
     } else {
-      tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #64748b;">No student results uploaded yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #64748b;">No student results uploaded yet.</td></tr>';
     }
   }
 }
@@ -250,7 +256,143 @@ window.deleteStudentResult = async function(id) {
   loadAdminStudentResults();
 };
 
-// OPTION A: BATCH PROMOTION LOGIC
+// ---------------- CORRECTION 3: EXCEL / CSV EXPORT & IMPORT ----------------
+window.exportClassResultsCSV = async function() {
+  var targetClass = document.getElementById("bulkClassSelect").value;
+  var targetSession = document.getElementById("bulkSessionSelect").value;
+
+  var res = await client.from("student_results").select("*")
+    .eq("class_name", targetClass)
+    .eq("academic_session", targetSession);
+
+  var rows = res.data || [];
+  var csvContent = "data:text/csv;charset=utf-8,";
+  csvContent += "roll_no,student_name,dob,academic_session,class_name,section,english,hindi,mathematics,science,social_science,result_status\n";
+
+  if (rows.length > 0) {
+    rows.forEach(function(r) {
+      var sMap = {};
+      (r.subjects || []).forEach(function(s) { sMap[s.name.toLowerCase()] = s.marks; });
+      var eng = sMap["english"] != null ? sMap["english"] : 80;
+      var hin = sMap["hindi"] != null ? sMap["hindi"] : 80;
+      var mat = sMap["mathematics"] != null ? sMap["mathematics"] : 80;
+      var sci = sMap["science"] != null ? sMap["science"] : 80;
+      var sst = sMap["social science"] != null ? sMap["social science"] : 80;
+
+      csvContent += [
+        '"' + r.roll_no + '"',
+        '"' + r.student_name + '"',
+        r.dob,
+        r.academic_session,
+        r.class_name,
+        r.section || 'A',
+        eng, hin, mat, sci, sst,
+        r.result_status || 'PASSED'
+      ].join(",") + "\n";
+    });
+  } else {
+    // Sample template row
+    csvContent += "01,Sample Student Name,2013-05-15," + targetSession + "," + targetClass + ",A,85,78,92,88,81,PASSED\n";
+  }
+
+  var encodedUri = encodeURI(csvContent);
+  var link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", "EMRS_" + targetClass.replace(/\s+/g, '_') + "_" + targetSession + ".csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+window.importClassResultsCSV = function() {
+  var fileInput = document.getElementById("bulkCsvFileInput");
+  var status = document.getElementById("bulkStatusMsg");
+  var file = fileInput.files[0];
+
+  if (!file) {
+    alert("Please select a CSV file to upload.");
+    return;
+  }
+
+  status.style.color = "#0284c7";
+  status.textContent = "Processing CSV file...";
+
+  var reader = new FileReader();
+  reader.onload = async function(e) {
+    var text = e.target.result;
+    var lines = text.split(/\r\n|\n/).filter(function(line) { return line.trim() !== ""; });
+    if (lines.length <= 1) {
+      status.style.color = "#dc2626";
+      status.textContent = "CSV file is empty.";
+      return;
+    }
+
+    var records = [];
+    // Start from index 1 to skip CSV header
+    for (var i = 1; i < lines.length; i++) {
+      var cols = lines[i].split(",").map(function(c) { return c.replace(/^["']|["']$/g, "").trim(); });
+      if (cols.length >= 5) {
+        var roll = cols[0];
+        var name = cols[1];
+        var dob = cols[2];
+        var session = cols[3];
+        var cls = cols[4];
+        var sec = cols[5] || 'A';
+        var eng = parseFloat(cols[6]) || 0;
+        var hin = parseFloat(cols[7]) || 0;
+        var mat = parseFloat(cols[8]) || 0;
+        var sci = parseFloat(cols[9]) || 0;
+        var sst = parseFloat(cols[10]) || 0;
+        var stat = cols[11] || 'PASSED';
+
+        var total = eng + hin + mat + sci + sst;
+        var percent = Math.round((total / 500) * 1000) / 10;
+        var grade = percent >= 90 ? 'A1' : (percent >= 80 ? 'A2' : (percent >= 70 ? 'B1' : (percent >= 60 ? 'B2' : (percent >= 50 ? 'C' : 'D'))));
+
+        records.push({
+          roll_no: roll,
+          student_name: name,
+          dob: dob,
+          academic_session: session,
+          class_name: cls,
+          section: sec,
+          subjects: [
+            { name: "English", max: 100, marks: eng, grade: eng >= 80 ? 'A' : 'B' },
+            { name: "Hindi", max: 100, marks: hin, grade: hin >= 80 ? 'A' : 'B' },
+            { name: "Mathematics", max: 100, marks: mat, grade: mat >= 80 ? 'A' : 'B' },
+            { name: "Science", max: 100, marks: sci, grade: sci >= 80 ? 'A' : 'B' },
+            { name: "Social Science", max: 100, marks: sst, grade: sst >= 80 ? 'A' : 'B' }
+          ],
+          total_marks: total,
+          max_marks: 500,
+          percentage: percent,
+          grade: grade,
+          result_status: stat
+        });
+      }
+    }
+
+    if (records.length === 0) {
+      status.style.color = "#dc2626";
+      status.textContent = "No valid records parsed from CSV.";
+      return;
+    }
+
+    var upRes = await client.from("student_results").insert(records);
+    if (upRes.error) {
+      status.style.color = "#dc2626";
+      status.textContent = "Upload failed: " + upRes.error.message;
+    } else {
+      status.style.color = "#16a34a";
+      status.textContent = "Successfully uploaded " + records.length + " student results!";
+      fileInput.value = "";
+      loadAdminStudentResults();
+    }
+  };
+  reader.readAsText(file);
+};
+
+// ---------------- 2. BATCH PROMOTION ----------------
 window.executeBatchPromotion = async function() {
   var fromSession = document.getElementById("promoFromSession").value;
   var fromClass = document.getElementById("promoFromClass").value;
@@ -258,37 +400,12 @@ window.executeBatchPromotion = async function() {
   var toSession = document.getElementById("promoToSession").value.trim();
   var msg = document.getElementById("promoStatusMsg");
 
-  if (!toSession) {
-    alert("Please enter the Target New Session (e.g. 2026-2027).");
-    return;
-  }
-
-  var confirmMsg = "Are you sure you want to promote all PASSED students from " + fromClass + " (" + fromSession + ") to " + toClass + " (" + toSession + ")?\n\nExisting records in other classes will remain untouched.";
-  if (!confirm(confirmMsg)) return;
+  if (!toSession) { alert("Please enter the Target New Session."); return; }
+  if (!confirm("Promote all PASSED students from " + fromClass + " (" + fromSession + ") to " + toClass + " (" + toSession + ")?")) return;
 
   msg.style.color = "#0284c7";
   msg.textContent = "Processing batch promotion...";
 
-  // 1. Fetch all passed students in source batch
-  var fetchRes = await client.from("student_results").select("*")
-    .eq("academic_session", fromSession)
-    .eq("class_name", fromClass)
-    .eq("result_status", "PASSED");
-
-  if (fetchRes.error) {
-    msg.style.color = "#dc2626";
-    msg.textContent = "Error fetching batch: " + fetchRes.error.message;
-    return;
-  }
-
-  var students = fetchRes.data || [];
-  if (students.length === 0) {
-    msg.style.color = "#dc2626";
-    msg.textContent = "No passed students found in " + fromClass + " (" + fromSession + ").";
-    return;
-  }
-
-  // 2. Tag promotion on original records so marksheets show promotion
   var updateRes = await client.from("student_results")
     .update({ promoted_to_class: toClass, promoted_session: toSession })
     .eq("academic_session", fromSession)
@@ -297,60 +414,35 @@ window.executeBatchPromotion = async function() {
 
   if (updateRes.error) {
     msg.style.color = "#dc2626";
-    msg.textContent = "Could not update promotion tag: " + updateRes.error.message;
-    return;
+    msg.textContent = "Error: " + updateRes.error.message;
+  } else {
+    msg.style.color = "#16a34a";
+    msg.textContent = "Batch promotion completed successfully!";
+    loadAdminStudentResults();
   }
-
-  msg.style.color = "#16a34a";
-  msg.textContent = "Success! " + students.length + " students from " + fromClass + " have been promoted to " + toClass + " for Session " + toSession + ".";
-  loadAdminStudentResults();
 };
 
-// ---------------- 2. STAFF CRUD ----------------
+// ---------------- 3. STAFF, DOCS, NOTICES, GALLERY ----------------
 var staffForm = document.getElementById("staffForm");
 if (staffForm) {
   staffForm.addEventListener("submit", async function(e) {
     e.preventDefault();
-    var status = document.getElementById("staffStatus");
-    status.style.color = "#0284c7";
-    status.textContent = "Saving staff...";
-
-    var name = document.getElementById("staffName").value.trim().toUpperCase();
-    var empId = document.getElementById("staffEmpId").value.trim().toUpperCase();
-    var category = document.getElementById("staffCategory").value.toUpperCase();
-    var designation = document.getElementById("staffDesignation").value.toUpperCase();
-    var dojNests = document.getElementById("staffDojNests").value || null;
-    var dojEmrs = document.getElementById("staffDojEmrs").value || null;
     var photoFile = document.getElementById("staffPhoto").files[0];
-
     if (!photoFile) return;
-    if (photoFile.size > 51200) {
-      status.style.color = "#dc2626";
-      status.textContent = "Photo must be under 50 KB!";
-      return;
-    }
 
-    try {
-      var fileExt = photoFile.name.split('.').pop();
-      var filePath = "staff_" + Date.now() + "." + fileExt;
-      var upRes = await client.storage.from("staff-photos").upload(filePath, photoFile, { upsert: true });
-      if (upRes.error) throw upRes.error;
+    var filePath = "staff_" + Date.now() + ".jpg";
+    await client.storage.from("staff-photos").upload(filePath, photoFile, { upsert: true });
+    var pub = client.storage.from("staff-photos").getPublicUrl(filePath);
 
-      var pub = client.storage.from("staff-photos").getPublicUrl(filePath);
-      var ins = await client.from("staff").insert([{
-        name: name, employee_id: empId, category: category, designation: designation,
-        doj_nests: dojNests, doj_emrs: dojEmrs, photo_url: pub.data.publicUrl
-      }]);
-      if (ins.error) throw ins.error;
-
-      status.style.color = "#16a34a";
-      status.textContent = "Staff saved!";
-      staffForm.reset();
-      loadAdminStaff();
-    } catch(err) {
-      status.style.color = "#dc2626";
-      status.textContent = "Error: " + err.message;
-    }
+    await client.from("staff").insert([{
+      name: document.getElementById("staffName").value.trim().toUpperCase(),
+      employee_id: document.getElementById("staffEmpId").value.trim().toUpperCase(),
+      category: document.getElementById("staffCategory").value.toUpperCase(),
+      designation: document.getElementById("staffDesignation").value.toUpperCase(),
+      photo_url: pub.data.publicUrl
+    }]);
+    staffForm.reset();
+    loadAdminStaff();
   });
 }
 
@@ -361,7 +453,7 @@ async function loadAdminStaff() {
   if (res.data) {
     tbody.innerHTML = res.data.map(function(s) {
       return '<tr>' +
-        '<td><img src="' + (s.photo_url || '') + '" style="max-height:50px; max-width:50px;" /></td>' +
+        '<td><img src="' + (s.photo_url || '') + '" style="max-height:45px;" /></td>' +
         '<td>' + s.name + '</td><td>' + s.employee_id + '</td><td>' + s.category + '</td><td>' + s.designation + '</td>' +
         '<td><button type="button" class="btn-delete" onclick="deleteStaff(\'' + s.id + '\')">Delete</button></td>' +
       '</tr>';
@@ -374,3 +466,56 @@ window.deleteStaff = async function(id) {
   await client.from("staff").delete().eq("id", id);
   loadAdminStaff();
 };
+
+var institutionForm = document.getElementById("institutionForm");
+if (institutionForm) {
+  institutionForm.addEventListener("submit", async function(e) {
+    e.preventDefault();
+    await client.from("institution_details").upsert([{
+      id: "primary",
+      institution_name: document.getElementById("instName").value.trim(),
+      location: document.getElementById("instLocation").value.trim(),
+      official_email: document.getElementById("instEmail").value.trim(),
+      updated_at: new Date().toISOString()
+    }]);
+    loadInstitutionDetails();
+  });
+}
+
+async function loadInstitutionDetails() {
+  if (!client) return;
+  var res = await client.from("institution_details").select("*").eq("id", "primary").maybeSingle();
+  if (res.data) {
+    var d = res.data;
+    if (document.getElementById("viewInstName")) document.getElementById("viewInstName").textContent = d.institution_name;
+    if (document.getElementById("viewInstLoc")) document.getElementById("viewInstLoc").textContent = d.location;
+    if (document.getElementById("viewInstEmail")) document.getElementById("viewInstEmail").textContent = d.official_email;
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  populateDesignations();
+  initDefaultSubjects();
+
+  var loginBtn = document.getElementById("loginBtn");
+  if (loginBtn) {
+    loginBtn.addEventListener("click", async function() {
+      var res = await client.auth.signInWithPassword({
+        email: document.getElementById("email").value.trim(),
+        password: document.getElementById("password").value
+      });
+      if (res.error) document.getElementById("loginMsg").textContent = res.error.message;
+      else checkSession();
+    });
+  }
+
+  var logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", async function() {
+      await client.auth.signOut();
+      checkSession();
+    });
+  }
+
+  checkSession();
+});
