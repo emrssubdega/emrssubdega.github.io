@@ -34,7 +34,6 @@
     .sidebar-btn-content { display: flex; align-items: center; gap: 12px; }
     .sidebar-btn:hover { background: #072a42; color: #38bdf8; }
     .sidebar-btn.active { background: #072a42; color: #ffffff; border-left-color: #f97316; }
-    .badge-counter { background: #f97316; color: #ffffff; font-size: 0.72rem; padding: 2px 7px; border-radius: 10px; font-weight: 700; }
     .sidebar-footer { padding: 15px; border-top: 1px solid rgba(255, 255, 255, 0.12); }
     .logout-btn { width: 100%; background: #ef4444; color: #ffffff; border: none; padding: 10px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
@@ -63,7 +62,6 @@
     .profile-info-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; }
     .profile-info-item span.label { color: #475569; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; }
     .profile-info-item span.val { color: #0b3c5d; font-weight: 700; font-size: 1rem; }
-    .profile-info-item span.val.empty { color: #94a3b8; font-style: italic; }
 
     .form-grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
     .form-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
@@ -73,37 +71,41 @@
     .btn-submit { background: #0b3c5d; color: #ffffff; border: none; padding: 11px 24px; font-size: 0.95rem; font-weight: 600; border-radius: 6px; cursor: pointer; }
     .btn-submit:hover { background: #072a42; }
 
+    /* Action Buttons in Archive (Correction 5: Edit Button) */
+    .btn-edit { background: #0284c7; color: #ffffff; border: none; padding: 5px 11px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; margin-right: 6px; font-weight: 600; }
+    .btn-edit:hover { background: #0369a1; }
+    .btn-delete { background: #ef4444; color: #ffffff; border: none; padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; }
+    .btn-delete:hover { background: #dc2626; }
+
+    /* Dynamic Subject Rows (Correction 4) */
+    .subject-row { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
+    .subject-row input { flex: 2; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 0.9rem; }
+    .subject-row input.mark-input { flex: 1; text-align: center; }
+    .btn-remove-sub { background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+    .btn-add-sub { background: #e0f2fe; color: #0284c7; border: 1px dashed #38bdf8; padding: 8px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; display: inline-block; margin-top: 6px; }
+
     .table-responsive { overflow-x: auto; margin-top: 15px; }
     .styled-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
     .styled-table th { background: #f1f5f9; color: #334155; font-weight: 700; padding: 12px 14px; border: 1px solid #e2e8f0; text-align: center; }
     .styled-table td { padding: 12px 14px; border: 1px solid #e2e8f0; color: #1e293b; text-align: center; }
     .styled-table tr:nth-child(even) { background: #f8fafc; }
-    .btn-delete { background: #ef4444; color: #ffffff; border: none; padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; }
   </style>
 </head>
 <body>
 
-  <!-- 1. LOGIN SCREEN -->
   <div id="loginView" class="login-container">
     <div class="login-card">
       <div id="loginSection">
         <h2>Admin Sign In</h2>
         <p>EMRS Subdega Official Management Portal</p>
-        <div class="form-field">
-          <label>Email Address</label>
-          <input type="email" id="email" placeholder="admin@example.com" />
-        </div>
-        <div class="form-field">
-          <label>Password</label>
-          <input type="password" id="password" placeholder="••••••••" />
-        </div>
+        <div class="form-field"><label>Email Address</label><input type="email" id="email" placeholder="admin@example.com" /></div>
+        <div class="form-field"><label>Password</label><input type="password" id="password" placeholder="••••••••" /></div>
         <button id="loginBtn" class="btn-submit" style="width: 100%;">Sign In</button>
         <p id="loginMsg" style="color: #dc2626; text-align: center; margin-top: 10px; font-size: 0.9rem; font-weight: 600;"></p>
       </div>
     </div>
   </div>
 
-  <!-- 2. ADMIN DASHBOARD WORKSPACE -->
   <div id="dashboardView" class="admin-wrapper" style="display: none;">
     <aside class="sidebar">
       <div class="sidebar-header">
@@ -156,23 +158,12 @@
             <h1 class="hero-school-title">EKLAVYA MODEL RESIDENTIAL SCHOOL, SUBDEGA</h1>
             <div class="hero-badge-pill">🏛️ NESTS • MINISTRY OF TRIBAL AFFAIRS</div>
           </div>
-
           <div class="panel-card">
-            <h3>
-              <span>🏫 Campus & Institutional Details</span>
-              <button type="button" class="btn-submit" style="padding: 6px 14px; font-size: 0.85rem;" onclick="switchAdminTab('tab-institution', document.querySelectorAll('.sidebar-btn')[1])">
-                ✏️ Edit Details
-              </button>
-            </h3>
+            <h3><span>🏫 Campus & Institutional Details</span></h3>
             <div class="profile-info-list">
               <div class="profile-info-item"><span class="label">Institution Name</span><span class="val" id="viewInstName">EMRS Subdega</span></div>
               <div class="profile-info-item"><span class="label">Location</span><span class="val" id="viewInstLoc">Subdega, Sundargarh, Odisha - 770014</span></div>
-              <div class="profile-info-item"><span class="label">Governing Body</span><span class="val" id="viewInstGov">NESTS, New Delhi</span></div>
-              <div class="profile-info-item"><span class="label">Curriculum / Board</span><span class="val" id="viewInstCurr">CBSE Residential</span></div>
               <div class="profile-info-item"><span class="label">Official Email</span><span class="val" id="viewInstEmail">emrssubdega@gmail.com</span></div>
-              <div class="profile-info-item"><span class="label">CBSE Affiliation No.</span><span class="val" id="viewInstCbseAff">-</span></div>
-              <div class="profile-info-item"><span class="label">School Code</span><span class="val" id="viewInstSchCode">-</span></div>
-              <div class="profile-info-item"><span class="label">Academic Session</span><span class="val" id="viewInstSession">-</span></div>
             </div>
           </div>
         </div>
@@ -192,40 +183,70 @@
                 <div class="form-field"><label>Official Email</label><input type="email" id="instEmail" placeholder="emrssubdega@gmail.com" /></div>
                 <div class="form-field"><label>Office Phone / Helpline</label><input type="text" id="instOfficePhone" /></div>
               </div>
-              <div class="form-grid-2">
-                <div class="form-field"><label>CBSE Affiliation No.</label><input type="text" id="instCbseAff" /></div>
-                <div class="form-field"><label>School Code</label><input type="text" id="instSchoolCode" /></div>
-              </div>
-              <div class="form-grid-2">
-                <div class="form-field"><label>UDISE+ Code</label><input type="text" id="instUdise" /></div>
-                <div class="form-field"><label>Academic Session</label><input type="text" id="instSession" placeholder="2025-2026" /></div>
-              </div>
               <button type="submit" id="saveInstBtn" class="btn-submit">Save Institutional Details</button>
               <p id="instStatus" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
             </form>
           </div>
         </div>
 
-        <!-- TAB 2: STUDENT RESULTS & BATCH PROMOTION (OPTION A) -->
+        <!-- TAB 2: STUDENT RESULTS WITH BULK IMPORT/EXPORT & EDITING -->
         <div id="tab-results-admin" class="admin-tab-pane">
           
-          <!-- BATCH PROMOTION TOOL (OPTION A) -->
+          <!-- CORRECTION 3: BULK IMPORT & EXPORT EXCEL TOOL -->
+          <div class="panel-card" style="border-top: 4px solid #0284c7; background: #f0f9ff;">
+            <h3>
+              <span>📊 Bulk Student Results Excel / CSV Tool (Correction 3)</span>
+              <span style="font-size:0.8rem; background:#bae6fd; color:#0369a1; padding:3px 8px; border-radius:4px;">Classwise Bulk Upload</span>
+            </h3>
+            <p style="color: #475569; font-size: 0.9rem; margin-bottom: 16px;">
+              Export class results to Excel/CSV, fill in student marks in bulk, and import them directly back into the database.
+            </p>
+
+            <div style="display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end;">
+              <div class="form-field" style="min-width: 180px; margin-bottom:0;">
+                <label>Select Class</label>
+                <select id="bulkClassSelect">
+                  <option value="Class VI">Class VI</option>
+                  <option value="Class VII">Class VII</option>
+                  <option value="Class VIII">Class VIII</option>
+                  <option value="Class IX">Class IX</option>
+                  <option value="Class X">Class X</option>
+                  <option value="Class XI">Class XI</option>
+                  <option value="Class XII">Class XII</option>
+                </select>
+              </div>
+              <div class="form-field" style="min-width: 180px; margin-bottom:0;">
+                <label>Session</label>
+                <select id="bulkSessionSelect">
+                  <option value="2025-2026">2025-2026</option>
+                  <option value="2026-2027">2026-2027</option>
+                </select>
+              </div>
+              <button type="button" onclick="exportClassResultsCSV()" class="btn-submit" style="background:#0284c7; display:inline-flex; align-items:center; gap:6px;">
+                📥 Export / Download Template
+              </button>
+            </div>
+
+            <div style="margin-top: 20px; padding-top: 16px; border-top: 1px dashed #cbd5e1; display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+              <label style="font-weight:700; font-size:0.85rem; color:#0b3c5d;">UPLOAD FILLED CSV FILE:</label>
+              <input type="file" id="bulkCsvFileInput" accept=".csv" style="padding:6px; font-size:0.85rem;" />
+              <button type="button" onclick="importClassResultsCSV()" class="btn-submit" style="background:#16a34a;">
+                📤 Upload & Process Bulk Results
+              </button>
+              <span id="bulkStatusMsg" style="font-weight:600; font-size:0.9rem;"></span>
+            </div>
+          </div>
+
+          <!-- BATCH PROMOTION TOOL -->
           <div class="panel-card" style="border-top: 4px solid #f97316; background: #fffaf5;">
             <h3>
-              <span>⚡ Batch Promotion Tool (Option A)</span>
-              <span style="font-size:0.8rem; background:#fed7aa; color:#9a3412; padding:3px 8px; border-radius:4px;">Safe Academic Session Rollover</span>
+              <span>⚡ Batch Promotion Tool</span>
+              <span style="font-size:0.8rem; background:#fed7aa; color:#9a3412; padding:3px 8px; border-radius:4px;">Safe Session Rollover</span>
             </h3>
-            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 16px;">
-              Promote all passed students from an exam batch into the next class of a new academic session. <strong>Existing students in other classes or previous sessions will remain untouched.</strong>
-            </p>
-            
             <div class="form-grid-3">
               <div class="form-field">
                 <label>Current Session</label>
-                <select id="promoFromSession">
-                  <option value="2025-2026">2025–2026</option>
-                  <option value="2024-2025">2024–2025</option>
-                </select>
+                <select id="promoFromSession"><option value="2025-2026">2025–2026</option></select>
               </div>
               <div class="form-field">
                 <label>Current Class</label>
@@ -250,22 +271,22 @@
                 </select>
               </div>
             </div>
-
             <div class="form-field" style="max-width: 320px;">
               <label>Target New Session</label>
-              <input type="text" id="promoToSession" value="2026-2027" placeholder="e.g. 2026-2027" />
+              <input type="text" id="promoToSession" value="2026-2027" />
             </div>
-
             <button type="button" onclick="executeBatchPromotion()" class="btn-submit" style="background:#ea580c;">🚀 Promote Passed Students Batch</button>
             <p id="promoStatusMsg" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
           </div>
 
-          <!-- ADD STUDENT RESULT FORM -->
-          <div class="panel-card">
-            <h3>Add / Update Student Marksheet</h3>
+          <!-- ADD & EDIT STUDENT RESULT FORM (CORRECTION 4: DYNAMIC CUSTOM SUBJECTS) -->
+          <div class="panel-card" id="studentFormPanel">
+            <h3 id="formModeTitle">Add Student Marksheet</h3>
             <form id="studentResultForm">
+              <input type="hidden" id="editingRecordId" value="" />
+
               <div class="form-grid-3">
-                <div class="form-field"><label>Roll Number *</label><input type="text" id="srRoll" placeholder="e.g. 2025-06-14" required /></div>
+                <div class="form-field"><label>Roll Number *</label><input type="text" id="srRoll" placeholder="e.g. 01, 14, 2025-06-14" required /></div>
                 <div class="form-field"><label>Student Name *</label><input type="text" id="srName" placeholder="Full Name" required /></div>
                 <div class="form-field"><label>Date of Birth *</label><input type="date" id="srDob" required /></div>
               </div>
@@ -294,29 +315,34 @@
                 <div class="form-field"><label>Section</label><input type="text" id="srSection" value="A" /></div>
               </div>
 
-              <!-- 5 Core Subjects -->
-              <h4 style="color:#0b3c5d; margin:16px 0 8px; font-size:0.95rem;">Subject Marks Breakdown (Out of 100)</h4>
-              <div class="form-grid-3">
-                <div class="form-field"><label>English Marks</label><input type="number" id="subEnglish" value="85" max="100" /></div>
-                <div class="form-field"><label>Hindi Marks</label><input type="number" id="subHindi" value="80" max="100" /></div>
-                <div class="form-field"><label>Mathematics</label><input type="number" id="subMaths" value="90" max="100" /></div>
-                <div class="form-field"><label>Science</label><input type="number" id="subScience" value="88" max="100" /></div>
-                <div class="form-field"><label>Social Science</label><input type="number" id="subSst" value="82" max="100" /></div>
-                <div class="form-field">
-                  <label>Result Status</label>
-                  <select id="srStatus">
-                    <option value="PASSED">PASSED</option>
-                    <option value="FAILED">FAILED</option>
-                  </select>
+              <!-- DYNAMIC EDITABLE SUBJECTS (CORRECTION 4) -->
+              <div style="margin: 20px 0 10px; padding: 16px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+                  <h4 style="color:#0b3c5d; font-size:1rem; margin:0;">Editable Subjects & Marks Breakdown</h4>
+                  <button type="button" onclick="addNewSubjectRow('', 100, 0)" class="btn-add-sub">+ Add Custom Subject</button>
                 </div>
+                <p style="color:#64748b; font-size:0.85rem; margin-bottom:12px;">Customize, add or delete subjects as required for this student/class.</p>
+
+                <div id="dynamicSubjectsContainer"></div>
               </div>
 
-              <button type="submit" class="btn-submit" style="margin-top: 10px;">Save Student Result</button>
+              <div class="form-field" style="max-width: 250px;">
+                <label>Final Result Status</label>
+                <select id="srStatus">
+                  <option value="PASSED">PASSED</option>
+                  <option value="FAILED">FAILED</option>
+                </select>
+              </div>
+
+              <div style="display:flex; gap:10px; align-items:center;">
+                <button type="submit" id="srSubmitBtn" class="btn-submit">Save Student Result</button>
+                <button type="button" id="srCancelEditBtn" onclick="resetStudentResultForm()" class="btn-submit" style="background:#64748b; display:none;">Cancel Edit</button>
+              </div>
               <p id="srStatusMsg" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
             </form>
           </div>
 
-          <!-- RESULTS DIRECTORY -->
+          <!-- ARCHIVE TABLE (CORRECTION 5: EDIT BUTTON ADDED) -->
           <div class="panel-card">
             <h3>Uploaded Results Archive</h3>
             <div class="table-responsive">
@@ -330,12 +356,11 @@
                     <th>Total</th>
                     <th>%</th>
                     <th>Status</th>
-                    <th>Promoted To</th>
                     <th>Action</th>
                   </tr>
                 </thead>
                 <tbody id="studentResultsTableBody">
-                  <tr><td colspan="9" style="text-align: center; color: #64748b;">Loading results...</td></tr>
+                  <tr><td colspan="8" style="text-align: center; color: #64748b;">Loading results...</td></tr>
                 </tbody>
               </table>
             </div>
@@ -361,8 +386,6 @@
                   </select>
                 </div>
                 <div class="form-field"><label>Designation *</label><select id="staffDesignation" required></select></div>
-                <div class="form-field"><label>Date of Joining in NESTS</label><input type="date" id="staffDojNests" /></div>
-                <div class="form-field"><label>Date of Joining in EMRS Subdega</label><input type="date" id="staffDojEmrs" /></div>
               </div>
               <div class="form-field"><label>Staff Photo (Max 50 KB) *</label><input type="file" id="staffPhoto" accept="image/*" required /></div>
               <button type="submit" id="saveStaffBtn" class="btn-submit">Add Staff Member</button>
@@ -385,19 +408,6 @@
           <div class="panel-card">
             <h3>Upload Official Document / Circular</h3>
             <form id="docForm">
-              <div class="form-grid-2">
-                <div class="form-field"><label>Circular / Ref Number</label><input type="text" id="docCircularNo" /></div>
-                <div class="form-field"><label>Document Date</label><input type="date" id="docDate" /></div>
-                <div class="form-field" style="grid-column: 1 / -1;">
-                  <label>Category</label>
-                  <select id="docCategory">
-                    <option value="Mandatory Disclosure">Mandatory Disclosure</option>
-                    <option value="General Notice">General Notice</option>
-                    <option value="Exam Notice">Exam Notice</option>
-                    <option value="Rules & Regulations">Rules & Regulations</option>
-                  </select>
-                </div>
-              </div>
               <div class="form-field"><label>Title *</label><input type="text" id="docTitle" required /></div>
               <div class="form-field"><label>Select PDF *</label><input type="file" id="docFile" accept="application/pdf" required /></div>
               <button type="submit" id="saveDocBtn" class="btn-submit">Upload Document</button>
@@ -429,9 +439,6 @@
             <form id="galleryForm">
               <div class="form-field"><label>Caption</label><input type="text" id="photoTitle" /></div>
               <div class="form-field"><label>Image File *</label><input type="file" id="photoFile" accept="image/*" required /></div>
-              <div class="form-field" style="flex-direction:row; align-items:center; gap:8px;">
-                <input type="checkbox" id="photoIsSlider" /><label for="photoIsSlider" style="cursor:pointer; text-transform:none;">Feature in Homepage Slider</label>
-              </div>
               <button type="submit" id="savePhotoBtn" class="btn-submit">Upload Photo</button>
               <p id="photoStatus" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
             </form>
