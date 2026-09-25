@@ -3,141 +3,78 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Panel - EMRS Subdega</title>
+  <title>EMRS Subdega - Admin Portal</title>
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../supabase-config.js"></script>
+
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #eaedf1;
-      color: #334155;
-    }
-
-    /* Top Blue Brand Navbar */
-    .top-navbar {
-      background: #0d47a1;
-      color: #ffffff;
-      height: 52px;
+      background: #f1f5f9;
+      color: #1e293b;
+      min-height: 100vh;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 24px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-      position: relative;
-      z-index: 100;
     }
-    .top-navbar h1 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      margin: 0;
-    }
-    .top-right-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .top-btn-link {
-      background: rgba(255, 255, 255, 0.15);
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      padding: 6px 14px;
-      border-radius: 4px;
-      font-size: 0.85rem;
-      text-decoration: none;
-      font-weight: 500;
-    }
-    .top-btn-link:hover {
-      background: rgba(255, 255, 255, 0.25);
-    }
-    .top-btn-logout {
-      background: #ef4444;
-      color: #ffffff;
-      border: none;
-      padding: 6px 14px;
-      border-radius: 4px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .top-btn-logout:hover {
-      background: #dc2626;
-    }
-
-    /* Login Form View */
-    .login-wrapper {
-      max-width: 400px;
-      margin: 80px auto;
-      background: #ffffff;
-      padding: 32px;
-      border-radius: 8px;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.1);
-      border-top: 4px solid #0d47a1;
-    }
-    .login-wrapper h2 {
-      color: #0d47a1;
-      font-size: 1.3rem;
-      margin-bottom: 6px;
-    }
-    .login-wrapper p {
-      font-size: 0.85rem;
-      color: #64748b;
-      margin-bottom: 20px;
-    }
-
-    /* Primary Side-by-Side Flex Layout */
-    .admin-layout {
-      display: flex !important;
-      flex-direction: row !important;
-      align-items: stretch !important;
-      height: calc(100vh - 52px);
+    /* Login Page */
+    .login-container {
       width: 100%;
-      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .login-card {
+      background: #ffffff;
+      padding: 35px 30px;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 420px;
+      border-top: 4px solid #f97316;
+    }
+    .login-card h2 {
+      color: #0b3c5d;
+      margin-bottom: 8px;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+    .login-card p {
+      color: #64748b;
+      font-size: 0.9rem;
+      text-align: center;
+      margin-bottom: 24px;
     }
 
-    /* Left Sidebar */
-    .sidebar {
-      width: 250px !important;
-      min-width: 250px !important;
-      max-width: 250px !important;
-      background: #1e293b;
-      color: #f8fafc;
+    /* Admin Workspace */
+    .admin-wrapper {
+      display: none;
+      width: 100%;
+      min-height: 100vh;
+      flex-direction: row;
+    }
+    .admin-sidebar {
+      width: 250px;
+      background: #0b3c5d;
+      color: #ffffff;
+      padding: 24px 0;
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
-      height: 100%;
-      border-right: 1px solid #0f172a;
     }
-    .sidebar-user-header {
-      background: linear-gradient(135deg, #b91c1c, #475569);
-      padding: 14px 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .user-info strong {
-      display: block;
-      font-size: 0.95rem;
-      text-transform: uppercase;
+    .admin-sidebar h3 {
+      font-size: 1.15rem;
+      padding: 0 20px 20px;
+      border-bottom: 1px solid #1e4a6d;
       letter-spacing: 0.5px;
-    }
-    .user-info span {
-      font-size: 0.75rem;
-      color: #cbd5e1;
     }
     .sidebar-menu {
       list-style: none;
-      padding: 0;
-      margin: 0;
+      margin-top: 15px;
       display: flex;
       flex-direction: column;
+      gap: 4px;
     }
     .sidebar-menu button {
       width: 100%;
@@ -145,382 +82,431 @@
       background: none;
       border: none;
       color: #cbd5e1;
-      padding: 12px 18px;
-      font-size: 0.88rem;
-      font-weight: 500;
+      padding: 12px 20px;
+      font-size: 0.95rem;
+      cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      transition: background 0.15s, color 0.15s;
-      font-family: inherit;
+      gap: 10px;
+      transition: background 0.2s, color 0.2s;
     }
-    .sidebar-menu button:hover {
-      background: #0f172a;
-      color: #ffffff;
+    .sidebar-menu button:hover, .sidebar-menu button.active {
+      background: #072a42;
+      color: #38bdf8;
+      border-left: 4px solid #f97316;
     }
-    .sidebar-menu button.active {
-      background: #0d47a1;
-      color: #ffffff;
-      font-weight: 600;
-      border-left: 4px solid #38bdf8;
-    }
-    .sidebar-footer {
-      margin-top: auto;
-      padding: 14px 18px;
-      font-size: 0.75rem;
-      color: #64748b;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      background: #182234;
-    }
-
-    /* Workspace Content Area */
-    .workspace {
-      flex: 1 1 auto;
-      height: 100%;
+    .admin-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
       overflow-y: auto;
-      padding: 24px 30px;
-      background: #eaedf1;
     }
-    .workspace-header {
+    .admin-topbar {
       background: #ffffff;
-      padding: 14px 20px;
-      border-radius: 6px;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-      margin-bottom: 20px;
+      padding: 16px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      border-bottom: 1px solid #e2e8f0;
     }
-    .workspace-header h2 {
-      font-size: 1.15rem;
-      color: #1e293b;
-      text-transform: uppercase;
-      font-weight: 700;
-      margin: 0;
+    .admin-content {
+      padding: 30px;
+      max-width: 1100px;
+      width: 100%;
     }
-
-    /* View Cards */
-    .view-card {
-      display: none;
-      background: #ffffff;
-      padding: 28px;
-      border-radius: 6px;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-    }
-    .view-card.active {
-      display: block;
-    }
-
-    /* Profile Card */
-    .profile-card {
-      max-width: 320px;
-      margin: 30px auto;
+    .panel-card {
       background: #ffffff;
       border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-      text-align: center;
+      padding: 26px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
       border: 1px solid #e2e8f0;
     }
-    .profile-banner {
-      height: 100px;
-      background: #be123c;
-    }
-    .profile-avatar-circle {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      border: 4px solid #ffffff;
-      margin: -50px auto 10px;
-      background: #e2e8f0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-    .profile-avatar-circle img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .profile-details {
-      padding: 12px 20px 24px;
-    }
-    .profile-details h3 {
-      font-size: 1.15rem;
-      color: #1e293b;
-      margin-bottom: 4px;
-    }
-    .profile-details p {
-      font-size: 0.85rem;
-      color: #64748b;
-      line-height: 1.4;
-      margin-bottom: 4px;
+    .panel-card h3 {
+      color: #0b3c5d;
+      margin-bottom: 18px;
+      font-size: 1.25rem;
     }
 
-    /* Form Fields */
+    /* Forms */
     .form-group {
       margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
     .form-group label {
-      display: block;
       font-size: 0.85rem;
       font-weight: 600;
-      margin-bottom: 6px;
-      color: #334155;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     .form-group input, .form-group select, .form-group textarea {
-      width: 100%;
-      padding: 9px 12px;
+      padding: 10px 14px;
       border: 1px solid #cbd5e1;
-      border-radius: 4px;
-      font-size: 0.9rem;
+      border-radius: 6px;
+      font-size: 0.95rem;
       font-family: inherit;
+      outline: none;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      border-color: #0b3c5d;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
     }
     .btn-primary {
-      background: #0d47a1;
-      color: #ffffff;
+      background: #0b3c5d;
+      color: white;
       border: none;
-      padding: 10px 18px;
-      border-radius: 4px;
+      padding: 10px 20px;
+      border-radius: 6px;
       font-weight: 600;
       cursor: pointer;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
     }
-    .btn-primary:hover {
-      background: #0a3880;
-    }
-    .danger {
-      background: #dc2626;
-      color: #fff;
+    .btn-primary:hover { background: #072a42; }
+    .btn-danger {
+      background: #ef4444;
+      color: white;
       border: none;
-      padding: 5px 10px;
+      padding: 6px 12px;
       border-radius: 4px;
       cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .table-container {
+      overflow-x: auto;
+      margin-top: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    th, td {
+      padding: 12px 14px;
+      border: 1px solid #e2e8f0;
+      text-align: left;
+    }
+    th {
+      background: #f8fafc;
+      color: #475569;
+      font-weight: 600;
+    }
+    .staff-thumb {
+      width: 45px;
+      height: 55px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid #cbd5e1;
+    }
+    .status-msg {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      font-weight: 500;
     }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../supabase-config.js"></script>
 </head>
 <body>
 
-  <!-- Top Blue Navbar -->
-  <header class="top-navbar">
-    <h1>Admin Panel</h1>
-    <div class="top-right-actions">
-      <a href="../" target="_blank" class="top-btn-link">Live Site ↗</a>
-      <button id="logoutBtn" class="top-btn-logout" type="button" onclick="logoutAdmin()">Logout</button>
-    </div>
-  </header>
+  <!-- LOGIN SECTION -->
+  <div id="loginView" class="login-container">
+    <div class="login-card">
+      <h2>Admin Login</h2>
+      <p>EMRS Subdega Official Management Portal</p>
+      
+      <div id="loginFormSection">
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="loginEmail" placeholder="admin@emrssubdega.in" />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="loginPassword" placeholder="••••••••" />
+        </div>
+        <div style="text-align: right; margin-bottom: 14px;">
+          <a href="javascript:void(0)" id="openForgotBtn" style="font-size: 0.8rem; color: #0284c7; text-decoration: none;">Forgot Password?</a>
+        </div>
+        <button type="button" id="loginBtn" class="btn-primary" style="width: 100%;">Sign In</button>
+        <p id="loginError" class="status-msg" style="color: #dc2626; text-align: center;"></p>
+      </div>
 
-  <!-- Login Form View -->
-  <div id="loginSection" class="login-wrapper">
-    <h2>Admin Sign In</h2>
-    <p>Enter your credentials to access the panel</p>
-    <div class="form-group">
-      <label>Email Address</label>
-      <input type="email" id="adminEmail" placeholder="admin@example.com" />
+      <!-- FORGOT PASSWORD SUB-PANEL -->
+      <div id="forgotFormSection" style="display: none;">
+        <div class="form-group">
+          <label>Enter Registered Email</label>
+          <input type="email" id="forgotEmail" placeholder="admin@emrssubdega.in" />
+        </div>
+        <button type="button" id="sendResetBtn" class="btn-primary" style="width: 100%;">Send Reset Link</button>
+        <div style="text-align: center; margin-top: 15px;">
+          <a href="javascript:void(0)" id="backToLoginLink" style="font-size: 0.85rem; color: #64748b; text-decoration: none;">← Back to Login</a>
+        </div>
+        <p id="forgotMsg" class="status-msg" style="text-align: center;"></p>
+      </div>
     </div>
-    <div class="form-group">
-      <label>Password</label>
-      <input type="password" id="adminPassword" placeholder="••••••••" />
-    </div>
-    <button type="button" id="loginBtn" class="btn-primary" style="width: 100%;">Sign In</button>
-    <p id="loginError" style="color: #dc2626; margin-top: 10px; font-size: 0.85rem;"></p>
   </div>
 
-  <!-- Synchronized Dashboard Layout -->
-  <div id="adminDashboard" class="admin-layout" style="display: none;">
-    <!-- Left Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-user-header">
-        <div class="user-info">
-          <strong id="sideUserName">ADMIN USER</strong>
-          <span id="sideUserRole">EMRS Subdega Staff</span>
-        </div>
-        <span style="font-size: 0.8rem; color: #cbd5e1;">▼</span>
-      </div>
-
+  <!-- ADMIN WORKSPACE -->
+  <div id="adminWorkspace" class="admin-wrapper">
+    <aside class="admin-sidebar">
+      <h3>EMRS Subdega Admin</h3>
       <ul class="sidebar-menu">
-        <li><button type="button" class="nav-tab-btn active" onclick="switchAdminTab('view-dashboard', this)">🏠 Dashboard</button></li>
-        <li><button type="button" class="nav-tab-btn" onclick="switchAdminTab('view-slider', this)">🖼️ Upload Main Slider</button></li>
-        <li><button type="button" class="nav-tab-btn" onclick="switchAdminTab('view-gallery', this)">📷 Upload Photo</button></li>
-        <li><button type="button" class="nav-tab-btn" onclick="switchAdminTab('view-notices', this)">📢 Notice Board</button></li>
-        <li><button type="button" class="nav-tab-btn" onclick="switchAdminTab('view-documents', this)">📁 File for Information</button></li>
-        <li><button type="button" class="nav-tab-btn" onclick="logoutAdmin()" style="color: #f87171;">🚪 Logout</button></li>
+        <li><button type="button" class="active" onclick="switchAdminSection('sec-staff', this)">Staff Details</button></li>
+        <li><button type="button" onclick="switchAdminSection('sec-docs', this)">Documents</button></li>
+        <li><button type="button" onclick="switchAdminSection('sec-notices', this)">Notices</button></li>
+        <li><button type="button" onclick="switchAdminSection('sec-gallery', this)">Photo Gallery</button></li>
+        <li style="margin-top: 30px;"><button type="button" id="logoutBtn" style="color: #fca5a5;">Logout</button></li>
       </ul>
-
-      <div class="sidebar-footer">
-        Powered by EMRS Portal System
-      </div>
     </aside>
 
-    <!-- Main Workspace -->
-    <main class="workspace">
-      <div class="workspace-header">
-        <h2 id="currentSectionTitle">DASHBOARD</h2>
-        <span style="font-size: 0.82rem; color: #64748b;" id="activeUserEmail"></span>
+    <main class="admin-main">
+      <div class="admin-topbar">
+        <span style="font-weight: 600; color: #0b3c5d;">Control Panel</span>
+        <span id="userEmailBadge" style="font-size: 0.85rem; color: #64748b;"></span>
       </div>
 
-      <!-- 1. DASHBOARD OVERVIEW -->
-      <section id="view-dashboard" class="view-card active">
-        <div class="profile-card">
-          <div class="profile-banner"></div>
-          <div class="profile-avatar-circle">
-            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Admin Avatar" onerror="this.src='../school-campus.jpg'" />
-          </div>
-          <div class="profile-details">
-            <h3 id="cardUserName">Admin User</h3>
-            <p><strong>Role:</strong> School Portal Administrator</p>
-            <p>EMRS Subdega, Sundargarh</p>
-          </div>
-        </div>
-      </section>
+      <div class="admin-content">
 
-      <!-- 2. MAIN SLIDER -->
-      <section id="view-slider" class="view-card">
-        <h3 style="margin-bottom: 12px; color: #0d47a1;">Upload Homepage Carousel Slider Photos</h3>
-        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 16px;">Photos uploaded here or marked with "★ In Slider" appear in the top banner carousel on the school website.</p>
-        
-        <div class="form-group">
-          <label>Slide Title / Caption</label>
-          <input type="text" id="sliderPhotoTitle" placeholder="e.g., School Campus Front View" />
-        </div>
-        <div class="form-group">
-          <label>Select Slider Photo</label>
-          <input type="file" id="sliderPhotoFile" accept="image/*" />
-        </div>
-        <button type="button" id="uploadSliderBtn" class="btn-primary">Upload Slider Photo</button>
-        <span id="sliderMsg" style="margin-left: 10px; font-size: 0.85rem;"></span>
-      </section>
+        <!-- 1. STAFF DETAILS MANAGEMENT SECTION -->
+        <section id="sec-staff">
+          <div class="panel-card">
+            <h3>Add New Staff Member</h3>
+            <form id="staffForm">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Full Name *</label>
+                  <input type="text" id="staffName" placeholder="e.g. RAJESH KUMAR" required style="text-transform: uppercase;" />
+                </div>
+                <div class="form-group">
+                  <label>Employee ID *</label>
+                  <input type="text" id="staffEmpId" placeholder="e.g. EMP10293" required style="text-transform: uppercase;" />
+                </div>
+              </div>
 
-      <!-- 3. ALL PHOTOS & GALLERY -->
-      <section id="view-gallery" class="view-card">
-        <h3 style="margin-bottom: 12px; color: #0d47a1;">Manage Photo Gallery</h3>
-        <div class="form-group">
-          <label>Photo Caption / Title</label>
-          <input type="text" id="galleryTitle" placeholder="e.g., Annual Sports Day 2026" />
-        </div>
-        <div class="form-group">
-          <label>Select Photo</label>
-          <input type="file" id="galleryFile" accept="image/*" />
-        </div>
-        <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
-          <input type="checkbox" id="galleryIsSlider" style="width: auto;" />
-          <label for="galleryIsSlider" style="margin-bottom: 0;">Also feature this in the Homepage Slider</label>
-        </div>
-        <button type="button" id="uploadGallery" class="btn-primary">Upload to Gallery</button>
-        <span id="galleryMsg" style="margin-left: 10px; font-size: 0.85rem;"></span>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Category *</label>
+                  <select id="staffCategory" required>
+                    <option value="PRINCIPAL">1. PRINCIPAL</option>
+                    <option value="PGT">2. PGT</option>
+                    <option value="TGT">3. TGT</option>
+                    <option value="NON-TEACHING">4. NON-TEACHING</option>
+                  </select>
+                </div>
 
-        <h4 style="margin-top: 25px; margin-bottom: 10px; color: #334155;">Existing Photos</h4>
-        <div id="galleryGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px;"></div>
-      </section>
+                <div class="form-group">
+                  <label>Designation *</label>
+                  <select id="staffDesignation" required>
+                    <!-- Populated automatically in app.js -->
+                  </select>
+                </div>
+              </div>
 
-      <!-- 4. NOTICE BOARD -->
-      <section id="view-notices" class="view-card">
-        <h3 style="margin-bottom: 12px; color: #0d47a1;">Notice Board & Circulars</h3>
-        <form id="noticeForm">
-          <div class="form-group">
-            <label>Notice Title</label>
-            <input type="text" id="noticeTitle" required />
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Date of Joining in NESTS</label>
+                  <input type="date" id="staffDojNests" />
+                </div>
+                <div class="form-group">
+                  <label>Date of Joining in EMRS Subdega</label>
+                  <input type="date" id="staffDojEmrs" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Staff Photo (Max 50 KB, .jpg/.png) *</label>
+                <input type="file" id="staffPhoto" accept="image/jpeg,image/png" required />
+                <span id="fileSizeTip" style="font-size: 0.8rem; color: #64748b;">Maximum file size allowed is 50 KB.</span>
+              </div>
+
+              <button type="submit" id="saveStaffBtn" class="btn-primary">Add Staff Member</button>
+              <p id="staffStatus" class="status-msg"></p>
+            </form>
           </div>
-          <div class="form-group">
-            <label>Notice Date</label>
-            <input type="date" id="noticeDate" required />
-          </div>
-          <div class="form-group">
-            <label>Notice Body / Content</label>
-            <textarea id="noticeBody" rows="3" required></textarea>
-          </div>
-          <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
-            <input type="checkbox" id="noticePublished" checked style="width: auto;" />
-            <label for="noticePublished" style="margin-bottom: 0;">Publish immediately on website</label>
-          </div>
-          <button type="submit" id="noticeSubmitBtn" class="btn-primary">Publish Notice</button>
-          <span id="noticeMsg" style="margin-left: 10px; font-size: 0.85rem;"></span>
-        </form>
 
-        <h4 style="margin-top: 25px; margin-bottom: 10px; color: #334155;">Active Notices</h4>
-        <div id="adminNoticeList"></div>
-      </section>
-
-      <!-- 5. FILE FOR INFORMATION (DOCUMENTS & CIRCULARS) -->
-      <section id="view-documents" class="view-card">
-        <h3 style="margin-bottom: 12px; color: #0d47a1;">Upload Official Records & Circulars</h3>
-        <form id="docForm">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-            <div class="form-group">
-              <label>Circular No. / Ref No.</label>
-              <input type="text" id="docCircularNo" placeholder="e.g. #243" required />
-            </div>
-            <div class="form-group">
-              <label>Issue Date</label>
-              <input type="date" id="docDate" required />
+          <div class="panel-card">
+            <h3>Existing Staff Directory</h3>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Photo</th>
+                    <th>Name</th>
+                    <th>Emp ID</th>
+                    <th>Category</th>
+                    <th>Designation</th>
+                    <th>DOJ NESTS</th>
+                    <th>DOJ EMRS</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="adminStaffTableBody">
+                  <tr><td colspan="8" style="text-align: center;">Loading staff records...</td></tr>
+                </tbody>
+              </table>
             </div>
           </div>
-          <div class="form-group">
-            <label>Subject / Document Title</label>
-            <input type="text" id="docTitle" placeholder="e.g. Implementation of Mentor-Mentee Programme in EMRSs" required />
-          </div>
-          <div class="form-group">
-            <label>Category (Matches School Website Dropdown)</label>
-            <select id="docCategory" required>
-              <option value="Mandatory Disclosure">Mandatory Disclosure</option>
-              <option value="General Notice">General Notice</option>
-              <option value="Exam Notice">Exam Notice</option>
-              <option value="Rules & Regulations">Rules & Regulations</option>
-              <option value="Committees">Committees</option>
-              <option value="Recent Activities">Recent Activities</option>
-              <option value="Result Analysis">Result Analysis</option>
-              <option value="Transfer Certificate">Transfer Certificate</option>
-              <option value="Admission Notice">Admission Notice</option>
-              <option value="Tenders">Tenders</option>
-              <option value="Career">Career</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Select File (PDF or Document)</label>
-            <input type="file" id="docFile" required />
-          </div>
-          <button type="submit" class="btn-primary">Upload Document</button>
-          <span id="docMsg" style="margin-left: 10px; font-size: 0.85rem;"></span>
-        </form>
+        </section>
 
-        <h4 style="margin-top: 25px; margin-bottom: 10px; color: #334155;">Uploaded Records</h4>
-        <div id="adminDocList"></div>
-      </section>
+        <!-- 2. DOCUMENTS MANAGEMENT SECTION -->
+        <section id="sec-docs" style="display: none;">
+          <div class="panel-card">
+            <h3>Upload Official Document / Circular</h3>
+            <form id="docForm">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Circular / Ref Number</label>
+                  <input type="text" id="docCircularNo" placeholder="e.g. CIR/2026/04" />
+                </div>
+                <div class="form-group">
+                  <label>Document Date</label>
+                  <input type="date" id="docDate" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Document Category</label>
+                <select id="docCategory">
+                  <option value="Mandatory Disclosure">Mandatory Disclosure</option>
+                  <option value="General Notice">General Notice</option>
+                  <option value="Exam Notice">Exam Notice</option>
+                  <option value="Rules & Regulations">Rules & Regulations</option>
+                  <option value="Committees">Committees</option>
+                  <option value="Result Analysis">Result Analysis</option>
+                  <option value="Transfer Certificate">Transfer Certificate</option>
+                  <option value="Admission Notice">Admission Notice</option>
+                  <option value="Tenders">Tenders</option>
+                  <option value="Career">Career</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Subject / Title *</label>
+                <input type="text" id="docTitle" placeholder="e.g. LTC List for Year 2026" required />
+              </div>
+              <div class="form-group">
+                <label>PDF Document *</label>
+                <input type="file" id="docFile" accept="application/pdf" required />
+              </div>
+              <button type="submit" id="saveDocBtn" class="btn-primary">Upload Document</button>
+              <p id="docStatus" class="status-msg"></p>
+            </form>
+          </div>
+
+          <div class="panel-card">
+            <h3>Uploaded Documents</h3>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Ref No.</th>
+                    <th>Date</th>
+                    <th>Category</th>
+                    <th>Subject</th>
+                    <th>File</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="adminDocTableBody">
+                  <tr><td colspan="6" style="text-align: center;">Loading documents...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. NOTICES MANAGEMENT SECTION -->
+        <section id="sec-notices" style="display: none;">
+          <div class="panel-card">
+            <h3>Post Notice / Announcement</h3>
+            <form id="noticeForm">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Notice Title *</label>
+                  <input type="text" id="noticeTitle" required />
+                </div>
+                <div class="form-group">
+                  <label>Date *</label>
+                  <input type="date" id="noticeDate" required />
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Details / Description *</label>
+                <textarea id="noticeBody" rows="4" required></textarea>
+              </div>
+              <button type="submit" id="saveNoticeBtn" class="btn-primary">Publish Notice</button>
+              <p id="noticeStatus" class="status-msg"></p>
+            </form>
+          </div>
+
+          <div class="panel-card">
+            <h3>Published Notices</h3>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="adminNoticeTableBody">
+                  <tr><td colspan="4" style="text-align: center;">Loading notices...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. GALLERY MANAGEMENT SECTION -->
+        <section id="sec-gallery" style="display: none;">
+          <div class="panel-card">
+            <h3>Add Photo to Gallery</h3>
+            <form id="galleryForm">
+              <div class="form-group">
+                <label>Photo Title / Event Name</label>
+                <input type="text" id="photoTitle" placeholder="e.g. Annual Sports Meet 2026" />
+              </div>
+              <div class="form-group">
+                <label>Image File *</label>
+                <input type="file" id="photoFile" accept="image/*" required />
+              </div>
+              <div class="form-group" style="flex-direction: row; align-items: center; gap: 8px;">
+                <input type="checkbox" id="photoIsSlider" />
+                <label for="photoIsSlider" style="cursor: pointer; text-transform: none;">Feature in Homepage Slider</label>
+              </div>
+              <button type="submit" id="savePhotoBtn" class="btn-primary">Upload Photo</button>
+              <p id="photoStatus" class="status-msg"></p>
+            </form>
+          </div>
+
+          <div class="panel-card">
+            <h3>Uploaded Photos</h3>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Preview</th>
+                    <th>Title</th>
+                    <th>Slider</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="adminGalleryTableBody">
+                  <tr><td colspan="4" style="text-align: center;">Loading gallery...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </div>
     </main>
   </div>
 
-  <script>
-    function switchAdminTab(viewId, btnEl) {
-      document.querySelectorAll('.view-card').forEach(function(v) { v.classList.remove('active'); });
-      var target = document.getElementById(viewId);
-      if (target) target.classList.add('active');
-
-      document.querySelectorAll('.nav-tab-btn').forEach(function(b) { b.classList.remove('active'); });
-      if (btnEl) btnEl.classList.add('active');
-
-      var titleMap = {
-        'view-dashboard': 'DASHBOARD',
-        'view-slider': 'UPLOAD MAIN SLIDER',
-        'view-gallery': 'UPLOAD PHOTO',
-        'view-notices': 'NOTICE BOARD',
-        'view-documents': 'FILE FOR INFORMATION'
-      };
-      var titleEl = document.getElementById('currentSectionTitle');
-      if (titleEl) titleEl.textContent = titleMap[viewId] || 'DASHBOARD';
-    }
-
-    async function logoutAdmin() {
-      if (window.client) {
-        await window.client.auth.signOut();
-      }
-      window.location.reload();
-    }
-  </script>
   <script src="app.js"></script>
 </body>
 </html>
