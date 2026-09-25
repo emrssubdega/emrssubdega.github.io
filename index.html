@@ -341,7 +341,7 @@
       }
     };
 
-    // SEARCH STUDENT RESULT & MARKSHEET
+    // SEARCH STUDENT RESULT & MARKSHEET (Roll Number input has NO placeholder)
     window.currentStudentResult = null;
     window.searchStudentResult = async function(e) {
       if (e) e.preventDefault();
@@ -475,7 +475,7 @@
     </div>
   </div>
 
-  <!-- Navbar (Single RESULTS link retained, removed from INFORMATION dropdown) -->
+  <!-- Navbar -->
   <nav class="navbar">
     <div class="nav-links">
       <button type="button" class="nav-link-btn" onclick="window.goToTab('tab-home')">HOME</button>
@@ -502,7 +502,7 @@
     </div>
   </nav>
 
-  <!-- 1. HOME VIEW (Middle Banner completely removed) -->
+  <!-- 1. HOME VIEW -->
   <section id="tab-home" class="tab-section" style="display: block;">
     <div class="slider-container" id="homeSlider">
       <div class="slide active">
@@ -539,7 +539,7 @@
     </div>
   </section>
 
-  <!-- 2. STUDENT RESULTS VIEW -->
+  <!-- 2. STUDENT RESULTS VIEW (Clean input with NO placeholder) -->
   <section id="tab-results" class="tab-section" style="display: none;">
     <div class="content-container">
       
@@ -563,7 +563,7 @@
             </div>
             <div class="form-field">
               <label>Roll Number *</label>
-              <input type="text" id="resRollNo" placeholder="e.g. 01, 14, 2025-06-14" required />
+              <input type="text" id="resRollNo" required />
             </div>
             <div class="form-field">
               <label>Academic Session *</label>
