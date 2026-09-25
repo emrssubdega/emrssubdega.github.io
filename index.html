@@ -108,39 +108,153 @@
 
     /* Printable A4 Marksheet Container */
     .marksheet-container {
-      background: #ffffff; border: 3px double #0b3c5d; border-radius: 12px; padding: 40px 45px; margin-top: 25px; display: none; box-shadow: 0 6px 22px rgba(0,0,0,0.08); max-width: 950px; margin-left: auto; margin-right: auto;
+      background: #ffffff;
+      border: 3px double #0b3c5d;
+      border-radius: 10px;
+      padding: 28px 32px 24px;
+      margin-top: 25px;
+      display: none;
+      box-shadow: 0 6px 22px rgba(0,0,0,0.08);
+      max-width: 950px;
+      margin-left: auto;
+      margin-right: auto;
     }
-    .marksheet-header { text-align: center; border-bottom: 2px solid #0b3c5d; padding-bottom: 18px; margin-bottom: 22px; }
-    .marksheet-header h2 { font-size: 1.6rem; color: #0b3c5d; font-weight: 900; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.8px; }
-    .marksheet-header p { font-size: 0.92rem; color: #475569; margin: 0; }
-    .student-meta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px 18px; background: #f8fafc; padding: 18px 22px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 24px; }
-    .meta-item span.lbl { font-size: 0.78rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
-    .meta-item span.val { font-size: 0.98rem; font-weight: 800; color: #0f172a; display: block; margin-top: 2px; }
-    .marks-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
-    .marks-table th { background: #f1f5f9; color: #0b3c5d; padding: 12px 14px; border: 1px solid #cbd5e1; font-weight: 800; text-align: center; font-size: 0.95rem; }
-    .marks-table td { padding: 12px 14px; border: 1px solid #cbd5e1; text-align: center; font-size: 0.95rem; }
+
+    /* Header with Logo + One-Line School Name */
+    .marksheet-header {
+      border-bottom: 2px solid #0b3c5d;
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+    }
+    .ms-header-top {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 4px;
+    }
+    .ms-emrs-logo {
+      width: 58px;
+      height: 58px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+    .marksheet-header h2 {
+      font-size: 1.42rem;
+      color: #0b3c5d;
+      font-weight: 900;
+      text-transform: uppercase;
+      margin: 0;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .marksheet-header p {
+      font-size: 0.86rem;
+      color: #475569;
+      margin: 2px 0 0;
+      text-align: center;
+    }
+    .marksheet-header .ms-sub-title {
+      margin-top: 8px;
+      color: #f97316;
+      font-size: 1.15rem;
+      letter-spacing: 1px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    /* Student Meta Details Grid */
+    .student-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px 16px;
+      background: #f8fafc;
+      padding: 14px 18px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 18px;
+    }
+    .meta-item span.lbl { font-size: 0.74rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.4px; }
+    .meta-item span.val { font-size: 0.92rem; font-weight: 800; color: #0f172a; display: block; margin-top: 1px; }
+
+    /* Academic Marks Table */
+    .marks-table { width: 100%; border-collapse: collapse; margin-bottom: 18px; }
+    .marks-table th { background: #f1f5f9; color: #0b3c5d; padding: 10px 12px; border: 1px solid #cbd5e1; font-weight: 800; text-align: center; font-size: 0.9rem; }
+    .marks-table td { padding: 9px 12px; border: 1px solid #cbd5e1; text-align: center; font-size: 0.9rem; }
     .marks-table tr:nth-child(even) { background: #f8fafc; }
-    .result-summary-box { display: flex; justify-content: space-around; align-items: center; padding: 16px 20px; background: #e0f2fe; border-radius: 8px; margin-top: 14px; border-left: 5px solid #0284c7; }
-    .actions-row { display: flex; gap: 14px; justify-content: flex-end; margin-top: 30px; }
-    .btn-action-res { background: #f97316; color: #fff; border: none; padding: 11px 22px; border-radius: 6px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 0.95rem; }
+
+    /* Result Summary Box */
+    .result-summary-box {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 12px 18px;
+      background: #e0f2fe;
+      border-radius: 6px;
+      margin-top: 10px;
+      border-left: 5px solid #0284c7;
+    }
+    .signature-block {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 36px;
+      padding: 0 25px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #334155;
+    }
+    .actions-row { display: flex; gap: 14px; justify-content: flex-end; margin-top: 24px; }
+    .btn-action-res { background: #f97316; color: #fff; border: none; padding: 10px 22px; border-radius: 6px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 0.92rem; }
     .btn-action-res:hover { background: #ea580c; }
 
-    /* Strict Full-Page A4 Print Configuration */
+    /* Strict A4 Print (Eliminates bottom cutting & fits on one single page) */
     @media print {
-      @page { size: A4 portrait; margin: 10mm 12mm; }
-      html, body { background: #ffffff !important; margin: 0 !important; padding: 0 !important; width: 100% !important; height: 100% !important; }
+      @page {
+        size: A4 portrait;
+        margin: 8mm 10mm;
+      }
+      html, body {
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        overflow: hidden !important;
+      }
       body * { visibility: hidden; }
       #studentMarksheetBlock, #studentMarksheetBlock * { visibility: visible; }
       #studentMarksheetBlock {
-        position: absolute; left: 0; top: 0; width: 100% !important; height: 98% !important; max-width: 100% !important;
-        border: 4px double #0b3c5d !important; padding: 35px 30px !important; margin: 0 !important;
-        box-shadow: none !important; display: flex !important; flex-direction: column !important; justify-content: space-between !important;
-        page-break-inside: avoid !important; break-inside: avoid !important;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100% !important;
+        max-width: 100% !important;
+        border: 3px double #0b3c5d !important;
+        border-radius: 8px !important;
+        padding: 22px 24px 20px !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        box-sizing: border-box !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      .marksheet-header h2 {
+        font-size: 1.35rem !important;
+        white-space: nowrap !important;
+      }
+      .ms-emrs-logo {
+        width: 52px !important;
+        height: 52px !important;
+      }
+      .marks-table th, .marks-table td {
+        padding: 8px 10px !important;
+        font-size: 0.88rem !important;
+      }
+      .signature-block {
+        margin-top: 32px !important;
+        padding: 0 20px !important;
       }
       .actions-row { display: none !important; }
-      .marksheet-header h2 { font-size: 1.6rem !important; }
-      .marks-table th, .marks-table td { padding: 12px 14px !important; font-size: 1rem !important; }
-      .signature-block { margin-top: auto !important; padding-top: 40px !important; }
     }
 
     /* Staff Cards */
@@ -198,6 +312,7 @@
         "Eleventh", "Twelfth", "Thirteenth", "Fourteenth", "Fifteenth", "Sixteenth", "Seventeenth", "Eighteenth", "Nineteenth", "Twentieth",
         "Twenty-First", "Twenty-Second", "Twenty-Third", "Twenty-Fourth", "Twenty-Fifth", "Twenty-Sixth", "Twenty-Seventh", "Twenty-Eighth", "Twenty-Ninth", "Thirtieth", "Thirty-First"];
       var months = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      
       var ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
       var tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
 
@@ -319,7 +434,7 @@
       }).join("");
     };
 
-    // Render Notice Board Only (No "Circulars" text)
+    // Render Notice Board
     window.renderNotices = function() {
       var nCont = document.getElementById("noticeList");
       var hCont = document.getElementById("homeNoticeList");
@@ -489,16 +604,21 @@
         '<style>' +
           'body { font-family: "Georgia", serif; text-align: center; padding: 40px; background: #fafafa; }' +
           '.cert-box { border: 10px double #0b3c5d; padding: 45px 35px; background: #fff; max-width: 850px; margin: 0 auto; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }' +
-          'h1 { color: #0b3c5d; font-size: 2.2rem; text-transform: uppercase; margin-bottom: 5px; }' +
-          'h3 { color: #f97316; font-size: 1.25rem; margin-top: 0; font-weight: normal; }' +
-          'p.cert-text { font-size: 1.2rem; line-height: 2.2; margin: 30px 0; color: #1e293b; text-align: justify; }' +
-          '.name { font-size: 1.35rem; font-weight: bold; text-decoration: underline; color: #0b3c5d; }' +
-          '.footer-sign { display: flex; justify-content: space-between; margin-top: 70px; padding: 0 40px; font-weight: bold; color: #334155; }' +
+          '.cert-header { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 6px; }' +
+          '.cert-logo { width: 60px; height: 60px; object-fit: contain; }' +
+          'h1 { color: #0b3c5d; font-size: 1.8rem; text-transform: uppercase; margin: 0; white-space: nowrap; }' +
+          'h3 { color: #f97316; font-size: 1.15rem; margin-top: 4px; font-weight: normal; }' +
+          'p.cert-text { font-size: 1.15rem; line-height: 2.1; margin: 30px 0; color: #1e293b; text-align: justify; }' +
+          '.name { font-size: 1.3rem; font-weight: bold; text-decoration: underline; color: #0b3c5d; }' +
+          '.footer-sign { display: flex; justify-content: space-between; margin-top: 60px; padding: 0 30px; font-weight: bold; color: #334155; font-size: 0.95rem; }' +
         '</style></head><body>' +
         '<div class="cert-box">' +
-          '<h1>EKLAVYA MODEL RESIDENTIAL SCHOOL, SUBDEGA</h1>' +
+          '<div class="cert-header">' +
+            '<img src="logo.png" class="cert-logo" onerror="this.src=\'https://nests.tribal.gov.in/assets/images/emrs_logo.png\'" />' +
+            '<h1>EKLAVYA MODEL RESIDENTIAL SCHOOL, SUBDEGA</h1>' +
+          '</div>' +
           '<h3>Ministry of Tribal Affairs, Govt. of India</h3>' +
-          '<h2 style="margin-top:25px; text-decoration:underline; font-size:1.6rem; color:#0b3c5d;">PROMOTION CERTIFICATE</h2>' +
+          '<h2 style="margin-top:20px; text-decoration:underline; font-size:1.5rem; color:#0b3c5d;">PROMOTION CERTIFICATE</h2>' +
           '<p class="cert-text">' +
             'This is to certify that <span class="name">' + (d.student_name ? d.student_name.toUpperCase() : '') + '</span>, ' +
             (d.father_name ? 'Son/Daughter of <strong>Shri ' + d.father_name.toUpperCase() + '</strong> and ' : '') +
@@ -569,7 +689,7 @@
     </div>
   </nav>
 
-  <!-- 1. HOME VIEW (Notice Board Only - Circulars Removed) -->
+  <!-- 1. HOME VIEW -->
   <section id="tab-home" class="tab-section" style="display: block;">
     <div class="slider-container" id="homeSlider">
       <div class="slide active">
@@ -606,7 +726,7 @@
     </div>
   </section>
 
-  <!-- 2. STUDENT RESULTS VIEW -->
+  <!-- 2. STUDENT RESULTS VIEW (ONE-LINE SCHOOL NAME + LOGO + NO BOTTOM CUTTING) -->
   <section id="tab-results" class="tab-section" style="display: none;">
     <div class="content-container">
       
@@ -653,13 +773,18 @@
       <!-- Marksheet Output Block -->
       <div id="studentMarksheetBlock" class="marksheet-container">
         
+        <!-- Header with EMRS Logo and Single-Line School Title -->
         <div class="marksheet-header">
-          <h2>EKLAVYA MODEL RESIDENTIAL SCHOOL, SUBDEGA</h2>
+          <div class="ms-header-top">
+            <img src="logo.png" alt="EMRS Logo" class="ms-emrs-logo" onerror="this.src='https://nests.tribal.gov.in/assets/images/emrs_logo.png'" />
+            <h2>EKLAVYA MODEL RESIDENTIAL SCHOOL, SUBDEGA</h2>
+          </div>
           <p>AT/PO: SUBDEGA, DIST: SUNDARGARH, ODISHA - 770014</p>
-          <p style="font-weight:600; color:#0b3c5d; margin-top:2px;">Under NESTS, Ministry of Tribal Affairs, Govt. of India</p>
-          <h3 style="margin-top: 10px; color: #f97316; font-size: 1.2rem; letter-spacing: 1px; font-weight: 800;">ANNUAL PROGRESS & MARKS STATEMENT</h3>
+          <p style="font-weight:600; color:#0b3c5d;">Under NESTS, Ministry of Tribal Affairs, Govt. of India</p>
+          <div class="ms-sub-title">ANNUAL PROGRESS & MARKS STATEMENT</div>
         </div>
 
+        <!-- Student Meta Details Grid -->
         <div class="student-meta-grid">
           <div class="meta-item"><span class="lbl">Student Name</span><span class="val" id="msStudentName">-</span></div>
           <div class="meta-item"><span class="lbl">Roll Number</span><span class="val" id="msRollNo">-</span></div>
@@ -673,43 +798,46 @@
           <div class="meta-item" style="grid-column: span 2;"><span class="lbl">DOB In Words</span><span class="val" id="msDobWords">-</span></div>
         </div>
 
+        <!-- Academic Marks Table -->
         <table class="marks-table">
           <thead>
             <tr>
-              <th style="text-align: left; width: 45%;">Subject Name</th>
+              <th style="text-align: left; width: 44%;">Subject Name</th>
               <th style="width: 18%;">Maximum Marks</th>
               <th style="width: 20%;">Marks Obtained</th>
-              <th style="width: 17%;">Grade</th>
+              <th style="width: 18%;">Grade</th>
             </tr>
           </thead>
           <tbody id="msSubjectsBody"></tbody>
         </table>
 
+        <!-- Result Summary Box -->
         <div class="result-summary-box">
           <div>
-            <div style="font-size: 0.82rem; color: #475569; font-weight: 700;">TOTAL MARKS</div>
-            <div id="msTotal" style="font-size: 1.25rem; font-weight: 800; color: #0b3c5d;">-</div>
+            <div style="font-size: 0.76rem; color: #475569; font-weight: 700;">TOTAL MARKS</div>
+            <div id="msTotal" style="font-size: 1.15rem; font-weight: 800; color: #0b3c5d;">-</div>
           </div>
           <div>
-            <div style="font-size: 0.82rem; color: #475569; font-weight: 700;">PERCENTAGE</div>
-            <div id="msPercent" style="font-size: 1.25rem; font-weight: 800; color: #0b3c5d;">-</div>
+            <div style="font-size: 0.76rem; color: #475569; font-weight: 700;">PERCENTAGE</div>
+            <div id="msPercent" style="font-size: 1.15rem; font-weight: 800; color: #0b3c5d;">-</div>
           </div>
           <div>
-            <div style="font-size: 0.82rem; color: #475569; font-weight: 700;">OVERALL GRADE</div>
-            <div id="msGrade" style="font-size: 1.25rem; font-weight: 800; color: #0b3c5d;">-</div>
+            <div style="font-size: 0.76rem; color: #475569; font-weight: 700;">OVERALL GRADE</div>
+            <div id="msGrade" style="font-size: 1.15rem; font-weight: 800; color: #0b3c5d;">-</div>
           </div>
           <div>
-            <div style="font-size: 0.82rem; color: #475569; font-weight: 700;">FINAL RESULT</div>
-            <div id="msStatusBadge" style="font-size: 1.25rem; font-weight: 900;">PASSED</div>
+            <div style="font-size: 0.76rem; color: #475569; font-weight: 700;">FINAL RESULT</div>
+            <div id="msStatusBadge" style="font-size: 1.15rem; font-weight: 900;">PASSED</div>
           </div>
         </div>
 
-        <p id="msPromotionNotice" style="margin-top: 14px; padding: 10px 14px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; color: #166534; font-size: 0.95rem; display: none;"></p>
+        <p id="msPromotionNotice" style="margin-top: 10px; padding: 8px 12px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; color: #166534; font-size: 0.88rem; display: none;"></p>
 
-        <div class="signature-block" style="display: flex; justify-content: space-between; margin-top: 50px; padding: 0 30px; font-size: 0.92rem; font-weight: 700; color: #334155;">
-          <div style="text-align: center; border-top: 1px solid #94a3b8; padding-top: 6px; width: 180px;">Class Teacher Signature</div>
-          <div style="text-align: center; border-top: 1px solid #94a3b8; padding-top: 6px; width: 180px;">Exam In-Charge</div>
-          <div style="text-align: center; border-top: 1px solid #94a3b8; padding-top: 6px; width: 180px;">Principal Signature</div>
+        <!-- Official Signatures Block (Positioned safely above bottom border) -->
+        <div class="signature-block">
+          <div style="text-align: center; border-top: 1px solid #94a3b8; padding-top: 4px; width: 175px;">Class Teacher Signature</div>
+          <div style="text-align: center; border-top: 1px solid #94a3b8; padding-top: 4px; width: 175px;">Exam In-Charge</div>
+          <div style="text-align: center; border-top: 1px solid #94a3b8; padding-top: 4px; width: 175px;">Principal Signature</div>
         </div>
 
         <div class="actions-row">
@@ -722,7 +850,7 @@
     </div>
   </section>
 
-  <!-- 3. DOCUMENTS VIEW (Notice Board Title) -->
+  <!-- 3. DOCUMENTS VIEW -->
   <section id="tab-documents" class="tab-section" style="display: none;">
     <div class="content-container">
       <div class="content-card" style="border-top: 4px solid #0284c7; padding: 25px 30px;">
@@ -748,7 +876,7 @@
     </div>
   </section>
 
-  <!-- 4. NOTICES VIEW (Notice Board Only) -->
+  <!-- 4. NOTICES VIEW -->
   <section id="tab-notices" class="tab-section" style="display: none;">
     <div class="content-container">
       <div class="content-card" style="border-top: 4px solid #0b3c5d;">
