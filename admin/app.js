@@ -28,7 +28,6 @@ function formatDateDMY(dateStr) {
   return dateStr;
 }
 
-// Helper: Convert YYYY-MM-DD into formal English words
 function convertDateToWords(dateStr) {
   if (!dateStr) return '';
   var parts = dateStr.split('-');
@@ -41,7 +40,6 @@ function convertDateToWords(dateStr) {
     "Eleventh", "Twelfth", "Thirteenth", "Fourteenth", "Fifteenth", "Sixteenth", "Seventeenth", "Eighteenth", "Nineteenth", "Twentieth",
     "Twenty-First", "Twenty-Second", "Twenty-Third", "Twenty-Fourth", "Twenty-Fifth", "Twenty-Sixth", "Twenty-Seventh", "Twenty-Eighth", "Twenty-Ninth", "Thirtieth", "Thirty-First"];
   var months = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  
   var ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
   var tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
 
@@ -82,6 +80,10 @@ window.switchAdminTab = function(tabId, btn) {
   if (heading && btn) heading.textContent = btn.textContent.trim().replace(/^[^a-zA-Z0-9]+/, '');
 
   if (tabId === 'tab-results-admin') loadAdminStudentResults();
+  if (tabId === 'tab-docs') loadAdminDocs();
+  if (tabId === 'tab-notices') loadAdminNotices();
+  if (tabId === 'tab-gallery') loadAdminGallery();
+  if (tabId === 'tab-staff') loadAdminStaff();
 };
 
 async function checkSession() {
@@ -104,10 +106,14 @@ async function checkSession() {
   }
 }
 
+// Loads ALL Admin sections automatically on login
 function loadAllAdminData() {
   loadInstitutionDetails();
   loadAdminStudentResults();
   loadAdminStaff();
+  loadAdminDocs();
+  loadAdminNotices();
+  loadAdminGallery();
 }
 
 // ---------------- DYNAMIC CUSTOM SUBJECT EDITOR ----------------
@@ -470,7 +476,198 @@ window.executeBatchPromotion = async function() {
   }
 };
 
-// ---------------- 3. STAFF, DOCS, NOTICES, GALLERY ----------------
+// ---------------- 3. DOCUMENTS CRUD & TABLE SYNC ----------------
+var docForm = document.getElementById("docForm");
+if (docForm) {
+  docForm.addEventListener("submit", async function(e) {
+    e.preventDefault();
+    var status = document.getElementById("docStatus");
+    status.style.color = "#0284c7";
+    status.textContent = "Uploading document...";
+
+    var circNo = document.getElementById("docCircularNo").value.trim();
+    var docDate = document.getElementById("docDate").value || null;
+    var category = document.getElementById("docCategory").value;
+    var title = document.getElementById("docTitle").value.trim();
+    var file = document.getElementById("docFile").files[0];
+
+    if (!file) return;
+
+    try {
+      var filePath = "docs_" + Date.now() + "_" + file.name.replace(/[^a-zA-Z0-9.]/g, "_");
+      var upRes = await client.storage.from("documents").upload(filePath, file);
+      if (upRes.error) throw upRes.error;
+
+      var pub = client.storage.from("documents").getPublicUrl(filePath);
+      var ins = await client.from("documents").insert([{
+        circular_no: circNo,
+        doc_date: docDate,
+        category: category,
+        title: title,
+        file_url: pub.data.publicUrl
+      }]);
+      if (ins.error) throw ins.error;
+
+      status.style.color = "#16a34a";
+      status.textContent = "Document uploaded successfully!";
+      docForm.reset();
+      loadAdminDocs();
+    } catch(err) {
+      status.style.color = "#dc2626";
+      status.textContent = "Error: " + err.message;
+    }
+  });
+}
+
+async function loadAdminDocs() {
+  var tbody = document.getElementById("docTableBody");
+  if (!tbody || !client) return;
+
+  var res = await client.from("documents").select("*").order("created_at", { ascending: false });
+  if (res.data) {
+    if (res.data.length > 0) {
+      tbody.innerHTML = res.data.map(function(d) {
+        return '<tr>' +
+          '<td>' + (d.circular_no || '-') + '</td>' +
+          '<td>' + formatDateDMY(d.doc_date) + '</td>' +
+          '<td>' + (d.category || '-') + '</td>' +
+          '<td>' + (d.title || '-') + '</td>' +
+          '<td><a href="' + d.file_url + '" target="_blank" style="color:#0284c7; font-weight:600;">Download</a></td>' +
+          '<td><button type="button" class="btn-delete" onclick="deleteDoc(\'' + d.id + '\')">Delete</button></td>' +
+        '</tr>';
+      }).join("");
+    } else {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #64748b;">No documents uploaded.</td></tr>';
+    }
+  }
+}
+
+window.deleteDoc = async function(id) {
+  if (!confirm("Delete this document?")) return;
+  await client.from("documents").delete().eq("id", id);
+  loadAdminDocs();
+};
+
+// ---------------- 4. NOTICE BOARD CRUD & TABLE SYNC ----------------
+var noticeForm = document.getElementById("noticeForm");
+if (noticeForm) {
+  noticeForm.addEventListener("submit", async function(e) {
+    e.preventDefault();
+    var status = document.getElementById("noticeStatus");
+    status.style.color = "#0284c7";
+    status.textContent = "Publishing notice...";
+
+    var title = document.getElementById("noticeTitle").value.trim();
+    var date = document.getElementById("noticeDate").value;
+    var body = document.getElementById("noticeBody").value.trim();
+
+    var ins = await client.from("notices").insert([{ title: title, notice_date: date, body: body }]);
+    if (ins.error) {
+      status.style.color = "#dc2626";
+      status.textContent = "Error: " + ins.error.message;
+    } else {
+      status.style.color = "#16a34a";
+      status.textContent = "Notice published successfully!";
+      noticeForm.reset();
+      loadAdminNotices();
+    }
+  });
+}
+
+async function loadAdminNotices() {
+  var tbody = document.getElementById("noticeTableBody");
+  if (!tbody || !client) return;
+
+  var res = await client.from("notices").select("*").order("notice_date", { ascending: false });
+  if (res.data) {
+    if (res.data.length > 0) {
+      tbody.innerHTML = res.data.map(function(n) {
+        return '<tr>' +
+          '<td>' + formatDateDMY(n.notice_date) + '</td>' +
+          '<td><strong>' + (n.title || '') + '</strong></td>' +
+          '<td>' + (n.body || '') + '</td>' +
+          '<td><button type="button" class="btn-delete" onclick="deleteNotice(\'' + n.id + '\')">Delete</button></td>' +
+        '</tr>';
+      }).join("");
+    } else {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748b;">No notices posted.</td></tr>';
+    }
+  }
+}
+
+window.deleteNotice = async function(id) {
+  if (!confirm("Delete this notice?")) return;
+  await client.from("notices").delete().eq("id", id);
+  loadAdminNotices();
+};
+
+// ---------------- 5. PHOTO GALLERY & SLIDER CRUD ----------------
+var galleryForm = document.getElementById("galleryForm");
+if (galleryForm) {
+  galleryForm.addEventListener("submit", async function(e) {
+    e.preventDefault();
+    var status = document.getElementById("photoStatus");
+    status.style.color = "#0284c7";
+    status.textContent = "Uploading image...";
+
+    var title = document.getElementById("photoTitle").value.trim();
+    var file = document.getElementById("photoFile").files[0];
+    var isSlider = document.getElementById("photoIsSlider").checked;
+
+    if (!file) return;
+
+    try {
+      var filePath = "gallery_" + Date.now() + "_" + file.name.replace(/[^a-zA-Z0-9.]/g, "_");
+      var upRes = await client.storage.from("gallery").upload(filePath, file);
+      if (upRes.error) throw upRes.error;
+
+      var pub = client.storage.from("gallery").getPublicUrl(filePath);
+      var ins = await client.from("gallery").insert([{
+        title: title,
+        image_url: pub.data.publicUrl,
+        is_slider: isSlider
+      }]);
+      if (ins.error) throw ins.error;
+
+      status.style.color = "#16a34a";
+      status.textContent = "Photo uploaded successfully!";
+      galleryForm.reset();
+      loadAdminGallery();
+    } catch(err) {
+      status.style.color = "#dc2626";
+      status.textContent = "Error: " + err.message;
+    }
+  });
+}
+
+async function loadAdminGallery() {
+  var tbody = document.getElementById("galleryTableBody");
+  if (!tbody || !client) return;
+
+  var res = await client.from("gallery").select("*").order("created_at", { ascending: false });
+  if (res.data) {
+    if (res.data.length > 0) {
+      tbody.innerHTML = res.data.map(function(g) {
+        return '<tr>' +
+          '<td><img src="' + g.image_url + '" style="width:65px; height:48px; object-fit:cover; border-radius:4px; border:1px solid #cbd5e1;" /></td>' +
+          '<td>' + (g.title || '-') + '</td>' +
+          '<td>' + (g.is_slider ? '<span style="color:#16a34a; font-weight:700;">★ In Slider</span>' : 'Gallery Only') + '</td>' +
+          '<td><button type="button" class="btn-delete" onclick="deleteGallery(\'' + g.id + '\')">Delete</button></td>' +
+        '</tr>';
+      }).join("");
+    } else {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748b;">No photos uploaded yet.</td></tr>';
+    }
+  }
+}
+
+window.deleteGallery = async function(id) {
+  if (!confirm("Delete this photo?")) return;
+  await client.from("gallery").delete().eq("id", id);
+  loadAdminGallery();
+};
+
+// ---------------- 6. STAFF CRUD ----------------
 var staffForm = document.getElementById("staffForm");
 if (staffForm) {
   staffForm.addEventListener("submit", async function(e) {
