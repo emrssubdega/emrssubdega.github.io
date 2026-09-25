@@ -94,41 +94,50 @@
     .dot { width: 11px; height: 11px; background: rgba(255, 255, 255, 0.5); border-radius: 50%; cursor: pointer; }
     .dot.active { background: #f97316; width: 24px; border-radius: 6px; }
 
-    /* Dynamic Badges */
-    .inst-badge-strip { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; padding-top: 16px; border-top: 1px solid #f1f5f9; }
-    .inst-pill { display: inline-flex; align-items: center; gap: 6px; background: #f1f5f9; color: #0b3c5d; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 700; border: 1px solid #e2e8f0; }
-    .inst-pill span.label { color: #64748b; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; }
-
-    /* Results Card */
+    /* Results Search Card (Class Included - Point 2) */
     .results-search-card {
       background: #ffffff; border-radius: 12px; padding: 32px; border-top: 5px solid #0b3c5d; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); margin-bottom: 30px;
     }
-    .form-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 18px; }
+    .form-grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 18px; }
     .form-field { display: flex; flex-direction: column; gap: 6px; }
     .form-field label { font-size: 0.82rem; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; }
     .form-field input, .form-field select { padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.95rem; outline: none; font-family: inherit; }
     .form-field input:focus, .form-field select:focus { border-color: #0b3c5d; }
-    .btn-search-res { background: #0b3c5d; color: #ffffff; border: none; padding: 11px 26px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.95rem; margin-top: 23px; }
+    .btn-search-res { background: #0b3c5d; color: #ffffff; border: none; padding: 11px 26px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.95rem; margin-top: 20px; }
     .btn-search-res:hover { background: #072a42; }
 
-    /* Printable Marksheet & Certificate */
+    /* Printable Single Page Marksheet (Point 1) */
     .marksheet-container {
-      background: #ffffff; border: 2px solid #0b3c5d; border-radius: 10px; padding: 35px 30px; margin-top: 30px; display: none; box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+      background: #ffffff; border: 2px solid #0b3c5d; border-radius: 8px; padding: 25px 25px; margin-top: 25px; display: none; box-shadow: 0 4px 16px rgba(0,0,0,0.06); max-width: 900px; margin-left: auto; margin-right: auto;
     }
-    .marksheet-header { text-align: center; border-bottom: 2px solid #0b3c5d; padding-bottom: 16px; margin-bottom: 20px; }
-    .marksheet-header h2 { font-size: 1.4rem; color: #0b3c5d; font-weight: 800; text-transform: uppercase; margin-bottom: 4px; }
-    .marksheet-header p { font-size: 0.9rem; color: #475569; margin: 0; }
-    .student-meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
-    .meta-item span.lbl { font-size: 0.78rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
-    .meta-item span.val { font-size: 0.95rem; font-weight: 800; color: #0f172a; display: block; }
-    .marks-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-    .marks-table th { background: #f1f5f9; color: #1e293b; padding: 10px 12px; border: 1px solid #cbd5e1; font-weight: 700; text-align: center; }
-    .marks-table td { padding: 10px 12px; border: 1px solid #cbd5e1; text-align: center; font-size: 0.92rem; }
+    .marksheet-header { text-align: center; border-bottom: 2px solid #0b3c5d; padding-bottom: 10px; margin-bottom: 14px; }
+    .marksheet-header h2 { font-size: 1.25rem; color: #0b3c5d; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; }
+    .marksheet-header p { font-size: 0.82rem; color: #475569; margin: 0; }
+    .student-meta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; background: #f8fafc; padding: 10px 14px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 14px; }
+    .meta-item span.lbl { font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
+    .meta-item span.val { font-size: 0.88rem; font-weight: 800; color: #0f172a; display: block; }
+    .marks-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
+    .marks-table th { background: #f1f5f9; color: #1e293b; padding: 7px 10px; border: 1px solid #cbd5e1; font-weight: 700; text-align: center; font-size: 0.82rem; }
+    .marks-table td { padding: 6px 10px; border: 1px solid #cbd5e1; text-align: center; font-size: 0.84rem; }
     .marks-table tr:nth-child(even) { background: #f8fafc; }
-    .result-summary-box { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: #e0f2fe; border-radius: 8px; margin-top: 15px; border-left: 5px solid #0284c7; }
-    .actions-row { display: flex; gap: 12px; justify-content: flex-end; margin-top: 25px; }
-    .btn-action-res { background: #f97316; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+    .result-summary-box { display: flex; justify-content: space-around; align-items: center; padding: 10px 14px; background: #e0f2fe; border-radius: 6px; margin-top: 10px; border-left: 4px solid #0284c7; }
+    .actions-row { display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px; }
+    .btn-action-res { background: #f97316; color: #fff; border: none; padding: 9px 18px; border-radius: 6px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 0.9rem; }
     .btn-action-res:hover { background: #ea580c; }
+
+    /* Single-Page Strict Print Rules */
+    @media print {
+      @page { size: A4 portrait; margin: 10mm; }
+      html, body { background: #fff !important; margin: 0 !important; padding: 0 !important; width: 100% !important; height: auto !important; }
+      body * { visibility: hidden; }
+      #studentMarksheetBlock, #studentMarksheetBlock * { visibility: visible; }
+      #studentMarksheetBlock {
+        position: absolute; left: 0; top: 0; width: 100% !important; max-width: 100% !important;
+        border: 2px solid #0b3c5d !important; padding: 15px !important; margin: 0 !important;
+        box-shadow: none !important; page-break-inside: avoid !important; break-inside: avoid !important;
+      }
+      .actions-row { display: none !important; }
+    }
 
     /* Staff Cards */
     .staff-category-block { margin-bottom: 45px; }
@@ -152,13 +161,6 @@
     .footer-col a { color: #38bdf8; text-decoration: none; }
     .footer-bottom { max-width: 1200px; margin: 22px auto 0; text-align: center; font-size: 0.88rem; }
     .footer-bottom a { color: #64748b; text-decoration: none; }
-
-    @media print {
-      body * { visibility: hidden; }
-      #studentMarksheetBlock, #studentMarksheetBlock * { visibility: visible; }
-      #studentMarksheetBlock { position: absolute; left: 0; top: 0; width: 100%; border: none; box-shadow: none; padding: 0; }
-      .actions-row { display: none; }
-    }
   </style>
 
   <script>
@@ -215,7 +217,7 @@
       }
 
       if (!matches || matches.length === 0) {
-        list.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748b; padding: 24px; font-style: italic; border: 1px solid #e2e8f0;">No documents found under "' + (window.currentDocCategory || 'General') + '". <br/><button type="button" onclick="window.openDocCategory(\'ALL\')" style="margin-top:8px; background:#0b3c5d; color:#fff; border:none; padding:5px 12px; border-radius:4px; cursor:pointer;">View All Uploaded Records</button></td></tr>';
+        list.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748b; padding: 24px; font-style: italic; border: 1px solid #e2e8f0;">No documents found.</td></tr>';
         return;
       }
 
@@ -255,9 +257,8 @@
         return;
       }
       grid.innerHTML = window.allGallery.map(function(photo) {
-        return '<div class="photo-card" onclick="openLightbox(\'' + photo.image_url + '\', \'' + window.escapeHtml(photo.title || '') + '\')">' +
-          '<img src="' + photo.image_url + '" alt="' + (photo.title || 'School photo') + '" loading="lazy" />' +
-          (photo.title ? '<div class="photo-card-title">' + window.escapeHtml(photo.title) + '</div>' : '') +
+        return '<div class="photo-card" style="height:220px; overflow:hidden; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.08); background:#e2e8f0;">' +
+          '<img src="' + photo.image_url + '" alt="' + (photo.title || 'School photo') + '" style="width:100%; height:100%; object-fit:cover;" loading="lazy" />' +
         '</div>';
       }).join("");
     };
@@ -272,12 +273,12 @@
         return;
       }
       var html = window.allNotices.map(function(item) {
-        return '<div class="notice-item">' +
-          '<div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;">' +
-            '<span style="color:#0f172a; font-weight:600; font-size:1.05rem;">' + window.escapeHtml(item.title || '') + '</span>' +
-            '<span style="font-size:0.85rem; color:#64748b; background:#e2e8f0; padding:2px 8px; border-radius:4px;">' + window.escapeHtml(window.formatDateDMY(item.notice_date)) + '</span>' +
+        return '<div style="padding:14px; border-radius:6px; background:#f8fafc; border-left:4px solid #0284c7; margin-bottom:10px;">' +
+          '<div style="display:flex; justify-content:space-between; align-items:baseline; gap:8px;">' +
+            '<span style="color:#0f172a; font-weight:600;">' + window.escapeHtml(item.title || '') + '</span>' +
+            '<span style="font-size:0.82rem; color:#64748b; background:#e2e8f0; padding:2px 8px; border-radius:4px;">' + window.escapeHtml(window.formatDateDMY(item.notice_date)) + '</span>' +
           '</div>' +
-          '<p style="color:#475569; font-size:0.95rem; line-height:1.5;">' + window.escapeHtml(item.body || '') + '</p>' +
+          '<p style="color:#475569; font-size:0.92rem; margin-top:4px;">' + window.escapeHtml(item.body || '') + '</p>' +
         '</div>';
       }).join("");
       if (nCont) nCont.innerHTML = html;
@@ -323,30 +324,13 @@
       var name = data.institution_name || 'EMRS Subdega';
       var loc = data.location || 'Subdega, Sundargarh, Odisha - 770014';
       var email = data.official_email || 'emrssubdega@gmail.com';
-      var cbseAff = (data.cbse_affiliation_no || '').trim();
-      var schCode = (data.school_code || '').trim();
-      var udise = (data.udise_code || '').trim();
       var phone = (data.office_phone || '').trim();
-      var session = (data.academic_session || '').trim();
-
-      var strip = document.getElementById('instBadgeStrip');
-      if (strip) {
-        var badges = [];
-        if (cbseAff) badges.push('<div class="inst-pill"><span class="label">CBSE Affiliation:</span> ' + window.escapeHtml(cbseAff) + '</div>');
-        if (schCode) badges.push('<div class="inst-pill"><span class="label">School Code:</span> ' + window.escapeHtml(schCode) + '</div>');
-        if (udise) badges.push('<div class="inst-pill"><span class="label">UDISE+:</span> ' + window.escapeHtml(udise) + '</div>');
-        if (session) badges.push('<div class="inst-pill"><span class="label">Session:</span> ' + window.escapeHtml(session) + '</div>');
-        strip.style.display = badges.length > 0 ? 'flex' : 'none';
-        strip.innerHTML = badges.join('');
-      }
 
       var fName = document.getElementById('footerSchoolName');
       var fAddr = document.getElementById('footerAddress');
       var fEmail = document.getElementById('footerEmail');
       var fPhoneP = document.getElementById('footerPhoneP');
       var fPhoneVal = document.getElementById('footerPhone');
-      var fAffP = document.getElementById('footerAffP');
-      var fAffVal = document.getElementById('footerAffVal');
 
       if (fName) fName.textContent = name;
       if (fAddr) fAddr.textContent = loc;
@@ -355,20 +339,14 @@
         if (phone) { fPhoneP.style.display = 'block'; fPhoneVal.textContent = phone; fPhoneVal.href = 'tel:' + phone.replace(/[^0-9+]/g, ''); }
         else { fPhoneP.style.display = 'none'; }
       }
-      if (fAffP && fAffVal) {
-        var affParts = [];
-        if (cbseAff) affParts.push('Affiliation No: ' + cbseAff);
-        if (schCode) affParts.push('School Code: ' + schCode);
-        if (affParts.length > 0) { fAffP.style.display = 'block'; fAffVal.textContent = affParts.join(' | '); }
-        else { fAffP.style.display = 'none'; }
-      }
     };
 
-    // SEARCH STUDENT RESULT & MARKSHEET
+    // SEARCH STUDENT RESULT & MARKSHEET (CLASS FILTER INCLUDED - Point 2)
     window.currentStudentResult = null;
     window.searchStudentResult = async function(e) {
       if (e) e.preventDefault();
       var roll = document.getElementById('resRollNo').value.trim();
+      var selectedClass = document.getElementById('resClass').value;
       var session = document.getElementById('resSession').value;
       var dob = document.getElementById('resDob').value;
       var status = document.getElementById('resSearchStatus');
@@ -378,8 +356,10 @@
       status.textContent = 'Searching student records...';
       outCard.style.display = 'none';
 
+      // Queries strictly with Class + Roll + Session + DOB (Prevents collision across classes)
       var query = window.client.from('student_results').select('*')
         .eq('roll_no', roll)
+        .eq('class_name', selectedClass)
         .eq('academic_session', session)
         .eq('dob', dob)
         .maybeSingle();
@@ -387,7 +367,7 @@
       var res = await query;
       if (res.error || !res.data) {
         status.style.color = '#dc2626';
-        status.textContent = 'No result record found matching the Roll No, Academic Session, and DOB.';
+        status.textContent = 'No result record found matching the Roll No, Class, Session, and DOB.';
         return;
       }
 
@@ -421,11 +401,10 @@
       statBadge.textContent = d.result_status || 'PASSED';
       statBadge.style.color = (d.result_status === 'FAILED') ? '#dc2626' : '#16a34a';
 
-      // Promotion Notice
       var promP = document.getElementById('msPromotionNotice');
       if (d.promoted_to_class && d.promoted_session) {
         promP.style.display = 'block';
-        promP.innerHTML = '🎉 <strong>Promotion Status:</strong> Eligible & Promoted to <u>' + window.escapeHtml(d.promoted_to_class) + '</u> for Academic Session <u>' + window.escapeHtml(d.promoted_session) + '</u>.';
+        promP.innerHTML = '🎉 <strong>Promotion Status:</strong> Promoted to <u>' + window.escapeHtml(d.promoted_to_class) + '</u> for Session <u>' + window.escapeHtml(d.promoted_session) + '</u>.';
       } else {
         promP.style.display = 'none';
       }
@@ -446,9 +425,9 @@
         '<!DOCTYPE html><html><head><title>Certificate - ' + d.student_name + '</title>' +
         '<style>' +
           'body { font-family: "Georgia", serif; text-align: center; padding: 40px; background: #fafafa; }' +
-          '.cert-box { border: 10px double #0b3c5d; padding: 40px 30px; background: #fff; max-width: 850px; margin: 0 auto; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }' +
+          '.cert-box { border: 10px double #0b3c5d; padding: 40px 30px; background: #fff; max-width: 850px; margin: 0 auto; }' +
           'h1 { color: #0b3c5d; font-size: 2.2rem; text-transform: uppercase; margin-bottom: 5px; }' +
-          'h3 { color: #f97316; font-size: 1.3rem; margin-top: 0; font-weight: normal; letter-spacing: 1px; }' +
+          'h3 { color: #f97316; font-size: 1.3rem; margin-top: 0; font-weight: normal; }' +
           'p.cert-text { font-size: 1.25rem; line-height: 2; margin: 30px 0; color: #1e293b; }' +
           '.name { font-size: 1.5rem; font-weight: bold; text-decoration: underline; color: #0b3c5d; }' +
           '.footer-sign { display: flex; justify-content: space-between; margin-top: 60px; padding: 0 40px; font-weight: bold; color: #334155; }' +
@@ -456,13 +435,13 @@
         '<div class="cert-box">' +
           '<h1>EKLAVYA MODEL RESIDENTIAL SCHOOL, SUBDEGA</h1>' +
           '<h3>Ministry of Tribal Affairs, Govt. of India</h3>' +
-          '<h2 style="margin-top:25px; text-decoration:underline; font-size:1.6rem;">PROMOTION CERTIFICATE</h2>' +
+          '<h2 style="margin-top:25px; text-decoration:underline;">PROMOTION CERTIFICATE</h2>' +
           '<p class="cert-text">' +
             'This is to certify that <span class="name">' + d.student_name.toUpperCase() + '</span>, ' +
             'bearing Roll No: <strong>' + d.roll_no + '</strong>, has successfully passed ' +
-            '<strong>' + d.class_name + '</strong> in the Academic Session <strong>' + d.academic_session + '</strong> ' +
+            '<strong>' + d.class_name + '</strong> in Academic Session <strong>' + d.academic_session + '</strong> ' +
             'securing <strong>' + d.percentage + '%</strong> (Grade ' + (d.grade || 'A') + ').<br/>' +
-            (d.promoted_to_class ? 'The student is hereby declared <strong>PROMOTED</strong> to <strong>' + d.promoted_to_class + '</strong> for Session <strong>' + (d.promoted_session || 'Next Academic Year') + '</strong>.' : '') +
+            (d.promoted_to_class ? 'The student is declared <strong>PROMOTED</strong> to <strong>' + d.promoted_to_class + '</strong> for Session <strong>' + (d.promoted_session || 'Next Academic Year') + '</strong>.' : '') +
           '</p>' +
           '<div class="footer-sign">' +
             '<div>Exam In-Charge</div>' +
@@ -488,7 +467,6 @@
         <p>National Education Society for Tribal Students (NESTS) | Ministry of Tribal Affairs, Govt. of India</p>
       </div>
     </div>
-
     <div class="header-right">
       <div class="header-tagline">
         <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" alt="National Emblem" style="height: 48px; width: auto; margin-bottom: 4px; object-fit: contain;" />
@@ -550,11 +528,10 @@
         <p style="color: #475569; font-size: 1rem;">
           Our focus is on the comprehensive development of students through high academic standards, sports, and cultural enrichment.
         </p>
-        <div id="instBadgeStrip" class="inst-badge-strip" style="display: none;"></div>
       </div>
     </div>
 
-    <!-- Direct Results Action Card on Homepage -->
+    <!-- Quick Results Banner -->
     <div class="content-container">
       <div class="content-card" style="border-left: 6px solid #0284c7; background: #f0f9ff; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
         <div>
@@ -575,19 +552,31 @@
     </div>
   </section>
 
-  <!-- 2. STUDENT RESULTS VIEW (OPTION A) -->
+  <!-- 2. STUDENT RESULTS VIEW (CORRECTION 2: CLASS FILTER INCLUDED) -->
   <section id="tab-results" class="tab-section" style="display: none;">
     <div class="content-container">
       
       <div class="results-search-card">
         <h2 style="color: #0b3c5d; margin-bottom: 6px;">Student Result & Marksheet Portal</h2>
-        <p style="color: #64748b; font-size: 0.95rem;">Enter your Roll Number, Academic Session, and Date of Birth to view your official result and download marksheets.</p>
+        <p style="color: #64748b; font-size: 0.95rem;">Select your Class, Session, and enter your Roll Number & Date of Birth to view your official result.</p>
 
         <form onsubmit="window.searchStudentResult(event)">
-          <div class="form-grid-3">
+          <div class="form-grid-4">
+            <div class="form-field">
+              <label>Class *</label>
+              <select id="resClass" required>
+                <option value="Class VI">Class VI</option>
+                <option value="Class VII">Class VII</option>
+                <option value="Class VIII">Class VIII</option>
+                <option value="Class IX">Class IX</option>
+                <option value="Class X">Class X</option>
+                <option value="Class XI">Class XI</option>
+                <option value="Class XII">Class XII</option>
+              </select>
+            </div>
             <div class="form-field">
               <label>Roll Number *</label>
-              <input type="text" id="resRollNo" placeholder="e.g. 2025-06-14" required />
+              <input type="text" id="resRollNo" placeholder="e.g. 01, 14, 2025-06-14" required />
             </div>
             <div class="form-field">
               <label>Academic Session *</label>
@@ -607,20 +596,20 @@
         </form>
       </div>
 
-      <!-- Marksheet Output Block -->
+      <!-- Marksheet Output Block (CORRECTION 1: STRICT SINGLE PAGE PRINT) -->
       <div id="studentMarksheetBlock" class="marksheet-container">
         
         <div class="marksheet-header">
           <h2>EKLAVYA MODEL RESIDENTIAL SCHOOL, SUBDEGA</h2>
           <p>Sundargarh, Odisha - 770014 | NESTS • Ministry of Tribal Affairs</p>
-          <h3 style="margin-top: 10px; color: #f97316; font-size: 1.15rem; letter-spacing: 0.5px;">ANNUAL PROGRESS & MARKS STATEMENT</h3>
+          <h3 style="margin-top: 6px; color: #f97316; font-size: 1.05rem; letter-spacing: 0.5px;">ANNUAL PROGRESS & MARKS STATEMENT</h3>
         </div>
 
         <div class="student-meta-grid">
           <div class="meta-item"><span class="lbl">Student Name</span><span class="val" id="msStudentName">-</span></div>
           <div class="meta-item"><span class="lbl">Roll Number</span><span class="val" id="msRollNo">-</span></div>
           <div class="meta-item"><span class="lbl">Class & Section</span><span class="val" id="msClass">-</span></div>
-          <div class="meta-item"><span class="lbl">Academic Session</span><span class="val" id="msSession">-</span></div>
+          <div class="meta-item"><span class="lbl">Session</span><span class="val" id="msSession">-</span></div>
           <div class="meta-item"><span class="lbl">Date of Birth</span><span class="val" id="msDob">-</span></div>
         </div>
 
@@ -638,27 +627,34 @@
 
         <div class="result-summary-box">
           <div>
-            <div style="font-size: 0.85rem; color: #475569; font-weight: 700;">TOTAL MARKS</div>
-            <div id="msTotal" style="font-size: 1.15rem; font-weight: 800; color: #0b3c5d;">-</div>
+            <div style="font-size: 0.75rem; color: #475569; font-weight: 700;">TOTAL MARKS</div>
+            <div id="msTotal" style="font-size: 1.05rem; font-weight: 800; color: #0b3c5d;">-</div>
           </div>
           <div>
-            <div style="font-size: 0.85rem; color: #475569; font-weight: 700;">PERCENTAGE</div>
-            <div id="msPercent" style="font-size: 1.15rem; font-weight: 800; color: #0b3c5d;">-</div>
+            <div style="font-size: 0.75rem; color: #475569; font-weight: 700;">PERCENTAGE</div>
+            <div id="msPercent" style="font-size: 1.05rem; font-weight: 800; color: #0b3c5d;">-</div>
           </div>
           <div>
-            <div style="font-size: 0.85rem; color: #475569; font-weight: 700;">OVERALL GRADE</div>
-            <div id="msGrade" style="font-size: 1.15rem; font-weight: 800; color: #0b3c5d;">-</div>
+            <div style="font-size: 0.75rem; color: #475569; font-weight: 700;">OVERALL GRADE</div>
+            <div id="msGrade" style="font-size: 1.05rem; font-weight: 800; color: #0b3c5d;">-</div>
           </div>
           <div>
-            <div style="font-size: 0.85rem; color: #475569; font-weight: 700;">RESULT STATUS</div>
-            <div id="msStatusBadge" style="font-size: 1.15rem; font-weight: 900;">PASSED</div>
+            <div style="font-size: 0.75rem; color: #475569; font-weight: 700;">RESULT STATUS</div>
+            <div id="msStatusBadge" style="font-size: 1.05rem; font-weight: 900;">PASSED</div>
           </div>
         </div>
 
-        <p id="msPromotionNotice" style="margin-top: 18px; padding: 12px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; color: #166534; font-size: 0.95rem; display: none;"></p>
+        <p id="msPromotionNotice" style="margin-top: 12px; padding: 8px 12px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 4px; color: #166534; font-size: 0.85rem; display: none;"></p>
+
+        <!-- Signature Space for Single Page Print -->
+        <div style="display: flex; justify-content: space-between; margin-top: 35px; padding: 0 20px; font-size: 0.85rem; font-weight: 700; color: #334155;">
+          <div>Class Teacher Signature</div>
+          <div>Exam In-Charge</div>
+          <div>Principal Signature</div>
+        </div>
 
         <div class="actions-row">
-          <button type="button" onclick="window.printMarksheet()" class="btn-action-res">🖨️ Print Marksheet</button>
+          <button type="button" onclick="window.printMarksheet()" class="btn-action-res">🖨️ Print Marksheet (Single Page)</button>
           <button type="button" onclick="window.downloadCertificate()" class="btn-action-res" style="background:#0284c7;">📄 Download Certificate</button>
         </div>
 
@@ -676,7 +672,6 @@
           <button type="button" onclick="window.openDocCategory('ALL')" style="background: none; border: 1px solid #0284c7; color: #0284c7; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">View All Documents</button>
         </div>
         <p id="docSub" style="color: #64748b; font-size: 0.95rem; margin-bottom: 22px;">Official records and circulars</p>
-        
         <div style="overflow-x: auto;">
           <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.92rem;">
             <thead>
@@ -720,7 +715,6 @@
       <div class="content-card" style="border-top: 4px solid #0b3c5d;">
         <h2 style="color: #0b3c5d; font-size: 1.9rem; margin-bottom: 4px; text-transform: uppercase;">STAFF DETAILS</h2>
         <p style="color: #64748b; margin-bottom: 30px; font-weight: 600; text-transform: uppercase;">FACULTY AND ADMINISTRATIVE STAFF OF EMRS SUBDEGA</p>
-
         <div class="staff-category-block"><div class="staff-category-title">1. PRINCIPAL</div><div id="staff-list-principal" class="staff-row-list"></div></div>
         <div class="staff-category-block"><div class="staff-category-title">2. PGT</div><div id="staff-list-pgt" class="staff-row-list"></div></div>
         <div class="staff-category-block"><div class="staff-category-title">3. TGT</div><div id="staff-list-tgt" class="staff-row-list"></div></div>
@@ -735,7 +729,6 @@
       <div class="footer-col">
         <h3 id="footerSchoolName">EMRS Subdega</h3>
         <p>A premier residential institution dedicated to quality CBSE education for tribal students under the Ministry of Tribal Affairs, Govt. of India.</p>
-        <p id="footerAffP" style="font-size: 0.85rem; color: #94a3b8; display: none; margin-top: 10px;"><strong style="color: #cbd5e1;" id="footerAffVal"></strong></p>
       </div>
       <div class="footer-col">
         <h3>Contact Us</h3>
