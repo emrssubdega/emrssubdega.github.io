@@ -646,7 +646,7 @@
       });
     };
 
-    // RENDER DYNAMIC INSTITUTION DETAILS (OPTION 1)
+    // RENDER DYNAMIC INSTITUTION DETAILS
     window.renderInstitutionDetails = function(data) {
       if (!data) return;
       var name = data.institution_name || 'EMRS Subdega';
@@ -719,7 +719,7 @@
       </div>
       <button type="button" class="nav-link-btn" onclick="window.goToTab('tab-notices')">NOTICES</button>
       <button type="button" class="nav-link-btn" onclick="window.goToTab('tab-gallery')">GALLERY</button>
-      <button type="button" class="nav-link-btn" onclick="window.goToTab('tab-contact')">CONTACT</button>
+      <button type="button" class="nav-link-btn" onclick="window.goToTab('tab-contact')">CONTACT US</button>
       <a href="admin/" style="display:block;">ADMIN PORTAL</a>
     </div>
   </nav>
@@ -842,7 +842,7 @@
     </div>
   </section>
 
-  <!-- 6. CONTACT VIEW (DYNAMIC) -->
+  <!-- 6. CONTACT US VIEW (DYNAMIC) -->
   <section id="tab-contact" class="tab-section" style="display: none;">
     <div class="content-container">
       <div class="content-card" style="border-top: 4px solid #0b3c5d;">
@@ -873,7 +873,7 @@
         <p id="footerAddress">At/Po: Subdega, District: Sundargarh, Odisha - 770014</p>
       </div>
       <div class="footer-col">
-        <h3>Contact & Portal</h3>
+        <h3>Contact Us & Portal</h3>
         <p>Email: <a id="footerEmail" href="mailto:emrssubdega@gmail.com">emrssubdega@gmail.com</a></p>
         <p>Portal: <a href="admin/">Staff & Admin Login</a></p>
       </div>
