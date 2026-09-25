@@ -194,20 +194,26 @@ document.addEventListener("DOMContentLoaded", function() {
   checkSession();
 });
 
-// ---------------- 0. INSTITUTION DETAILS CRUD ----------------
+// ---------------- 0. INSTITUTION DETAILS CRUD (WITH PART B OPTIONAL FIELDS) ----------------
 var institutionForm = document.getElementById("institutionForm");
 if (institutionForm) {
   institutionForm.addEventListener("submit", async function(e) {
     e.preventDefault();
     var status = document.getElementById("instStatus");
     status.style.color = "#0284c7";
-    status.textContent = "Saving changes...";
+    status.textContent = "Saving details...";
 
     var name = document.getElementById("instName").value.trim();
     var loc = document.getElementById("instLocation").value.trim();
     var gov = document.getElementById("instGovBody").value.trim();
     var curr = document.getElementById("instCurriculum").value.trim();
     var email = document.getElementById("instEmail").value.trim();
+    var phone = document.getElementById("instOfficePhone").value.trim();
+    var cbseAff = document.getElementById("instCbseAff").value.trim();
+    var schCode = document.getElementById("instSchoolCode").value.trim();
+    var udise = document.getElementById("instUdise").value.trim();
+    var session = document.getElementById("instSession").value.trim();
+    var principal = document.getElementById("instPrincipal").value.trim();
 
     var res = await client.from("institution_details").upsert([{
       id: "primary",
@@ -216,6 +222,12 @@ if (institutionForm) {
       governing_body: gov,
       curriculum: curr,
       official_email: email,
+      office_phone: phone,
+      cbse_affiliation_no: cbseAff,
+      school_code: schCode,
+      udise_code: udise,
+      academic_session: session,
+      principal_name: principal,
       updated_at: new Date().toISOString()
     }]);
 
@@ -235,19 +247,45 @@ async function loadInstitutionDetails() {
   var res = await client.from("institution_details").select("*").eq("id", "primary").maybeSingle();
   if (res.data) {
     var d = res.data;
-    // Update Dashboard View
-    if (document.getElementById("viewInstName")) document.getElementById("viewInstName").textContent = d.institution_name || "-";
-    if (document.getElementById("viewInstLoc")) document.getElementById("viewInstLoc").textContent = d.location || "-";
-    if (document.getElementById("viewInstGov")) document.getElementById("viewInstGov").textContent = d.governing_body || "-";
-    if (document.getElementById("viewInstCurr")) document.getElementById("viewInstCurr").textContent = d.curriculum || "-";
-    if (document.getElementById("viewInstEmail")) document.getElementById("viewInstEmail").textContent = d.official_email || "-";
 
-    // Update Form Inputs
+    // Helper to render value or a subtle placeholder
+    function setDashVal(elId, val) {
+      var el = document.getElementById(elId);
+      if (!el) return;
+      if (val && String(val).trim()) {
+        el.textContent = val;
+        el.classList.remove("empty");
+      } else {
+        el.textContent = "(Not set - hidden on live site)";
+        el.classList.add("empty");
+      }
+    }
+
+    // Update Dashboard Display Card
+    setDashVal("viewInstName", d.institution_name);
+    setDashVal("viewInstLoc", d.location);
+    setDashVal("viewInstGov", d.governing_body);
+    setDashVal("viewInstCurr", d.curriculum);
+    setDashVal("viewInstEmail", d.official_email);
+    setDashVal("viewInstCbseAff", d.cbse_affiliation_no);
+    setDashVal("viewInstSchCode", d.school_code);
+    setDashVal("viewInstUdise", d.udise_code);
+    setDashVal("viewInstPhone", d.office_phone);
+    setDashVal("viewInstPrincipal", d.principal_name);
+    setDashVal("viewInstSession", d.academic_session);
+
+    // Populate Edit Form Inputs
     if (document.getElementById("instName")) document.getElementById("instName").value = d.institution_name || "";
     if (document.getElementById("instLocation")) document.getElementById("instLocation").value = d.location || "";
     if (document.getElementById("instGovBody")) document.getElementById("instGovBody").value = d.governing_body || "";
     if (document.getElementById("instCurriculum")) document.getElementById("instCurriculum").value = d.curriculum || "";
     if (document.getElementById("instEmail")) document.getElementById("instEmail").value = d.official_email || "";
+    if (document.getElementById("instOfficePhone")) document.getElementById("instOfficePhone").value = d.office_phone || "";
+    if (document.getElementById("instCbseAff")) document.getElementById("instCbseAff").value = d.cbse_affiliation_no || "";
+    if (document.getElementById("instSchoolCode")) document.getElementById("instSchoolCode").value = d.school_code || "";
+    if (document.getElementById("instUdise")) document.getElementById("instUdise").value = d.udise_code || "";
+    if (document.getElementById("instSession")) document.getElementById("instSession").value = d.academic_session || "";
+    if (document.getElementById("instPrincipal")) document.getElementById("instPrincipal").value = d.principal_name || "";
   }
 }
 
@@ -452,7 +490,7 @@ async function loadAdminNotices() {
     if (res.data.length > 0) {
       tbody.innerHTML = res.data.map(function(n) {
         return '<tr>' +
-          '<td>' + formatDateDMY(n.notice_date) + '</td>' +
+          '<td>' + (n.notice_date || '-') + '</td>' +
           '<td><strong>' + (n.title || '') + '</strong></td>' +
           '<td>' + (n.body || '') + '</td>' +
           '<td><button type="button" class="btn-delete" onclick="deleteNotice(\'' + n.id + '\')">Delete</button></td>' +
