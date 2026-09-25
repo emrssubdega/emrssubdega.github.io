@@ -127,7 +127,7 @@
           <div class="sidebar-btn-content"><span>📁</span> Documents</div>
         </button>
         <button type="button" class="sidebar-btn" onclick="switchAdminTab('tab-notices', this)">
-          <div class="sidebar-btn-content"><span>📢</span> Notices</div>
+          <div class="sidebar-btn-content"><span>📢</span> Notice Board</div>
         </button>
         <button type="button" class="sidebar-btn" onclick="switchAdminTab('tab-gallery', this)">
           <div class="sidebar-btn-content"><span>🖼️</span> Photo Gallery</div>
@@ -409,45 +409,98 @@
           </div>
         </div>
 
-        <!-- TAB 4: DOCUMENTS -->
+        <!-- TAB 4: DOCUMENTS (ALL 10 PUBLIC CATEGORIES MATCHED) -->
         <div id="tab-docs" class="admin-tab-pane">
           <div class="panel-card">
-            <h3>Upload Official Document / Circular</h3>
+            <h3>Upload Official Document</h3>
             <form id="docForm">
-              <div class="form-field"><label>Title *</label><input type="text" id="docTitle" required /></div>
-              <div class="form-field"><label>Select PDF *</label><input type="file" id="docFile" accept="application/pdf" required /></div>
+              <div class="form-grid-2">
+                <div class="form-field"><label>Document / Ref Number</label><input type="text" id="docCircularNo" /></div>
+                <div class="form-field"><label>Document Date</label><input type="date" id="docDate" /></div>
+                <div class="form-field" style="grid-column: 1 / -1;">
+                  <label>Category (Matches Public Website)</label>
+                  <select id="docCategory">
+                    <option value="Mandatory Disclosure">Mandatory Disclosure</option>
+                    <option value="General Notice">General Notice</option>
+                    <option value="Exam Notice">Exam Notice</option>
+                    <option value="Rules & Regulations">Rules & Regulations</option>
+                    <option value="Committees">Committees</option>
+                    <option value="Result Analysis">Result Analysis</option>
+                    <option value="Transfer Certificate">Transfer Certificate</option>
+                    <option value="Admission Notice">Admission Notice</option>
+                    <option value="Tenders">Tenders</option>
+                    <option value="Career">Career</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-field"><label>Document Title *</label><input type="text" id="docTitle" required /></div>
+              <div class="form-field"><label>Select PDF File *</label><input type="file" id="docFile" accept="application/pdf" required /></div>
               <button type="submit" id="saveDocBtn" class="btn-submit">Upload Document</button>
               <p id="docStatus" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
             </form>
           </div>
+
+          <div class="panel-card">
+            <h3>Uploaded Documents List</h3>
+            <div class="table-responsive">
+              <table class="styled-table">
+                <thead><tr><th>Ref No</th><th>Date</th><th>Category</th><th>Title</th><th>File</th><th>Action</th></tr></thead>
+                <tbody id="docTableBody"><tr><td colspan="6" style="text-align:center;">Loading documents...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
         </div>
 
-        <!-- TAB 5: NOTICES -->
+        <!-- TAB 5: NOTICE BOARD (NO CIRCULARS TEXT) -->
         <div id="tab-notices" class="admin-tab-pane">
           <div class="panel-card">
-            <h3>Publish School Announcement</h3>
+            <h3>Publish Notice</h3>
             <form id="noticeForm">
               <div class="form-grid-2">
-                <div class="form-field"><label>Title *</label><input type="text" id="noticeTitle" required /></div>
-                <div class="form-field"><label>Date *</label><input type="date" id="noticeDate" required /></div>
+                <div class="form-field"><label>Notice Title *</label><input type="text" id="noticeTitle" required /></div>
+                <div class="form-field"><label>Notice Date *</label><input type="date" id="noticeDate" required /></div>
               </div>
-              <div class="form-field"><label>Description *</label><textarea id="noticeBody" rows="4" required></textarea></div>
+              <div class="form-field"><label>Notice Description *</label><textarea id="noticeBody" rows="4" required></textarea></div>
               <button type="submit" id="saveNoticeBtn" class="btn-submit">Publish Notice</button>
               <p id="noticeStatus" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
             </form>
           </div>
+
+          <div class="panel-card">
+            <h3>Active Notice Board</h3>
+            <div class="table-responsive">
+              <table class="styled-table">
+                <thead><tr><th>Date</th><th>Title</th><th>Description</th><th>Action</th></tr></thead>
+                <tbody id="noticeTableBody"><tr><td colspan="4" style="text-align:center;">Loading notices...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
         </div>
 
-        <!-- TAB 6: GALLERY -->
+        <!-- TAB 6: PHOTO GALLERY (HOMEPAGE SLIDER TOGGLE INCLUDED) -->
         <div id="tab-gallery" class="admin-tab-pane">
           <div class="panel-card">
             <h3>Add Photo to Gallery</h3>
             <form id="galleryForm">
-              <div class="form-field"><label>Caption</label><input type="text" id="photoTitle" /></div>
+              <div class="form-field"><label>Photo Caption / Title</label><input type="text" id="photoTitle" /></div>
               <div class="form-field"><label>Image File *</label><input type="file" id="photoFile" accept="image/*" required /></div>
+              <div class="form-field" style="flex-direction:row; align-items:center; gap:8px;">
+                <input type="checkbox" id="photoIsSlider" />
+                <label for="photoIsSlider" style="cursor:pointer; text-transform:none; font-weight:bold; color:#0b3c5d;">Feature in Homepage Slider</label>
+              </div>
               <button type="submit" id="savePhotoBtn" class="btn-submit">Upload Photo</button>
               <p id="photoStatus" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
             </form>
+          </div>
+
+          <div class="panel-card">
+            <h3>Uploaded Photos & Campus Slider</h3>
+            <div class="table-responsive">
+              <table class="styled-table">
+                <thead><tr><th>Preview</th><th>Caption</th><th>Slider Status</th><th>Action</th></tr></thead>
+                <tbody id="galleryTableBody"><tr><td colspan="4" style="text-align:center;">Loading gallery...</td></tr></tbody>
+              </table>
+            </div>
           </div>
         </div>
 
