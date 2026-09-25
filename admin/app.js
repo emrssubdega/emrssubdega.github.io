@@ -65,7 +65,10 @@ window.autoFillDobWords = function(dateStr) {
   }
 };
 
-window.switchAdminTab = function(tabId, btn) {
+// TAB SWITCHER WITH URL HASH PERSISTENCE
+window.switchAdminTab = function(tabId, btn, updateHash) {
+  if (updateHash === undefined) updateHash = true;
+
   var panes = document.querySelectorAll(".admin-tab-pane");
   panes.forEach(function(p) { p.classList.remove("show"); });
 
@@ -74,17 +77,56 @@ window.switchAdminTab = function(tabId, btn) {
 
   var activePane = document.getElementById(tabId);
   if (activePane) activePane.classList.add("show");
+
+  // Highlight matching sidebar button if not explicitly passed
+  if (!btn) {
+    btns.forEach(function(b) {
+      var attr = b.getAttribute("onclick") || "";
+      if (attr.indexOf(tabId) !== -1) {
+        btn = b;
+      }
+    });
+  }
   if (btn) btn.classList.add("active");
 
   var heading = document.getElementById("pageTitleHeading");
   if (heading && btn) heading.textContent = btn.textContent.trim().replace(/^[^a-zA-Z0-9]+/, '');
+
+  // Update URL hash without page reload
+  if (updateHash) {
+    var key = tabId.replace("tab-", "").replace("-admin", "");
+    history.pushState(null, null, "#" + key);
+  }
 
   if (tabId === 'tab-results-admin') loadAdminStudentResults();
   if (tabId === 'tab-docs') loadAdminDocs();
   if (tabId === 'tab-notices') loadAdminNotices();
   if (tabId === 'tab-gallery') loadAdminGallery();
   if (tabId === 'tab-staff') loadAdminStaff();
+  if (tabId === 'tab-institution') loadInstitutionDetails();
 };
+
+// READS CURRENT HASH ON REFRESH & BROWSER NAVIGATION
+window.applyAdminHashRoute = function() {
+  var hash = window.location.hash.replace("#", "").trim().toLowerCase();
+  var tabMap = {
+    "dashboard": "tab-dashboard",
+    "institution": "tab-institution",
+    "campus": "tab-institution",
+    "results": "tab-results-admin",
+    "student-results": "tab-results-admin",
+    "staff": "tab-staff",
+    "docs": "tab-docs",
+    "documents": "tab-docs",
+    "notices": "tab-notices",
+    "gallery": "tab-gallery"
+  };
+
+  var targetTabId = tabMap[hash] || "tab-dashboard";
+  window.switchAdminTab(targetTabId, null, false);
+};
+
+window.addEventListener("popstate", window.applyAdminHashRoute);
 
 async function checkSession() {
   if (!client) return;
@@ -100,6 +142,7 @@ async function checkSession() {
     if (dashboardView) dashboardView.style.display = "flex";
     if (userBadge) userBadge.textContent = session.user.email;
     loadAllAdminData();
+    window.applyAdminHashRoute();
   } else {
     if (loginView) loginView.style.display = "flex";
     if (dashboardView) dashboardView.style.display = "none";
@@ -751,7 +794,7 @@ window.deleteGallery = async function(id) {
   loadAdminGallery();
 };
 
-// ---------------- 6. STAFF CRUD (WITH EXACT 8 COLUMNS & EDIT BUTTON) ----------------
+// ---------------- 6. STAFF CRUD ----------------
 var staffForm = document.getElementById("staffForm");
 if (staffForm) {
   staffForm.addEventListener("submit", async function(e) {
@@ -856,7 +899,6 @@ window.resetStaffForm = function() {
   document.getElementById("cancelStaffEditBtn").style.display = "none";
 };
 
-// Generates exactly 8 columns (matching table header)
 async function loadAdminStaff() {
   var tbody = document.getElementById("staffTableBody");
   if (!tbody || !client) return;
