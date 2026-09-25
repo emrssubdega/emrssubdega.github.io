@@ -182,18 +182,41 @@
       return dateStr;
     };
 
-    window.goToTab = function(tabId) {
+    // TAB ROUTING WITH URL HASH (Remembers page across reloads)
+    window.goToTab = function(tabId, updateHash) {
+      if (updateHash === undefined) updateHash = true;
       var tabs = ['tab-home', 'tab-documents', 'tab-notices', 'tab-gallery', 'tab-staff', 'tab-results'];
       for (var i = 0; i < tabs.length; i++) {
         var el = document.getElementById(tabs[i]);
         if (el) el.style.display = (tabs[i] === tabId) ? 'block' : 'none';
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Update URL hash without forcing a page refresh
+      if (updateHash) {
+        var hashKey = tabId.replace('tab-', '');
+        history.pushState(null, null, '#' + hashKey);
+      }
+
       if (tabId === 'tab-gallery') window.renderGallery();
       if (tabId === 'tab-notices') window.renderNotices();
       if (tabId === 'tab-documents') window.renderDocuments();
       if (tabId === 'tab-staff') window.renderStaff();
     };
+
+    // Reads current hash when browser reloads or back/forward is clicked
+    window.applyHashRoute = function() {
+      var hash = window.location.hash.replace('#', '').trim().toLowerCase();
+      var tabId = 'tab-home';
+      if (hash === 'results') tabId = 'tab-results';
+      else if (hash === 'documents') tabId = 'tab-documents';
+      else if (hash === 'notices') tabId = 'tab-notices';
+      else if (hash === 'gallery') tabId = 'tab-gallery';
+      else if (hash === 'staff') tabId = 'tab-staff';
+      window.goToTab(tabId, false);
+    };
+
+    window.addEventListener('popstate', window.applyHashRoute);
 
     window.renderDocuments = function() {
       var list = document.getElementById('documentList');
@@ -341,7 +364,7 @@
       }
     };
 
-    // SEARCH STUDENT RESULT & MARKSHEET (Roll Number input has NO placeholder)
+    // SEARCH STUDENT RESULT & MARKSHEET
     window.currentStudentResult = null;
     window.searchStudentResult = async function(e) {
       if (e) e.preventDefault();
@@ -374,7 +397,6 @@
       window.currentStudentResult = res.data;
       var d = res.data;
 
-      // Populate Marksheet
       document.getElementById('msStudentName').textContent = d.student_name.toUpperCase();
       document.getElementById('msRollNo').textContent = d.roll_no;
       document.getElementById('msClass').textContent = d.class_name + ' (' + (d.section || 'A') + ')';
@@ -539,7 +561,7 @@
     </div>
   </section>
 
-  <!-- 2. STUDENT RESULTS VIEW (Clean input with NO placeholder) -->
+  <!-- 2. STUDENT RESULTS VIEW -->
   <section id="tab-results" class="tab-section" style="display: none;">
     <div class="content-container">
       
@@ -783,6 +805,9 @@
           return;
         }
       }
+
+      // Check current hash on initial page load (prevents jumping back to home)
+      window.applyHashRoute();
 
       try {
         var instRes = await window.client.from("institution_details").select("*").eq("id", "primary").maybeSingle();
