@@ -34,528 +34,133 @@
       gap: 20px;
       border-bottom: 3px solid #f97316;
     }
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-    .header-logo {
-      width: 78px;
-      height: 78px;
-      object-fit: contain;
-    }
-    .header-titles h2 {
-      font-size: 1.15rem;
-      color: #1e293b;
-      margin: 0;
-      font-weight: 700;
-      line-height: 1.3;
-    }
-    .header-titles h1 {
-      font-size: 1.35rem;
-      color: #0b3c5d;
-      margin: 2px 0;
-      font-weight: 800;
-      line-height: 1.2;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .header-titles p {
-      font-size: 0.85rem;
-      color: #64748b;
-      margin: 0;
-      line-height: 1.3;
-    }
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      text-align: right;
-    }
-    .header-tagline {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-    }
-    .header-tagline strong.ministry-title {
-      font-family: inherit;
-      font-size: 1.15rem;
-      color: #0b3c5d;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      margin-top: 2px;
-      line-height: 1.2;
-    }
-    .header-tagline strong.tagline-sub {
-      font-size: 0.88rem;
-      color: #0b3c5d;
-      font-weight: 700;
-    }
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .header-logo { width: 78px; height: 78px; object-fit: contain; }
+    .header-titles h2 { font-size: 1.15rem; color: #1e293b; margin: 0; font-weight: 700; line-height: 1.3; }
+    .header-titles h1 { font-size: 1.35rem; color: #0b3c5d; margin: 2px 0; font-weight: 800; line-height: 1.2; text-transform: uppercase; letter-spacing: 0.5px; }
+    .header-titles p { font-size: 0.85rem; color: #64748b; margin: 0; line-height: 1.3; }
+    .header-right { display: flex; align-items: center; gap: 15px; text-align: right; }
+    .header-tagline { display: flex; flex-direction: column; align-items: flex-end; }
+    .header-tagline strong.ministry-title { font-size: 1.15rem; color: #0b3c5d; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 2px; line-height: 1.2; }
+    .header-tagline strong.tagline-sub { font-size: 0.88rem; color: #0b3c5d; font-weight: 700; }
 
     /* Navbar */
     .navbar {
       position: sticky;
-      top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 1000;
+      top: 0; left: 0; width: 100%; z-index: 1000;
       background: #0b3c5d;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
+      display: flex; justify-content: flex-end; align-items: center;
       padding: 0 clamp(15px, 4vw, 45px);
     }
-    .nav-links {
-      display: flex;
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      align-items: center;
-      flex-wrap: wrap;
-    }
+    .nav-links { display: flex; list-style: none; margin: 0; padding: 0; align-items: center; flex-wrap: wrap; }
     .nav-links button.nav-link-btn, .nav-links a {
-      display: block;
-      background: none;
-      border: none;
-      padding: 14px 18px;
-      text-decoration: none;
-      color: #ffffff;
-      font-weight: 500;
-      font-size: 0.92rem;
-      transition: background 0.2s ease, color 0.2s ease;
-      cursor: pointer;
-      font-family: inherit;
+      display: block; background: none; border: none; padding: 14px 18px;
+      text-decoration: none; color: #ffffff; font-weight: 500; font-size: 0.92rem;
+      transition: background 0.2s ease, color 0.2s ease; cursor: pointer; font-family: inherit;
     }
-    .nav-links a:hover,
-    .nav-links button.nav-link-btn:hover {
-      background: #072a42;
-      color: #38bdf8;
-    }
+    .nav-links a:hover, .nav-links button.nav-link-btn:hover { background: #072a42; color: #38bdf8; }
 
     /* Dropdown */
     .dropdown { position: relative; }
     .dropdown-btn { cursor: pointer; display: flex; align-items: center; gap: 4px; }
     .dropdown-content {
-      display: none;
-      position: absolute;
-      top: 100%;
-      right: 0;
-      background-color: #ffffff;
-      min-width: 230px;
-      box-shadow: 0 10px 22px rgba(0,0,0,0.15);
-      border-radius: 0 0 6px 6px;
-      overflow: hidden;
-      z-index: 1001;
-      border: 1px solid #e2e8f0;
-      border-top: 3px solid #f97316;
+      display: none; position: absolute; top: 100%; right: 0; background-color: #ffffff;
+      min-width: 230px; box-shadow: 0 10px 22px rgba(0,0,0,0.15); border-radius: 0 0 6px 6px;
+      overflow: hidden; z-index: 1001; border: 1px solid #e2e8f0; border-top: 3px solid #f97316;
     }
     .dropdown-content button {
-      width: 100%;
-      text-align: left;
-      border: none;
-      background: #fff;
-      color: #334155;
-      padding: 10px 16px;
-      font-size: 0.88rem;
-      border-bottom: 1px solid #f1f5f9;
-      cursor: pointer;
-      font-family: inherit;
+      width: 100%; text-align: left; border: none; background: #fff; color: #334155;
+      padding: 10px 16px; font-size: 0.88rem; border-bottom: 1px solid #f1f5f9; cursor: pointer; font-family: inherit;
     }
-    .dropdown-content button:hover {
-      background-color: #f8fafc;
-      color: #0b3c5d;
-      font-weight: 600;
-    }
+    .dropdown-content button:hover { background-color: #f8fafc; color: #0b3c5d; font-weight: 600; }
     .dropdown:hover .dropdown-content { display: block; }
 
-    /* Sections */
-    .tab-section {
-      width: 100%;
-      flex: 1;
-      min-height: 480px;
-    }
+    /* Tab Layout */
+    .tab-section { width: 100%; flex: 1; min-height: 480px; }
+    .content-container { max-width: 1280px; margin: 35px auto; padding: 0 20px; }
+    .content-card { background: #ffffff; border-radius: 10px; padding: 28px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06); }
 
     /* Carousel */
-    .slider-container {
-      position: relative;
-      width: 100%;
-      max-width: 100%;
-      height: 480px;
-      overflow: hidden;
-      background: #0f172a;
-    }
-    .slide {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      transition: opacity 0.8s ease-in-out;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    .slider-container { position: relative; width: 100%; height: 480px; overflow: hidden; background: #0f172a; }
+    .slide { position: absolute; inset: 0; opacity: 0; transition: opacity 0.8s ease-in-out; display: flex; align-items: center; justify-content: center; }
     .slide.active { opacity: 1; }
     .slide img { width: 100%; height: 100%; object-fit: cover; }
-    .slide-overlay {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      padding: 30px 25px 20px;
-      background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
-      color: #ffffff;
-      text-align: left;
-    }
+    .slide-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 30px 25px 20px; background: linear-gradient(to top, rgba(0,0,0,0.85), transparent); color: #ffffff; }
     .slide-overlay h3 { font-size: 1.4rem; font-weight: 700; margin-bottom: 4px; }
-    .slider-btn {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(0, 0, 0, 0.45);
-      color: #fff;
-      border: none;
-      padding: 14px 18px;
-      font-size: 1.5rem;
-      cursor: pointer;
-      z-index: 10;
-      border-radius: 4px;
-    }
-    .slider-btn.prev { left: 15px; }
-    .slider-btn.next { right: 15px; }
-    .slider-dots {
-      position: absolute;
-      bottom: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 8px;
-      z-index: 10;
-    }
-    .dot {
-      width: 11px;
-      height: 11px;
-      background: rgba(255, 255, 255, 0.5);
-      border-radius: 50%;
-      cursor: pointer;
-    }
+    .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0, 0, 0, 0.45); color: #fff; border: none; padding: 14px 18px; font-size: 1.5rem; cursor: pointer; z-index: 10; border-radius: 4px; }
+    .slider-btn.prev { left: 15px; } .slider-btn.next { right: 15px; }
+    .slider-dots { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 10; }
+    .dot { width: 11px; height: 11px; background: rgba(255, 255, 255, 0.5); border-radius: 50%; cursor: pointer; }
     .dot.active { background: #f97316; width: 24px; border-radius: 6px; }
 
-    .content-container { max-width: 1280px; margin: 35px auto; padding: 0 20px; }
-    .content-card {
-      background: #ffffff;
-      border-radius: 10px;
-      padding: 28px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-    }
+    /* Dynamic Badges */
+    .inst-badge-strip { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; padding-top: 16px; border-top: 1px solid #f1f5f9; }
+    .inst-pill { display: inline-flex; align-items: center; gap: 6px; background: #f1f5f9; color: #0b3c5d; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 700; border: 1px solid #e2e8f0; }
+    .inst-pill span.label { color: #64748b; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; }
 
-    /* Optional Institution Badges Bar (Home) */
-    .inst-badge-strip {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 18px;
-      padding-top: 16px;
-      border-top: 1px solid #f1f5f9;
+    /* Results Card */
+    .results-search-card {
+      background: #ffffff; border-radius: 12px; padding: 32px; border-top: 5px solid #0b3c5d; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); margin-bottom: 30px;
     }
-    .inst-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: #f1f5f9;
-      color: #0b3c5d;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      border: 1px solid #e2e8f0;
-    }
-    .inst-pill span.label {
-      color: #64748b;
-      font-weight: 600;
-      text-transform: uppercase;
-      font-size: 0.75rem;
-    }
+    .form-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 18px; }
+    .form-field { display: flex; flex-direction: column; gap: 6px; }
+    .form-field label { font-size: 0.82rem; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-field input, .form-field select { padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.95rem; outline: none; font-family: inherit; }
+    .form-field input:focus, .form-field select:focus { border-color: #0b3c5d; }
+    .btn-search-res { background: #0b3c5d; color: #ffffff; border: none; padding: 11px 26px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.95rem; margin-top: 23px; }
+    .btn-search-res:hover { background: #072a42; }
 
-    .notice-item {
-      padding: 16px;
-      border-radius: 8px;
-      background: #f8fafc;
-      border-left: 4px solid #0284c7;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 12px;
+    /* Printable Marksheet & Certificate */
+    .marksheet-container {
+      background: #ffffff; border: 2px solid #0b3c5d; border-radius: 10px; padding: 35px 30px; margin-top: 30px; display: none; box-shadow: 0 6px 20px rgba(0,0,0,0.06);
     }
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 24px;
-      margin-top: 20px;
-    }
-    .photo-card {
-      position: relative;
-      border-radius: 10px;
-      overflow: hidden;
-      height: 230px;
-      background: #e2e8f0;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      cursor: pointer;
-      transition: transform 0.25s ease;
-    }
-    .photo-card:hover { transform: translateY(-4px); }
-    .photo-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .photo-card-title {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      padding: 12px 14px;
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.78), transparent);
-      color: #fff;
-      font-size: 0.95rem;
-    }
+    .marksheet-header { text-align: center; border-bottom: 2px solid #0b3c5d; padding-bottom: 16px; margin-bottom: 20px; }
+    .marksheet-header h2 { font-size: 1.4rem; color: #0b3c5d; font-weight: 800; text-transform: uppercase; margin-bottom: 4px; }
+    .marksheet-header p { font-size: 0.9rem; color: #475569; margin: 0; }
+    .student-meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
+    .meta-item span.lbl { font-size: 0.78rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
+    .meta-item span.val { font-size: 0.95rem; font-weight: 800; color: #0f172a; display: block; }
+    .marks-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+    .marks-table th { background: #f1f5f9; color: #1e293b; padding: 10px 12px; border: 1px solid #cbd5e1; font-weight: 700; text-align: center; }
+    .marks-table td { padding: 10px 12px; border: 1px solid #cbd5e1; text-align: center; font-size: 0.92rem; }
+    .marks-table tr:nth-child(even) { background: #f8fafc; }
+    .result-summary-box { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: #e0f2fe; border-radius: 8px; margin-top: 15px; border-left: 5px solid #0284c7; }
+    .actions-row { display: flex; gap: 12px; justify-content: flex-end; margin-top: 25px; }
+    .btn-action-res { background: #f97316; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-action-res:hover { background: #ea580c; }
 
-    /* Staff Details Horizontal Row Styling */
-    .staff-category-block {
-      margin-bottom: 45px;
-    }
-    .staff-category-title {
-      font-size: 1.35rem;
-      font-weight: 800;
-      color: #0b3c5d;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      padding-bottom: 8px;
-      border-bottom: 2px solid #f97316;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .staff-row-list {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .staff-horizontal-card {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-left: 5px solid #0b3c5d;
-      border-radius: 8px;
-      padding: 18px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 24px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-      overflow-x: auto;
-    }
-    .staff-horizontal-card:hover {
-      box-shadow: 0 6px 16px rgba(0,0,0,0.08);
-    }
-    
-    .staff-fields-row {
-      display: flex;
-      align-items: center;
-      flex-wrap: nowrap;
-      justify-content: space-between;
-      gap: 30px;
-      flex: 1;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-    .staff-field {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 6px;
-      min-width: 110px;
-    }
-    .staff-label {
-      font-size: 0.84rem;
-      font-weight: 800;
-      color: #334155;
-      letter-spacing: 0.6px;
-    }
-    .staff-value {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: #1e293b;
-      text-align: center;
-    }
-    .staff-value.highlight {
-      color: #0b3c5d;
-      font-size: 1.05rem;
-      font-weight: 800;
-    }
-    .staff-badge {
-      display: inline-block;
-      background: #e0f2fe;
-      color: #0369a1;
-      padding: 3px 10px;
-      border-radius: 4px;
-      font-size: 0.82rem;
-      font-weight: 700;
-    }
+    /* Staff Cards */
+    .staff-category-block { margin-bottom: 45px; }
+    .staff-category-title { font-size: 1.35rem; font-weight: 800; color: #0b3c5d; text-transform: uppercase; letter-spacing: 0.8px; padding-bottom: 8px; border-bottom: 2px solid #f97316; margin-bottom: 20px; }
+    .staff-row-list { display: flex; flex-direction: column; gap: 16px; }
+    .staff-horizontal-card { background: #ffffff; border: 1px solid #e2e8f0; border-left: 5px solid #0b3c5d; border-radius: 8px; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; gap: 24px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); overflow-x: auto; }
+    .staff-fields-row { display: flex; align-items: center; flex-wrap: nowrap; justify-content: space-between; gap: 30px; flex: 1; text-transform: uppercase; white-space: nowrap; }
+    .staff-field { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; min-width: 110px; }
+    .staff-label { font-size: 0.84rem; font-weight: 800; color: #334155; }
+    .staff-value { font-size: 0.95rem; font-weight: 600; color: #1e293b; }
+    .staff-value.highlight { color: #0b3c5d; font-size: 1.05rem; font-weight: 800; }
+    .staff-badge { display: inline-block; background: #e0f2fe; color: #0369a1; padding: 3px 10px; border-radius: 4px; font-size: 0.82rem; font-weight: 700; }
+    .staff-photo-wrapper { flex-shrink: 0; padding: 2px; border: 1px solid #cbd5e1; border-radius: 6px; background: #f8fafc; margin-left: 10px; }
+    .staff-photo { max-height: 90px; max-width: 90px; object-fit: contain; border-radius: 4px; display: block; }
 
-    .staff-photo-wrapper {
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2px;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
-      background: #f8fafc;
-      margin-left: 10px;
-    }
-    .staff-photo {
-      max-height: 90px;
-      max-width: 90px;
-      width: auto;
-      height: auto;
-      object-fit: contain;
-      border-radius: 4px;
-      display: block;
-    }
+    /* Footer */
+    footer.site-footer { background: #0f172a; color: #94a3b8; padding: 45px 20px 25px; margin-top: auto; }
+    .footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1.5fr 1fr; gap: 40px; padding-bottom: 30px; border-bottom: 1px solid #1e293b; }
+    .footer-col h3 { color: #ffffff; margin-bottom: 15px; font-size: 1.15rem; font-weight: 700; }
+    .footer-col p { font-size: 0.95rem; margin-bottom: 8px; color: #cbd5e1; line-height: 1.5; }
+    .footer-col a { color: #38bdf8; text-decoration: none; }
+    .footer-bottom { max-width: 1200px; margin: 22px auto 0; text-align: center; font-size: 0.88rem; }
+    .footer-bottom a { color: #64748b; text-decoration: none; }
 
-    /* Public Enquiry Form Styling (Option 2) */
-    .enquiry-form-card {
-      background: #ffffff;
-      border-radius: 10px;
-      padding: 30px;
-      border-top: 4px solid #f97316;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-    }
-    .enquiry-form-card h2 {
-      color: #0b3c5d;
-      font-size: 1.6rem;
-      font-weight: 800;
-      margin-bottom: 6px;
-    }
-    .enquiry-form-card p.form-desc {
-      color: #64748b;
-      font-size: 0.95rem;
-      margin-bottom: 22px;
-    }
-    .form-grid-2 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 16px;
-    }
-    .form-field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 14px;
-    }
-    .form-field label {
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: #475569;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .form-field input, .form-field select, .form-field textarea {
-      padding: 10px 14px;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
-      font-size: 0.95rem;
-      outline: none;
-      font-family: inherit;
-    }
-    .form-field input:focus, .form-field select:focus, .form-field textarea:focus {
-      border-color: #0b3c5d;
-      box-shadow: 0 0 0 2px rgba(11, 60, 93, 0.1);
-    }
-    .btn-submit-enquiry {
-      background: #0b3c5d;
-      color: #ffffff;
-      border: none;
-      padding: 12px 28px;
-      font-size: 0.95rem;
-      font-weight: 700;
-      border-radius: 6px;
-      cursor: pointer;
-      font-family: inherit;
-      transition: background 0.2s ease;
-    }
-    .btn-submit-enquiry:hover {
-      background: #072a42;
-    }
-
-    .lightbox {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.85);
-      z-index: 9999;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
-    .lightbox img { max-width: 85%; max-height: 80vh; border-radius: 8px; }
-    .lightbox .caption { color: white; margin-top: 15px; font-size: 1.1rem; }
-    .lightbox .close { position: absolute; top: 20px; right: 35px; color: white; font-size: 40px; cursor: pointer; }
-
-    /* Footer Styling */
-    footer.site-footer {
-      background: #0f172a;
-      color: #94a3b8;
-      padding: 45px 20px 25px;
-      margin-top: auto;
-    }
-    .footer-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1.5fr 1fr;
-      gap: 40px;
-      padding-bottom: 30px;
-      border-bottom: 1px solid #1e293b;
-    }
-    .footer-col h3 {
-      color: #ffffff;
-      margin-bottom: 15px;
-      font-size: 1.15rem;
-      font-weight: 700;
-    }
-    .footer-col p {
-      font-size: 0.95rem;
-      margin-bottom: 8px;
-      color: #cbd5e1;
-      line-height: 1.5;
-    }
-    .footer-col a {
-      color: #38bdf8;
-      text-decoration: none;
-    }
-    .footer-col a:hover {
-      text-decoration: underline;
-    }
-    .footer-bottom {
-      max-width: 1200px;
-      margin: 22px auto 0;
-      text-align: center;
-      font-size: 0.88rem;
-    }
-    .footer-bottom a {
-      color: #64748b;
-      text-decoration: none;
-    }
-
-    @media (max-width: 900px) {
-      .top-header { flex-direction: column; align-items: flex-start; }
-      .header-right { align-items: flex-start; }
-      .header-tagline { align-items: flex-start; }
-      .navbar { justify-content: flex-start; }
-      .slider-container { height: 260px; }
-      .staff-horizontal-card { flex-direction: column; align-items: center; gap: 14px; }
-      .staff-fields-row { flex-direction: column; align-items: center; gap: 12px; white-space: normal; }
-      .staff-photo-wrapper { margin-left: 0; }
-      .footer-content { grid-template-columns: 1fr; }
+    @media print {
+      body * { visibility: hidden; }
+      #studentMarksheetBlock, #studentMarksheetBlock * { visibility: visible; }
+      #studentMarksheetBlock { position: absolute; left: 0; top: 0; width: 100%; border: none; box-shadow: none; padding: 0; }
+      .actions-row { display: none; }
     }
   </style>
 
-  <!-- Navigation & Rendering Engine -->
   <script>
     window.allDocuments = [];
     window.allGallery = [];
@@ -565,33 +170,23 @@
 
     window.escapeHtml = function(value) {
       return String(value == null ? '' : value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
     };
 
-    // Helper: Converts YYYY-MM-DD to DD-MM-YYYY
     window.formatDateDMY = function(dateStr) {
       if (!dateStr || dateStr === '-') return '-';
       var parts = dateStr.split('-');
-      if (parts.length === 3) {
-        return parts[2] + '-' + parts[1] + '-' + parts[0];
-      }
+      if (parts.length === 3) return parts[2] + '-' + parts[1] + '-' + parts[0];
       return dateStr;
     };
 
     window.goToTab = function(tabId) {
-      var tabs = ['tab-home', 'tab-documents', 'tab-notices', 'tab-gallery', 'tab-staff'];
+      var tabs = ['tab-home', 'tab-documents', 'tab-notices', 'tab-gallery', 'tab-staff', 'tab-results'];
       for (var i = 0; i < tabs.length; i++) {
         var el = document.getElementById(tabs[i]);
-        if (el) {
-          el.style.display = (tabs[i] === tabId) ? 'block' : 'none';
-        }
+        if (el) el.style.display = (tabs[i] === tabId) ? 'block' : 'none';
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
-
       if (tabId === 'tab-gallery') window.renderGallery();
       if (tabId === 'tab-notices') window.renderNotices();
       if (tabId === 'tab-documents') window.renderDocuments();
@@ -655,59 +250,40 @@
     window.renderGallery = function() {
       var grid = document.getElementById("publicGalleryGrid");
       if (!grid) return;
-
       if (!window.allGallery || window.allGallery.length === 0) {
         grid.innerHTML = '<p style="color:#64748b; grid-column: 1 / -1; padding: 30px;">No photos uploaded yet.</p>';
         return;
       }
-
       grid.innerHTML = window.allGallery.map(function(photo) {
-        return '<div class="photo-card" data-url="' + photo.image_url + '" data-title="' + (photo.title || '') + '">' +
+        return '<div class="photo-card" onclick="openLightbox(\'' + photo.image_url + '\', \'' + window.escapeHtml(photo.title || '') + '\')">' +
           '<img src="' + photo.image_url + '" alt="' + (photo.title || 'School photo') + '" loading="lazy" />' +
           (photo.title ? '<div class="photo-card-title">' + window.escapeHtml(photo.title) + '</div>' : '') +
         '</div>';
       }).join("");
-
-      var cards = grid.querySelectorAll(".photo-card");
-      cards.forEach(function(card) {
-        card.addEventListener("click", function() {
-          var lb = document.getElementById("lightbox");
-          var img = document.getElementById("lightboxImg");
-          var cap = document.getElementById("lightboxCaption");
-          if (img) img.src = card.dataset.url;
-          if (cap) cap.textContent = card.dataset.title;
-          if (lb) lb.style.display = "flex";
-        });
-      });
     };
 
     window.renderNotices = function() {
       var nCont = document.getElementById("noticeList");
       var hCont = document.getElementById("homeNoticeList");
-      
       if (!window.allNotices || window.allNotices.length === 0) {
         var empty = '<p style="color: #64748b; font-style: italic;">No current circulars posted.</p>';
         if (nCont) nCont.innerHTML = empty;
         if (hCont) hCont.innerHTML = empty;
         return;
       }
-
       var html = window.allNotices.map(function(item) {
-        var dmyNoticeDate = window.formatDateDMY(item.notice_date);
         return '<div class="notice-item">' +
           '<div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;">' +
             '<span style="color:#0f172a; font-weight:600; font-size:1.05rem;">' + window.escapeHtml(item.title || '') + '</span>' +
-            '<span style="font-size:0.85rem; color:#64748b; background:#e2e8f0; padding:2px 8px; border-radius:4px;">' + window.escapeHtml(dmyNoticeDate) + '</span>' +
+            '<span style="font-size:0.85rem; color:#64748b; background:#e2e8f0; padding:2px 8px; border-radius:4px;">' + window.escapeHtml(window.formatDateDMY(item.notice_date)) + '</span>' +
           '</div>' +
           '<p style="color:#475569; font-size:0.95rem; line-height:1.5;">' + window.escapeHtml(item.body || '') + '</p>' +
         '</div>';
       }).join("");
-
       if (nCont) nCont.innerHTML = html;
       if (hCont) hCont.innerHTML = html;
     };
 
-    // RENDER STAFF DETAILS
     window.renderStaff = function() {
       var categories = ['PRINCIPAL', 'PGT', 'TGT', 'NON-TEACHING'];
       var staffData = window.allStaff || [];
@@ -727,49 +303,21 @@
         }
 
         container.innerHTML = items.map(function(s) {
-          var photoSrc = s.photo_url || 'https://via.placeholder.com/75x90?text=PHOTO';
-          var name = String(s.name || '').toUpperCase();
-          var empId = String(s.employee_id || '-').toUpperCase();
-          var desig = String(s.designation || '').toUpperCase();
-          var dojNests = window.formatDateDMY(s.doj_nests);
-          var dojEmrs = window.formatDateDMY(s.doj_emrs);
-
           return '<div class="staff-horizontal-card">' +
             '<div class="staff-fields-row">' +
-              '<div class="staff-field">' +
-                '<span class="staff-label">NAME</span>' +
-                '<span class="staff-value highlight">' + window.escapeHtml(name) + '</span>' +
-              '</div>' +
-              '<div class="staff-field">' +
-                '<span class="staff-label">EMPLOYEE ID</span>' +
-                '<span class="staff-value">' + window.escapeHtml(empId) + '</span>' +
-              '</div>' +
-              '<div class="staff-field">' +
-                '<span class="staff-label">CATEGORY</span>' +
-                '<span><span class="staff-badge">' + cat + '</span></span>' +
-              '</div>' +
-              '<div class="staff-field">' +
-                '<span class="staff-label">DESIGNATION</span>' +
-                '<span class="staff-value" style="color: #c2410c;">' + window.escapeHtml(desig) + '</span>' +
-              '</div>' +
-              '<div class="staff-field">' +
-                '<span class="staff-label">DOJ IN NESTS</span>' +
-                '<span class="staff-value">' + window.escapeHtml(dojNests) + '</span>' +
-              '</div>' +
-              '<div class="staff-field">' +
-                '<span class="staff-label">DOJ IN EMRS SUBDEGA</span>' +
-                '<span class="staff-value">' + window.escapeHtml(dojEmrs) + '</span>' +
-              '</div>' +
+              '<div class="staff-field"><span class="staff-label">NAME</span><span class="staff-value highlight">' + window.escapeHtml(s.name) + '</span></div>' +
+              '<div class="staff-field"><span class="staff-label">EMPLOYEE ID</span><span class="staff-value">' + window.escapeHtml(s.employee_id || '-') + '</span></div>' +
+              '<div class="staff-field"><span class="staff-label">CATEGORY</span><span><span class="staff-badge">' + cat + '</span></span></div>' +
+              '<div class="staff-field"><span class="staff-label">DESIGNATION</span><span class="staff-value" style="color: #c2410c;">' + window.escapeHtml(s.designation) + '</span></div>' +
+              '<div class="staff-field"><span class="staff-label">DOJ IN NESTS</span><span class="staff-value">' + window.formatDateDMY(s.doj_nests) + '</span></div>' +
+              '<div class="staff-field"><span class="staff-label">DOJ IN EMRS SUBDEGA</span><span class="staff-value">' + window.formatDateDMY(s.doj_emrs) + '</span></div>' +
             '</div>' +
-            '<div class="staff-photo-wrapper">' +
-              '<img src="' + photoSrc + '" alt="' + name + '" class="staff-photo" />' +
-            '</div>' +
+            '<div class="staff-photo-wrapper"><img src="' + (s.photo_url || 'https://via.placeholder.com/75x90?text=PHOTO') + '" alt="' + s.name + '" class="staff-photo" /></div>' +
           '</div>';
         }).join('');
       });
     };
 
-    // RENDER DYNAMIC INSTITUTION DETAILS
     window.renderInstitutionDetails = function(data) {
       if (!data) return;
       var name = data.institution_name || 'EMRS Subdega';
@@ -788,13 +336,8 @@
         if (schCode) badges.push('<div class="inst-pill"><span class="label">School Code:</span> ' + window.escapeHtml(schCode) + '</div>');
         if (udise) badges.push('<div class="inst-pill"><span class="label">UDISE+:</span> ' + window.escapeHtml(udise) + '</div>');
         if (session) badges.push('<div class="inst-pill"><span class="label">Session:</span> ' + window.escapeHtml(session) + '</div>');
-        
-        if (badges.length > 0) {
-          strip.style.display = 'flex';
-          strip.innerHTML = badges.join('');
-        } else {
-          strip.style.display = 'none';
-        }
+        strip.style.display = badges.length > 0 ? 'flex' : 'none';
+        strip.innerHTML = badges.join('');
       }
 
       var fName = document.getElementById('footerSchoolName');
@@ -807,30 +350,129 @@
 
       if (fName) fName.textContent = name;
       if (fAddr) fAddr.textContent = loc;
-      if (fEmail) {
-        fEmail.textContent = email;
-        fEmail.href = 'mailto:' + email;
-      }
+      if (fEmail) { fEmail.textContent = email; fEmail.href = 'mailto:' + email; }
       if (fPhoneP && fPhoneVal) {
-        if (phone) {
-          fPhoneP.style.display = 'block';
-          fPhoneVal.textContent = phone;
-          fPhoneVal.href = 'tel:' + phone.replace(/[^0-9+]/g, '');
-        } else {
-          fPhoneP.style.display = 'none';
-        }
+        if (phone) { fPhoneP.style.display = 'block'; fPhoneVal.textContent = phone; fPhoneVal.href = 'tel:' + phone.replace(/[^0-9+]/g, ''); }
+        else { fPhoneP.style.display = 'none'; }
       }
       if (fAffP && fAffVal) {
         var affParts = [];
         if (cbseAff) affParts.push('Affiliation No: ' + cbseAff);
         if (schCode) affParts.push('School Code: ' + schCode);
-        if (affParts.length > 0) {
-          fAffP.style.display = 'block';
-          fAffVal.textContent = affParts.join(' | ');
-        } else {
-          fAffP.style.display = 'none';
-        }
+        if (affParts.length > 0) { fAffP.style.display = 'block'; fAffVal.textContent = affParts.join(' | '); }
+        else { fAffP.style.display = 'none'; }
       }
+    };
+
+    // SEARCH STUDENT RESULT & MARKSHEET
+    window.currentStudentResult = null;
+    window.searchStudentResult = async function(e) {
+      if (e) e.preventDefault();
+      var roll = document.getElementById('resRollNo').value.trim();
+      var session = document.getElementById('resSession').value;
+      var dob = document.getElementById('resDob').value;
+      var status = document.getElementById('resSearchStatus');
+      var outCard = document.getElementById('studentMarksheetBlock');
+
+      status.style.color = '#0284c7';
+      status.textContent = 'Searching student records...';
+      outCard.style.display = 'none';
+
+      var query = window.client.from('student_results').select('*')
+        .eq('roll_no', roll)
+        .eq('academic_session', session)
+        .eq('dob', dob)
+        .maybeSingle();
+
+      var res = await query;
+      if (res.error || !res.data) {
+        status.style.color = '#dc2626';
+        status.textContent = 'No result record found matching the Roll No, Academic Session, and DOB.';
+        return;
+      }
+
+      status.textContent = '';
+      window.currentStudentResult = res.data;
+      var d = res.data;
+
+      // Populate Marksheet
+      document.getElementById('msStudentName').textContent = d.student_name.toUpperCase();
+      document.getElementById('msRollNo').textContent = d.roll_no;
+      document.getElementById('msClass').textContent = d.class_name + ' (' + (d.section || 'A') + ')';
+      document.getElementById('msSession').textContent = d.academic_session;
+      document.getElementById('msDob').textContent = window.formatDateDMY(d.dob);
+
+      var subTbody = document.getElementById('msSubjectsBody');
+      var subs = d.subjects || [];
+      subTbody.innerHTML = subs.map(function(s) {
+        return '<tr>' +
+          '<td style="text-align:left; font-weight:600;">' + window.escapeHtml(s.name) + '</td>' +
+          '<td>' + (s.max || 100) + '</td>' +
+          '<td>' + (s.marks != null ? s.marks : '-') + '</td>' +
+          '<td><strong>' + (s.grade || '-') + '</strong></td>' +
+        '</tr>';
+      }).join('');
+
+      document.getElementById('msTotal').textContent = d.total_marks + ' / ' + d.max_marks;
+      document.getElementById('msPercent').textContent = d.percentage + '%';
+      document.getElementById('msGrade').textContent = d.grade || '-';
+
+      var statBadge = document.getElementById('msStatusBadge');
+      statBadge.textContent = d.result_status || 'PASSED';
+      statBadge.style.color = (d.result_status === 'FAILED') ? '#dc2626' : '#16a34a';
+
+      // Promotion Notice
+      var promP = document.getElementById('msPromotionNotice');
+      if (d.promoted_to_class && d.promoted_session) {
+        promP.style.display = 'block';
+        promP.innerHTML = '🎉 <strong>Promotion Status:</strong> Eligible & Promoted to <u>' + window.escapeHtml(d.promoted_to_class) + '</u> for Academic Session <u>' + window.escapeHtml(d.promoted_session) + '</u>.';
+      } else {
+        promP.style.display = 'none';
+      }
+
+      outCard.style.display = 'block';
+      outCard.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    window.printMarksheet = function() {
+      window.print();
+    };
+
+    window.downloadCertificate = function() {
+      if (!window.currentStudentResult) return;
+      var d = window.currentStudentResult;
+      var certWindow = window.open('', '_blank');
+      certWindow.document.write(
+        '<!DOCTYPE html><html><head><title>Certificate - ' + d.student_name + '</title>' +
+        '<style>' +
+          'body { font-family: "Georgia", serif; text-align: center; padding: 40px; background: #fafafa; }' +
+          '.cert-box { border: 10px double #0b3c5d; padding: 40px 30px; background: #fff; max-width: 850px; margin: 0 auto; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }' +
+          'h1 { color: #0b3c5d; font-size: 2.2rem; text-transform: uppercase; margin-bottom: 5px; }' +
+          'h3 { color: #f97316; font-size: 1.3rem; margin-top: 0; font-weight: normal; letter-spacing: 1px; }' +
+          'p.cert-text { font-size: 1.25rem; line-height: 2; margin: 30px 0; color: #1e293b; }' +
+          '.name { font-size: 1.5rem; font-weight: bold; text-decoration: underline; color: #0b3c5d; }' +
+          '.footer-sign { display: flex; justify-content: space-between; margin-top: 60px; padding: 0 40px; font-weight: bold; color: #334155; }' +
+        '</style></head><body>' +
+        '<div class="cert-box">' +
+          '<h1>EKLAVYA MODEL RESIDENTIAL SCHOOL, SUBDEGA</h1>' +
+          '<h3>Ministry of Tribal Affairs, Govt. of India</h3>' +
+          '<h2 style="margin-top:25px; text-decoration:underline; font-size:1.6rem;">PROMOTION CERTIFICATE</h2>' +
+          '<p class="cert-text">' +
+            'This is to certify that <span class="name">' + d.student_name.toUpperCase() + '</span>, ' +
+            'bearing Roll No: <strong>' + d.roll_no + '</strong>, has successfully passed ' +
+            '<strong>' + d.class_name + '</strong> in the Academic Session <strong>' + d.academic_session + '</strong> ' +
+            'securing <strong>' + d.percentage + '%</strong> (Grade ' + (d.grade || 'A') + ').<br/>' +
+            (d.promoted_to_class ? 'The student is hereby declared <strong>PROMOTED</strong> to <strong>' + d.promoted_to_class + '</strong> for Session <strong>' + (d.promoted_session || 'Next Academic Year') + '</strong>.' : '') +
+          '</p>' +
+          '<div class="footer-sign">' +
+            '<div>Exam In-Charge</div>' +
+            '<div>Principal / Headmaster</div>' +
+          '</div>' +
+        '</div>' +
+        '<script>window.onload = function() { window.print(); }<\/script>' +
+        '</body></html>'
+      );
+      certWindow.document.close();
     };
   </script>
 </head>
@@ -863,6 +505,7 @@
       <div class="dropdown">
         <button type="button" class="nav-link-btn dropdown-btn">INFORMATION ▾</button>
         <div class="dropdown-content">
+          <button type="button" onclick="window.goToTab('tab-results')">Student Results & Marksheet</button>
           <button type="button" onclick="window.openDocCategory('Mandatory Disclosure')">Mandatory Disclosure</button>
           <button type="button" onclick="window.openDocCategory('General Notice')">General Notice</button>
           <button type="button" onclick="window.openDocCategory('Exam Notice')">Exam Notice</button>
@@ -876,6 +519,7 @@
           <button type="button" onclick="window.openDocCategory('Career')">Career</button>
         </div>
       </div>
+      <button type="button" class="nav-link-btn" onclick="window.goToTab('tab-results')">RESULTS</button>
       <button type="button" class="nav-link-btn" onclick="window.goToTab('tab-notices')">NOTICES</button>
       <button type="button" class="nav-link-btn" onclick="window.goToTab('tab-gallery')">GALLERY</button>
       <a href="admin/" style="display:block;">ADMIN PORTAL</a>
@@ -906,53 +550,18 @@
         <p style="color: #475569; font-size: 1rem;">
           Our focus is on the comprehensive development of students through high academic standards, sports, and cultural enrichment.
         </p>
-        
         <div id="instBadgeStrip" class="inst-badge-strip" style="display: none;"></div>
       </div>
     </div>
 
-    <!-- Option 2: Public Admission & General Enquiry Form -->
+    <!-- Direct Results Action Card on Homepage -->
     <div class="content-container">
-      <div class="enquiry-form-card">
-        <h2>Admission & General Enquiry</h2>
-        <p class="form-desc">Have a question regarding admissions, academic curriculum, or hostel facilities? Submit your enquiry below and our office will get in touch with you.</p>
-        
-        <form id="publicEnquiryForm">
-          <div class="form-grid-2">
-            <div class="form-field">
-              <label>Applicant / Guardian Name *</label>
-              <input type="text" id="enqName" placeholder="Full Name" required />
-            </div>
-            <div class="form-field">
-              <label>Contact Phone Number *</label>
-              <input type="tel" id="enqPhone" placeholder="10-digit mobile number" required pattern="[0-9]{10}" />
-            </div>
-          </div>
-
-          <div class="form-grid-2">
-            <div class="form-field">
-              <label>Email Address (Optional)</label>
-              <input type="email" id="enqEmail" placeholder="name@example.com" />
-            </div>
-            <div class="form-field">
-              <label>Enquiry Type *</label>
-              <select id="enqType" required>
-                <option value="Admission Enquiry">Admission Enquiry (Class VI)</option>
-                <option value="Hostel & Facilities">Hostel & Residential Facilities</option>
-                <option value="Academic Curriculum">Academic & CBSE Curriculum</option>
-                <option value="General Query">General Query</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-field">
-            <label>Message / Question *</label>
-            <textarea id="enqMessage" rows="4" placeholder="Please write your query details here..." required></textarea>
-          </div>
-
-          <button type="submit" id="enqSubmitBtn" class="btn-submit-enquiry">Submit Enquiry</button>
-          <p id="enqStatusMsg" style="margin-top: 12px; font-weight: 600; font-size: 0.95rem;"></p>
-        </form>
+      <div class="content-card" style="border-left: 6px solid #0284c7; background: #f0f9ff; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+        <div>
+          <h3 style="color:#0b3c5d; margin-bottom:4px;">🎓 Annual Student Examination Results</h3>
+          <p style="color:#475569; font-size:0.95rem; margin:0;">Download official digital marksheets and passing certificates.</p>
+        </div>
+        <button type="button" onclick="window.goToTab('tab-results')" class="btn-action-res" style="background:#0b3c5d; padding:10px 22px;">Check Result ↗</button>
       </div>
     </div>
 
@@ -966,7 +575,99 @@
     </div>
   </section>
 
-  <!-- 2. DOCUMENTS VIEW -->
+  <!-- 2. STUDENT RESULTS VIEW (OPTION A) -->
+  <section id="tab-results" class="tab-section" style="display: none;">
+    <div class="content-container">
+      
+      <div class="results-search-card">
+        <h2 style="color: #0b3c5d; margin-bottom: 6px;">Student Result & Marksheet Portal</h2>
+        <p style="color: #64748b; font-size: 0.95rem;">Enter your Roll Number, Academic Session, and Date of Birth to view your official result and download marksheets.</p>
+
+        <form onsubmit="window.searchStudentResult(event)">
+          <div class="form-grid-3">
+            <div class="form-field">
+              <label>Roll Number *</label>
+              <input type="text" id="resRollNo" placeholder="e.g. 2025-06-14" required />
+            </div>
+            <div class="form-field">
+              <label>Academic Session *</label>
+              <select id="resSession" required>
+                <option value="2025-2026">Session 2025–2026</option>
+                <option value="2026-2027">Session 2026–2027</option>
+                <option value="2024-2025">Session 2024–2025</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Date of Birth *</label>
+              <input type="date" id="resDob" required />
+            </div>
+          </div>
+          <button type="submit" class="btn-search-res">🔍 View Result</button>
+          <span id="resSearchStatus" style="margin-left: 15px; font-weight: 600; font-size: 0.9rem;"></span>
+        </form>
+      </div>
+
+      <!-- Marksheet Output Block -->
+      <div id="studentMarksheetBlock" class="marksheet-container">
+        
+        <div class="marksheet-header">
+          <h2>EKLAVYA MODEL RESIDENTIAL SCHOOL, SUBDEGA</h2>
+          <p>Sundargarh, Odisha - 770014 | NESTS • Ministry of Tribal Affairs</p>
+          <h3 style="margin-top: 10px; color: #f97316; font-size: 1.15rem; letter-spacing: 0.5px;">ANNUAL PROGRESS & MARKS STATEMENT</h3>
+        </div>
+
+        <div class="student-meta-grid">
+          <div class="meta-item"><span class="lbl">Student Name</span><span class="val" id="msStudentName">-</span></div>
+          <div class="meta-item"><span class="lbl">Roll Number</span><span class="val" id="msRollNo">-</span></div>
+          <div class="meta-item"><span class="lbl">Class & Section</span><span class="val" id="msClass">-</span></div>
+          <div class="meta-item"><span class="lbl">Academic Session</span><span class="val" id="msSession">-</span></div>
+          <div class="meta-item"><span class="lbl">Date of Birth</span><span class="val" id="msDob">-</span></div>
+        </div>
+
+        <table class="marks-table">
+          <thead>
+            <tr>
+              <th style="text-align: left;">Subject Name</th>
+              <th>Max Marks</th>
+              <th>Marks Obtained</th>
+              <th>Grade</th>
+            </tr>
+          </thead>
+          <tbody id="msSubjectsBody"></tbody>
+        </table>
+
+        <div class="result-summary-box">
+          <div>
+            <div style="font-size: 0.85rem; color: #475569; font-weight: 700;">TOTAL MARKS</div>
+            <div id="msTotal" style="font-size: 1.15rem; font-weight: 800; color: #0b3c5d;">-</div>
+          </div>
+          <div>
+            <div style="font-size: 0.85rem; color: #475569; font-weight: 700;">PERCENTAGE</div>
+            <div id="msPercent" style="font-size: 1.15rem; font-weight: 800; color: #0b3c5d;">-</div>
+          </div>
+          <div>
+            <div style="font-size: 0.85rem; color: #475569; font-weight: 700;">OVERALL GRADE</div>
+            <div id="msGrade" style="font-size: 1.15rem; font-weight: 800; color: #0b3c5d;">-</div>
+          </div>
+          <div>
+            <div style="font-size: 0.85rem; color: #475569; font-weight: 700;">RESULT STATUS</div>
+            <div id="msStatusBadge" style="font-size: 1.15rem; font-weight: 900;">PASSED</div>
+          </div>
+        </div>
+
+        <p id="msPromotionNotice" style="margin-top: 18px; padding: 12px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; color: #166534; font-size: 0.95rem; display: none;"></p>
+
+        <div class="actions-row">
+          <button type="button" onclick="window.printMarksheet()" class="btn-action-res">🖨️ Print Marksheet</button>
+          <button type="button" onclick="window.downloadCertificate()" class="btn-action-res" style="background:#0284c7;">📄 Download Certificate</button>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 3. DOCUMENTS VIEW -->
   <section id="tab-documents" class="tab-section" style="display: none;">
     <div class="content-container">
       <div class="content-card" style="border-top: 4px solid #0284c7; padding: 25px 30px;">
@@ -993,7 +694,7 @@
     </div>
   </section>
 
-  <!-- 3. NOTICES VIEW -->
+  <!-- 4. NOTICES VIEW -->
   <section id="tab-notices" class="tab-section" style="display: none;">
     <div class="content-container">
       <div class="content-card" style="border-top: 4px solid #0b3c5d;">
@@ -1004,85 +705,50 @@
     </div>
   </section>
 
-  <!-- 4. GALLERY VIEW -->
+  <!-- 5. GALLERY VIEW -->
   <section id="tab-gallery" class="tab-section" style="display: none;">
     <div class="content-container" style="text-align: center;">
       <h2 style="color: #0b3c5d; font-size: 2.2rem; margin-bottom: 8px;">Photo Gallery</h2>
       <p style="color: #64748b; margin-bottom: 20px;">Moments, activities, and campus life</p>
-      <div id="publicGalleryGrid" class="gallery-grid"></div>
+      <div id="publicGalleryGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:24px; margin-top:20px;"></div>
     </div>
   </section>
 
-  <!-- 5. STAFF DETAIL VIEW -->
+  <!-- 6. STAFF DETAIL VIEW -->
   <section id="tab-staff" class="tab-section" style="display: none;">
     <div class="content-container">
       <div class="content-card" style="border-top: 4px solid #0b3c5d;">
         <h2 style="color: #0b3c5d; font-size: 1.9rem; margin-bottom: 4px; text-transform: uppercase;">STAFF DETAILS</h2>
         <p style="color: #64748b; margin-bottom: 30px; font-weight: 600; text-transform: uppercase;">FACULTY AND ADMINISTRATIVE STAFF OF EMRS SUBDEGA</p>
 
-        <!-- Category 1: PRINCIPAL -->
-        <div class="staff-category-block">
-          <div class="staff-category-title">1. PRINCIPAL</div>
-          <div id="staff-list-principal" class="staff-row-list"></div>
-        </div>
-
-        <!-- Category 2: PGT -->
-        <div class="staff-category-block">
-          <div class="staff-category-title">2. PGT</div>
-          <div id="staff-list-pgt" class="staff-row-list"></div>
-        </div>
-
-        <!-- Category 3: TGT -->
-        <div class="staff-category-block">
-          <div class="staff-category-title">3. TGT</div>
-          <div id="staff-list-tgt" class="staff-row-list"></div>
-        </div>
-
-        <!-- Category 4: NON-TEACHING -->
-        <div class="staff-category-block">
-          <div class="staff-category-title">4. NON-TEACHING</div>
-          <div id="staff-list-nonteaching" class="staff-row-list"></div>
-        </div>
+        <div class="staff-category-block"><div class="staff-category-title">1. PRINCIPAL</div><div id="staff-list-principal" class="staff-row-list"></div></div>
+        <div class="staff-category-block"><div class="staff-category-title">2. PGT</div><div id="staff-list-pgt" class="staff-row-list"></div></div>
+        <div class="staff-category-block"><div class="staff-category-title">3. TGT</div><div id="staff-list-tgt" class="staff-row-list"></div></div>
+        <div class="staff-category-block"><div class="staff-category-title">4. NON-TEACHING</div><div id="staff-list-nonteaching" class="staff-row-list"></div></div>
       </div>
     </div>
   </section>
 
-  <!-- Lightbox -->
-  <div id="lightbox" class="lightbox">
-    <span class="close" id="closeBtn">&times;</span>
-    <img id="lightboxImg" src="" alt="Popup Preview" />
-    <div id="lightboxCaption" class="caption"></div>
-  </div>
-
   <!-- Footer -->
   <footer class="site-footer">
     <div class="footer-content">
-      
-      <!-- Column 1: School Identity -->
       <div class="footer-col">
         <h3 id="footerSchoolName">EMRS Subdega</h3>
         <p>A premier residential institution dedicated to quality CBSE education for tribal students under the Ministry of Tribal Affairs, Govt. of India.</p>
-        <p id="footerAffP" style="font-size: 0.85rem; color: #94a3b8; display: none; margin-top: 10px;">
-          <strong style="color: #cbd5e1;" id="footerAffVal"></strong>
-        </p>
+        <p id="footerAffP" style="font-size: 0.85rem; color: #94a3b8; display: none; margin-top: 10px;"><strong style="color: #cbd5e1;" id="footerAffVal"></strong></p>
       </div>
-
-      <!-- Column 2: Contact Us -->
       <div class="footer-col">
         <h3>Contact Us</h3>
         <p id="footerAddress" style="color: #e2e8f0; font-weight: 500;">Subdega, Sundargarh, Odisha - 770014</p>
         <p style="margin-top: 10px;">Email: <a id="footerEmail" href="mailto:emrssubdega1@gmail.com">emrssubdega1@gmail.com</a></p>
         <p id="footerPhoneP" style="display: none;">Phone: <a id="footerPhone" href="#" style="color: #38bdf8;"></a></p>
       </div>
-
     </div>
-
     <div class="footer-bottom">
       <p>&copy; EMRS Subdega. All rights reserved. | <a href="admin/">Admin Login</a></p>
     </div>
   </footer>
 
-  <!-- Asynchronous Initialization & Fetch Engine -->
   <script>
     var currentSlideIdx = 0;
     var sliderTimer = null;
@@ -1104,11 +770,7 @@
       slidesData.forEach(function(item, idx) {
         var slide = document.createElement('div');
         slide.className = 'slide ' + (idx === 0 ? 'active' : '');
-        slide.innerHTML = '<img src="' + item.url + '" alt="' + (item.title || '') + '" />' +
-          '<div class="slide-overlay">' +
-            '<h3>' + (item.title || '') + '</h3>' +
-            '<p>EMRS Subdega, Sundargarh, Odisha</p>' +
-          '</div>';
+        slide.innerHTML = '<img src="' + item.url + '" alt="' + (item.title || '') + '" /><div class="slide-overlay"><h3>' + (item.title || '') + '</h3><p>EMRS Subdega, Sundargarh, Odisha</p></div>';
         slider.appendChild(slide);
 
         var dot = document.createElement('div');
@@ -1116,76 +778,25 @@
         dot.onclick = function() { goToSlide(idx); };
         dotsContainer.appendChild(dot);
       });
-
-      startAutoSlider(slidesData.length);
+      if (sliderTimer) clearInterval(sliderTimer);
+      sliderTimer = setInterval(function() { goToSlide(currentSlideIdx + 1); }, 5000);
     }
 
     function goToSlide(idx) {
       var slides = document.querySelectorAll('.slide');
       var dots = document.querySelectorAll('.dot');
       if (slides.length === 0) return;
-
       if (slides[currentSlideIdx]) slides[currentSlideIdx].classList.remove('active');
       if (dots[currentSlideIdx]) dots[currentSlideIdx].classList.remove('active');
-
       currentSlideIdx = (idx + slides.length) % slides.length;
-
       if (slides[currentSlideIdx]) slides[currentSlideIdx].classList.add('active');
       if (dots[currentSlideIdx]) dots[currentSlideIdx].classList.add('active');
-    }
-
-    function startAutoSlider(total) {
-      if (sliderTimer) clearInterval(sliderTimer);
-      sliderTimer = setInterval(function() { goToSlide(currentSlideIdx + 1); }, 5000);
-    }
-
-    // Public Enquiry Submission Engine (Option 2)
-    function setupEnquiryForm() {
-      var form = document.getElementById('publicEnquiryForm');
-      if (!form) return;
-
-      form.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        var msgEl = document.getElementById('enqStatusMsg');
-        var btn = document.getElementById('enqSubmitBtn');
-        msgEl.style.color = '#0284c7';
-        msgEl.textContent = 'Submitting your enquiry...';
-        btn.disabled = true;
-
-        var name = document.getElementById('enqName').value.trim();
-        var phone = document.getElementById('enqPhone').value.trim();
-        var email = document.getElementById('enqEmail').value.trim() || null;
-        var type = document.getElementById('enqType').value;
-        var msg = document.getElementById('enqMessage').value.trim();
-
-        try {
-          var ins = await window.client.from('enquiries').insert([{
-            name: name,
-            phone: phone,
-            email: email,
-            enquiry_type: type,
-            message: msg
-          }]);
-
-          if (ins.error) throw ins.error;
-
-          msgEl.style.color = '#16a34a';
-          msgEl.textContent = 'Thank you! Your enquiry has been received. Our office will contact you soon.';
-          form.reset();
-        } catch(err) {
-          msgEl.style.color = '#dc2626';
-          msgEl.textContent = 'Could not submit enquiry: ' + err.message;
-        } finally {
-          btn.disabled = false;
-        }
-      });
     }
 
     async function ensureClientAndFetch() {
       if (!window.client) {
         var targetUrl = window.SUPABASE_URL || "https://eukhcbxrxzhpwfizoqun.supabase.co";
         var targetKey = window.SUPABASE_ANON_KEY;
-
         if (window.supabase && targetUrl && targetKey) {
           window.client = window.supabase.createClient(targetUrl, targetKey);
         } else {
@@ -1194,55 +805,30 @@
         }
       }
 
-      setupEnquiryForm();
-
-      // 1. Fetch Dynamic Campus & Institution Details
       try {
         var instRes = await window.client.from("institution_details").select("*").eq("id", "primary").maybeSingle();
-        if (instRes && instRes.data) {
-          window.renderInstitutionDetails(instRes.data);
-        }
+        if (instRes && instRes.data) window.renderInstitutionDetails(instRes.data);
       } catch(e) {}
 
-      // 2. Fetch Documents
       try {
         var dRes = await window.client.from("documents").select("*").order("created_at", { ascending: false });
-        if (dRes && dRes.data) {
-          window.allDocuments = dRes.data;
-          window.renderDocuments();
-        }
+        if (dRes && dRes.data) { window.allDocuments = dRes.data; window.renderDocuments(); }
       } catch(e) {}
 
-      // 3. Fetch Notices
       try {
         var nRes = await window.client.from("notices").select("*").order("notice_date", { ascending: false });
-        if (nRes && nRes.data) {
-          window.allNotices = nRes.data;
-          window.renderNotices();
-        }
+        if (nRes && nRes.data) { window.allNotices = nRes.data; window.renderNotices(); }
       } catch(e) {}
 
-      // 4. Fetch Photos
       try {
         var gRes = await window.client.from("gallery").select("*").order("created_at", { ascending: false });
-        if (gRes && gRes.data) {
-          window.allGallery = gRes.data;
-          buildSlider(window.allGallery);
-          window.renderGallery();
-        } else {
-          buildSlider([]);
-        }
-      } catch(e) {
-        buildSlider([]);
-      }
+        if (gRes && gRes.data) { window.allGallery = gRes.data; buildSlider(window.allGallery); window.renderGallery(); }
+        else { buildSlider([]); }
+      } catch(e) { buildSlider([]); }
 
-      // 5. Fetch Staff Details
       try {
         var sRes = await window.client.from("staff").select("*").order("created_at", { ascending: true });
-        if (sRes && sRes.data) {
-          window.allStaff = sRes.data;
-          window.renderStaff();
-        }
+        if (sRes && sRes.data) { window.allStaff = sRes.data; window.renderStaff(); }
       } catch(e) {}
     }
 
@@ -1251,14 +837,6 @@
       var nextBtn = document.getElementById('sliderNext');
       if (prevBtn) prevBtn.addEventListener('click', function() { goToSlide(currentSlideIdx - 1); });
       if (nextBtn) nextBtn.addEventListener('click', function() { goToSlide(currentSlideIdx + 1); });
-
-      var closeBtn = document.getElementById("closeBtn");
-      var lb = document.getElementById("lightbox");
-      if (closeBtn && lb) {
-        closeBtn.addEventListener("click", function() { lb.style.display = "none"; });
-        lb.addEventListener("click", function(e) { if (e.target === lb) lb.style.display = "none"; });
-      }
-
       ensureClientAndFetch();
     });
   </script>
