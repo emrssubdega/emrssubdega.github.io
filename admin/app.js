@@ -1,10 +1,10 @@
-// Global Supabase Client
+// Supabase Client
 var client = null;
 if (window.supabase && window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
   client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
 }
 
-// All 40 Designations
+// 40 Designations list
 var DESIGNATIONS = [
   "PRINCIPAL",
   "PGT ENGLISH",
@@ -56,25 +56,20 @@ function populateDesignations() {
   }).join("");
 }
 
-// Setup Tabs
-function initAdminTabs() {
-  var tabBtns = document.querySelectorAll(".admin-tabs .tab-btn");
-  var tabContents = document.querySelectorAll(".admin-tab-content");
+// Tab Switcher function
+window.switchAdminTab = function(tabId, btn) {
+  var panes = document.querySelectorAll(".admin-tab-pane");
+  panes.forEach(function(p) { p.classList.remove("show"); });
 
-  tabBtns.forEach(function(btn) {
-    btn.addEventListener("click", function() {
-      var target = btn.dataset.tab;
-      tabBtns.forEach(function(b) { b.classList.remove("active"); });
-      tabContents.forEach(function(c) { c.classList.remove("active"); });
+  var btns = document.querySelectorAll(".tab-nav-btn");
+  btns.forEach(function(b) { b.classList.remove("active"); });
 
-      btn.classList.add("active");
-      var activeContent = document.getElementById(target);
-      if (activeContent) activeContent.classList.add("active");
-    });
-  });
-}
+  var activePane = document.getElementById(tabId);
+  if (activePane) activePane.classList.add("show");
+  if (btn) btn.classList.add("active");
+};
 
-// Check session
+// Check Session & Auth
 async function checkSession() {
   if (!client) return;
   var sessionRes = await client.auth.getSession();
@@ -105,7 +100,6 @@ function loadAllAdminData() {
 
 document.addEventListener("DOMContentLoaded", function() {
   populateDesignations();
-  initAdminTabs();
 
   // Forgot password toggling
   var showForgotBtn = document.getElementById("showForgotBtn");
@@ -134,7 +128,7 @@ document.addEventListener("DOMContentLoaded", function() {
       var email = document.getElementById("resetEmail").value.trim();
       if (!email) {
         resetMsg.style.color = "#dc2626";
-        resetMsg.textContent = "Please enter your registered email.";
+        resetMsg.textContent = "Please enter your email.";
         return;
       }
       resetMsg.style.color = "#0284c7";
@@ -154,7 +148,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
-  // Login handler
+  // Sign In handler
   var loginBtn = document.getElementById("loginBtn");
   if (loginBtn) {
     loginBtn.addEventListener("click", async function() {
@@ -173,7 +167,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
-  // Logout handler
+  // Sign Out handler
   var logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", async function() {
@@ -202,12 +196,12 @@ if (staffForm) {
     var dojEmrs = document.getElementById("staffDojEmrs").value || null;
     var photoFile = document.getElementById("staffPhoto").files[0];
 
-    // 50 KB limit validation
     if (!photoFile) {
       status.style.color = "#dc2626";
-      status.textContent = "Please choose a photo.";
+      status.textContent = "Please select a staff photo.";
       return;
     }
+
     if (photoFile.size > 51200) {
       status.style.color = "#dc2626";
       status.textContent = "File too large (" + Math.round(photoFile.size / 1024) + " KB). Photo must be under 50 KB!";
@@ -258,11 +252,11 @@ async function loadAdminStaff() {
         '<td><img src="' + (s.photo_url || '') + '" style="width:40px; height:50px; object-fit:cover; border-radius:4px; border:1px solid #cbd5e1;" /></td>' +
         '<td><strong>' + (s.name || '') + '</strong></td>' +
         '<td>' + (s.employee_id || '') + '</td>' +
-        '<td><span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-weight:700; font-size:0.8rem;">' + (s.category || '') + '</span></td>' +
+        '<td><span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-weight:700; font-size:0.8rem;">' + (s.category || '') + '</span></td>' +
         '<td>' + (s.designation || '') + '</td>' +
         '<td>' + (s.doj_nests || '-') + '</td>' +
         '<td>' + (s.doj_emrs || '-') + '</td>' +
-        '<td><button type="button" class="btn-danger" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;" onclick="deleteStaff(\'' + s.id + '\')">Delete</button></td>' +
+        '<td><button type="button" class="btn-delete" onclick="deleteStaff(\'' + s.id + '\')">Delete</button></td>' +
       '</tr>';
     }).join("");
   } else {
@@ -330,8 +324,8 @@ async function loadAdminDocs() {
         '<td>' + (d.doc_date || '-') + '</td>' +
         '<td>' + (d.category || '-') + '</td>' +
         '<td>' + (d.title || '-') + '</td>' +
-        '<td><a href="' + d.file_url + '" target="_blank" style="color:#0284c7;">Download</a></td>' +
-        '<td><button type="button" class="btn-danger" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;" onclick="deleteDoc(\'' + d.id + '\')">Delete</button></td>' +
+        '<td><a href="' + d.file_url + '" target="_blank" style="color:#0284c7; font-weight:600;">Download</a></td>' +
+        '<td><button type="button" class="btn-delete" onclick="deleteDoc(\'' + d.id + '\')">Delete</button></td>' +
       '</tr>';
     }).join("");
   } else {
@@ -381,7 +375,7 @@ async function loadAdminNotices() {
         '<td>' + (n.notice_date || '-') + '</td>' +
         '<td><strong>' + (n.title || '') + '</strong></td>' +
         '<td>' + (n.body || '') + '</td>' +
-        '<td><button type="button" class="btn-danger" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;" onclick="deleteNotice(\'' + n.id + '\')">Delete</button></td>' +
+        '<td><button type="button" class="btn-delete" onclick="deleteNotice(\'' + n.id + '\')">Delete</button></td>' +
       '</tr>';
     }).join("");
   } else {
@@ -444,7 +438,7 @@ async function loadAdminGallery() {
         '<td><img src="' + g.image_url + '" style="width:60px; height:45px; object-fit:cover; border-radius:4px;" /></td>' +
         '<td>' + (g.title || '-') + '</td>' +
         '<td>' + (g.is_slider ? 'Yes' : 'No') + '</td>' +
-        '<td><button type="button" class="btn-danger" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;" onclick="deleteGallery(\'' + g.id + '\')">Delete</button></td>' +
+        '<td><button type="button" class="btn-delete" onclick="deleteGallery(\'' + g.id + '\')">Delete</button></td>' +
       '</tr>';
     }).join("");
   } else {
