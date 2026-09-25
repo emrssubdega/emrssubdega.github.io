@@ -4,290 +4,506 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EMRS Subdega - Admin Portal</title>
-  <link rel="stylesheet" href="style.css" />
+  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../supabase-config.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Bar */
+    .admin-header {
+      background: #0b3c5d;
+      color: #ffffff;
+      padding: 16px clamp(15px, 4vw, 40px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 3px solid #f97316;
+    }
+    .admin-header h1 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      margin: 0;
+    }
+    .admin-header p {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin: 0;
+    }
+    .signout-btn {
+      background: #dc2626;
+      color: #ffffff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .signout-btn:hover { background: #b91c1c; }
+
+    /* Login Box */
+    .login-wrapper {
+      max-width: 420px;
+      margin: 60px auto;
+      padding: 32px 28px;
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      border-top: 4px solid #0b3c5d;
+    }
+    .login-wrapper h2 {
+      color: #0b3c5d;
+      font-size: 1.45rem;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+    .login-wrapper p {
+      color: #64748b;
+      font-size: 0.88rem;
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    /* Dashboard Navigation Tabs */
+    .dashboard-container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 25px auto;
+      padding: 0 20px;
+      flex: 1;
+    }
+    .nav-tab-bar {
+      display: flex;
+      gap: 8px;
+      border-bottom: 2px solid #e2e8f0;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+    .tab-nav-btn {
+      background: #e2e8f0;
+      color: #475569;
+      border: none;
+      padding: 12px 22px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 6px 6px 0 0;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .tab-nav-btn:hover {
+      background: #cbd5e1;
+      color: #0b3c5d;
+    }
+    .tab-nav-btn.active {
+      background: #0b3c5d;
+      color: #ffffff;
+    }
+
+    /* Content Cards */
+    .panel-box {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+    .panel-box h3 {
+      color: #0b3c5d;
+      font-size: 1.25rem;
+      margin-bottom: 18px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    /* Form Fields */
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .form-field label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .form-field input, .form-field select, .form-field textarea {
+      padding: 10px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      outline: none;
+      font-family: inherit;
+    }
+    .form-field input:focus, .form-field select:focus, .form-field textarea:focus {
+      border-color: #0b3c5d;
+    }
+    .btn-submit {
+      background: #0b3c5d;
+      color: #ffffff;
+      border: none;
+      padding: 11px 24px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-submit:hover { background: #072a42; }
+
+    /* Tables */
+    .table-responsive {
+      overflow-x: auto;
+      margin-top: 15px;
+    }
+    .styled-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      text-align: left;
+    }
+    .styled-table th {
+      background: #f1f5f9;
+      color: #334155;
+      font-weight: 700;
+      padding: 12px 14px;
+      border: 1px solid #e2e8f0;
+    }
+    .styled-table td {
+      padding: 12px 14px;
+      border: 1px solid #e2e8f0;
+      color: #1e293b;
+    }
+    .styled-table tr:nth-child(even) { background: #f8fafc; }
+    .btn-delete {
+      background: #ef4444;
+      color: #ffffff;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+    .btn-delete:hover { background: #dc2626; }
+    .status-alert {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    /* Tab Section toggles */
+    .admin-tab-pane {
+      display: none;
+    }
+    .admin-tab-pane.show {
+      display: block;
+    }
+  </style>
 </head>
 <body>
-  <div class="top-header">
-    <div class="brand-text">
-      <h2>EMRS Subdega</h2>
-      <p>Content Management Admin Portal</p>
+
+  <!-- Top Header -->
+  <header class="admin-header">
+    <div>
+      <h1>EMRS Subdega - Administration</h1>
+      <p>Official School Portal Management System</p>
     </div>
-    <button id="logoutBtn" class="logout-btn" style="display:none;">Sign Out</button>
+    <button id="logoutBtn" class="signout-btn" style="display: none;">Sign Out</button>
+  </header>
+
+  <!-- 1. LOGIN & FORGOT PASSWORD VIEW -->
+  <div id="loginView" class="login-wrapper">
+    <!-- Login Form -->
+    <div id="loginSection">
+      <h2>Admin Sign In</h2>
+      <p>Log in with your administrator credentials</p>
+      <div class="form-field">
+        <label>Email Address</label>
+        <input type="email" id="email" placeholder="admin@example.com" />
+      </div>
+      <div class="form-field">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="••••••••" />
+      </div>
+      <div style="text-align: right; margin-bottom: 16px;">
+        <a href="javascript:void(0)" id="showForgotBtn" style="font-size: 0.85rem; color: #0284c7; text-decoration: none; font-weight: 600;">Forgot Password?</a>
+      </div>
+      <button id="loginBtn" class="btn-submit" style="width: 100%;">Sign In</button>
+      <p id="loginMsg" class="status-alert" style="color: #dc2626; text-align: center;"></p>
+    </div>
+
+    <!-- Forgot Password Form -->
+    <div id="forgotSection" style="display: none;">
+      <h2>Reset Password</h2>
+      <p>Enter your registered email to receive a password recovery link.</p>
+      <div class="form-field">
+        <label>Registered Email</label>
+        <input type="email" id="resetEmail" placeholder="admin@example.com" />
+      </div>
+      <button id="sendResetBtn" class="btn-submit" style="width: 100%;">Send Reset Link</button>
+      <div style="text-align: center; margin-top: 15px;">
+        <a href="javascript:void(0)" id="backToLoginBtn" style="font-size: 0.85rem; color: #64748b; text-decoration: none;">← Back to Sign In</a>
+      </div>
+      <p id="resetMsg" class="status-alert" style="text-align: center;"></p>
+    </div>
   </div>
 
-  <main class="main-content">
-    <!-- Login View -->
-    <div id="loginView" class="auth-box">
-      <div id="loginSection">
-        <h3>Staff Administration Login</h3>
-        <p>Sign in to manage circulars, notices, staff directory, and gallery.</p>
-        <div class="form-group">
-          <label>Email Address</label>
-          <input type="email" id="email" placeholder="admin@example.com" />
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="password" placeholder="••••••••" />
-        </div>
-        <div class="form-group" style="text-align: right; margin-top: -6px;">
-          <a href="javascript:void(0)" id="showForgotBtn" style="font-size: 0.82rem; color: #0b3c5d; font-weight: 600; text-decoration: none;">Forgot Password?</a>
-        </div>
-        <button id="loginBtn" class="btn-primary" style="width: 100%;">Sign In</button>
-        <p id="loginMsg" class="msg-error"></p>
+  <!-- 2. MAIN DASHBOARD WORKSPACE -->
+  <div id="dashboardView" class="dashboard-container" style="display: none;">
+    <!-- Tab Navigation Buttons -->
+    <div class="nav-tab-bar">
+      <button type="button" class="tab-nav-btn active" onclick="switchAdminTab('tab-staff', this)">Staff Details</button>
+      <button type="button" class="tab-nav-btn" onclick="switchAdminTab('tab-docs', this)">Documents & Circulars</button>
+      <button type="button" class="tab-nav-btn" onclick="switchAdminTab('tab-notices', this)">Notices</button>
+      <button type="button" class="tab-nav-btn" onclick="switchAdminTab('tab-gallery', this)">Photo Gallery</button>
+    </div>
+
+    <!-- TAB 1: STAFF DETAILS -->
+    <div id="tab-staff" class="admin-tab-pane show">
+      <div class="panel-box">
+        <h3>Add New Staff Member</h3>
+        <form id="staffForm">
+          <div class="form-grid-2">
+            <div class="form-field">
+              <label>Full Name *</label>
+              <input type="text" id="staffName" placeholder="e.g. SUDHIR KUMAR" required style="text-transform: uppercase;" />
+            </div>
+            <div class="form-field">
+              <label>Employee ID *</label>
+              <input type="text" id="staffEmpId" placeholder="e.g. 241408659" required style="text-transform: uppercase;" />
+            </div>
+            <div class="form-field">
+              <label>Category *</label>
+              <select id="staffCategory" required>
+                <option value="PRINCIPAL">1. PRINCIPAL</option>
+                <option value="PGT">2. PGT</option>
+                <option value="TGT">3. TGT</option>
+                <option value="NON-TEACHING">4. NON-TEACHING</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Designation *</label>
+              <select id="staffDesignation" required>
+                <!-- Filled automatically from app.js -->
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Date of Joining in NESTS</label>
+              <input type="date" id="staffDojNests" />
+            </div>
+            <div class="form-field">
+              <label>Date of Joining in EMRS Subdega</label>
+              <input type="date" id="staffDojEmrs" />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Staff Photo (Max 50 KB, .jpg / .png) *</label>
+            <input type="file" id="staffPhoto" accept="image/jpeg,image/png" required />
+            <small style="color: #64748b;">Maximum file size allowed is 50 KB.</small>
+          </div>
+          <button type="submit" id="saveStaffBtn" class="btn-submit">Add Staff Member</button>
+          <p id="staffStatus" class="status-alert"></p>
+        </form>
       </div>
 
-      <!-- Forgot Password Section -->
-      <div id="forgotSection" style="display:none;">
-        <h3>Reset Password</h3>
-        <p>Enter your registered email address to receive a password reset link.</p>
-        <div class="form-group">
-          <label>Email Address</label>
-          <input type="email" id="resetEmail" placeholder="admin@example.com" />
+      <div class="panel-box">
+        <h3>Current Staff Directory</h3>
+        <div class="table-responsive">
+          <table class="styled-table">
+            <thead>
+              <tr>
+                <th>Photo</th>
+                <th>Name</th>
+                <th>Emp ID</th>
+                <th>Category</th>
+                <th>Designation</th>
+                <th>DOJ NESTS</th>
+                <th>DOJ EMRS</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="staffTableBody">
+              <tr><td colspan="8" style="text-align: center; color: #64748b;">Loading staff records...</td></tr>
+            </tbody>
+          </table>
         </div>
-        <button id="sendResetBtn" class="btn-primary" style="width: 100%;">Send Reset Link</button>
-        <div style="text-align: center; margin-top: 15px;">
-          <a href="javascript:void(0)" id="backToLoginBtn" style="font-size: 0.85rem; color: #64748b; text-decoration: none;">← Back to Login</a>
-        </div>
-        <p id="resetMsg" style="margin-top: 10px; font-size: 0.85rem; text-align: center;"></p>
       </div>
     </div>
 
-    <!-- Admin Dashboard View -->
-    <div id="dashboardView" style="display:none; width: 100%;">
-      <div class="admin-tabs">
-        <button class="tab-btn active" data-tab="staffTab">Staff Details</button>
-        <button class="tab-btn" data-tab="docsTab">Documents & Circulars</button>
-        <button class="tab-btn" data-tab="noticesTab">Notices</button>
-        <button class="tab-btn" data-tab="galleryTab">Photo Gallery</button>
+    <!-- TAB 2: DOCUMENTS -->
+    <div id="tab-docs" class="admin-tab-pane">
+      <div class="panel-box">
+        <h3>Upload Official Document / Circular</h3>
+        <form id="docForm">
+          <div class="form-grid-2">
+            <div class="form-field">
+              <label>Circular / Ref Number</label>
+              <input type="text" id="docCircularNo" placeholder="e.g. CIR/2026/01" />
+            </div>
+            <div class="form-field">
+              <label>Document Date</label>
+              <input type="date" id="docDate" />
+            </div>
+            <div class="form-field" style="grid-column: 1 / -1;">
+              <label>Category</label>
+              <select id="docCategory">
+                <option value="Mandatory Disclosure">Mandatory Disclosure</option>
+                <option value="General Notice">General Notice</option>
+                <option value="Exam Notice">Exam Notice</option>
+                <option value="Rules & Regulations">Rules & Regulations</option>
+                <option value="Committees">Committees</option>
+                <option value="Result Analysis">Result Analysis</option>
+                <option value="Transfer Certificate">Transfer Certificate</option>
+                <option value="Admission Notice">Admission Notice</option>
+                <option value="Tenders">Tenders</option>
+                <option value="Career">Career</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Subject / Document Title *</label>
+            <input type="text" id="docTitle" placeholder="e.g. Mandatory Disclosure Details" required />
+          </div>
+          <div class="form-field">
+            <label>Select PDF File *</label>
+            <input type="file" id="docFile" accept="application/pdf" required />
+          </div>
+          <button type="submit" id="saveDocBtn" class="btn-submit">Upload Document</button>
+          <p id="docStatus" class="status-alert"></p>
+        </form>
       </div>
 
-      <!-- 1. STAFF DETAILS TAB -->
-      <section id="staffTab" class="admin-tab-content active">
-        <div class="card">
-          <h3>Add New Staff Member</h3>
-          <form id="staffForm">
-            <div class="form-grid">
-              <div class="form-group">
-                <label>Full Name *</label>
-                <input type="text" id="staffName" placeholder="e.g. RAJESH KUMAR" required style="text-transform: uppercase;" />
-              </div>
-              <div class="form-group">
-                <label>Employee ID *</label>
-                <input type="text" id="staffEmpId" placeholder="e.g. EMP10293" required style="text-transform: uppercase;" />
-              </div>
-              <div class="form-group">
-                <label>Category *</label>
-                <select id="staffCategory" required>
-                  <option value="PRINCIPAL">1. PRINCIPAL</option>
-                  <option value="PGT">2. PGT</option>
-                  <option value="TGT">3. TGT</option>
-                  <option value="NON-TEACHING">4. NON-TEACHING</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Designation *</label>
-                <select id="staffDesignation" required>
-                  <!-- Populated from DESIGNATIONS list in app.js -->
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Date of Joining in NESTS</label>
-                <input type="date" id="staffDojNests" />
-              </div>
-              <div class="form-group">
-                <label>Date of Joining in EMRS Subdega</label>
-                <input type="date" id="staffDojEmrs" />
-              </div>
-            </div>
-            <div class="form-group" style="margin-top: 10px;">
-              <label>Staff Photo (Max 50 KB, .jpg/.png) *</label>
-              <input type="file" id="staffPhoto" accept="image/jpeg,image/png" required />
-              <small style="color: #64748b; font-size: 0.8rem;">Maximum file size allowed is 50 KB.</small>
-            </div>
-            <button type="submit" id="saveStaffBtn" class="btn-primary" style="margin-top: 14px;">Add Staff Member</button>
-            <p id="staffStatus" style="margin-top: 10px; font-weight: 500; font-size: 0.9rem;"></p>
-          </form>
+      <div class="panel-box">
+        <h3>Uploaded Documents List</h3>
+        <div class="table-responsive">
+          <table class="styled-table">
+            <thead>
+              <tr>
+                <th>Ref No.</th>
+                <th>Date</th>
+                <th>Category</th>
+                <th>Subject</th>
+                <th>File</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="docTableBody">
+              <tr><td colspan="6" style="text-align: center; color: #64748b;">Loading documents...</td></tr>
+            </tbody>
+          </table>
         </div>
-
-        <div class="card" style="margin-top: 25px;">
-          <h3>Staff Directory</h3>
-          <div style="overflow-x: auto;">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Photo</th>
-                  <th>Name</th>
-                  <th>Emp ID</th>
-                  <th>Category</th>
-                  <th>Designation</th>
-                  <th>DOJ NESTS</th>
-                  <th>DOJ EMRS</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody id="staffTableBody">
-                <tr><td colspan="8" style="text-align: center;">Loading staff records...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- 2. DOCUMENTS TAB -->
-      <section id="docsTab" class="admin-tab-content">
-        <div class="card">
-          <h3>Upload Official Document / Circular</h3>
-          <form id="docForm">
-            <div class="form-grid">
-              <div class="form-group">
-                <label>Circular / Ref Number</label>
-                <input type="text" id="docCircularNo" placeholder="e.g. CIR/2026/01" />
-              </div>
-              <div class="form-group">
-                <label>Document Date</label>
-                <input type="date" id="docDate" />
-              </div>
-              <div class="form-group">
-                <label>Category</label>
-                <select id="docCategory">
-                  <option value="Mandatory Disclosure">Mandatory Disclosure</option>
-                  <option value="General Notice">General Notice</option>
-                  <option value="Exam Notice">Exam Notice</option>
-                  <option value="Rules & Regulations">Rules & Regulations</option>
-                  <option value="Committees">Committees</option>
-                  <option value="Result Analysis">Result Analysis</option>
-                  <option value="Transfer Certificate">Transfer Certificate</option>
-                  <option value="Admission Notice">Admission Notice</option>
-                  <option value="Tenders">Tenders</option>
-                  <option value="Career">Career</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Subject / Title *</label>
-              <input type="text" id="docTitle" placeholder="e.g. Mandatory Disclosure Details 2026" required />
-            </div>
-            <div class="form-group">
-              <label>PDF Document *</label>
-              <input type="file" id="docFile" accept="application/pdf" required />
-            </div>
-            <button type="submit" id="saveDocBtn" class="btn-primary">Upload Document</button>
-            <p id="docStatus" style="margin-top: 10px; font-weight: 500; font-size: 0.9rem;"></p>
-          </form>
-        </div>
-
-        <div class="card" style="margin-top: 25px;">
-          <h3>Uploaded Documents</h3>
-          <div style="overflow-x: auto;">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Ref No.</th>
-                  <th>Date</th>
-                  <th>Category</th>
-                  <th>Subject</th>
-                  <th>File</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody id="docTableBody">
-                <tr><td colspan="6" style="text-align: center;">Loading documents...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- 3. NOTICES TAB -->
-      <section id="noticesTab" class="admin-tab-content">
-        <div class="card">
-          <h3>Post New Notice / Circular</h3>
-          <form id="noticeForm">
-            <div class="form-grid">
-              <div class="form-group">
-                <label>Notice Title *</label>
-                <input type="text" id="noticeTitle" required />
-              </div>
-              <div class="form-group">
-                <label>Notice Date *</label>
-                <input type="date" id="noticeDate" required />
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Notice Details / Body *</label>
-              <textarea id="noticeBody" rows="4" required></textarea>
-            </div>
-            <button type="submit" id="saveNoticeBtn" class="btn-primary">Publish Notice</button>
-            <p id="noticeStatus" style="margin-top: 10px; font-weight: 500; font-size: 0.9rem;"></p>
-          </form>
-        </div>
-
-        <div class="card" style="margin-top: 25px;">
-          <h3>Published Notices</h3>
-          <div style="overflow-x: auto;">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Title</th>
-                  <th>Description</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody id="noticeTableBody">
-                <tr><td colspan="4" style="text-align: center;">Loading notices...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- 4. GALLERY TAB -->
-      <section id="galleryTab" class="admin-tab-content">
-        <div class="card">
-          <h3>Upload Photo to Gallery</h3>
-          <form id="galleryForm">
-            <div class="form-group">
-              <label>Photo Title / Caption</label>
-              <input type="text" id="photoTitle" placeholder="e.g. Science Exhibition" />
-            </div>
-            <div class="form-group">
-              <label>Image File *</label>
-              <input type="file" id="photoFile" accept="image/*" required />
-            </div>
-            <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
-              <input type="checkbox" id="photoIsSlider" />
-              <label for="photoIsSlider" style="cursor: pointer;">Display in Homepage Carousel / Slider</label>
-            </div>
-            <button type="submit" id="savePhotoBtn" class="btn-primary">Upload Photo</button>
-            <p id="photoStatus" style="margin-top: 10px; font-weight: 500; font-size: 0.9rem;"></p>
-          </form>
-        </div>
-
-        <div class="card" style="margin-top: 25px;">
-          <h3>Uploaded Photos</h3>
-          <div style="overflow-x: auto;">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Preview</th>
-                  <th>Title</th>
-                  <th>Slider</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody id="galleryTableBody">
-                <tr><td colspan="4" style="text-align: center;">Loading photos...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
+      </div>
     </div>
-  </main>
+
+    <!-- TAB 3: NOTICES -->
+    <div id="tab-notices" class="admin-tab-pane">
+      <div class="panel-box">
+        <h3>Publish School Announcement</h3>
+        <form id="noticeForm">
+          <div class="form-grid-2">
+            <div class="form-field">
+              <label>Notice Title *</label>
+              <input type="text" id="noticeTitle" required />
+            </div>
+            <div class="form-field">
+              <label>Notice Date *</label>
+              <input type="date" id="noticeDate" required />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Notice Description *</label>
+            <textarea id="noticeBody" rows="4" required></textarea>
+          </div>
+          <button type="submit" id="saveNoticeBtn" class="btn-submit">Publish Notice</button>
+          <p id="noticeStatus" class="status-alert"></p>
+        </form>
+      </div>
+
+      <div class="panel-box">
+        <h3>Active Notices</h3>
+        <div class="table-responsive">
+          <table class="styled-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="noticeTableBody">
+              <tr><td colspan="4" style="text-align: center; color: #64748b;">Loading notices...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: GALLERY -->
+    <div id="tab-gallery" class="admin-tab-pane">
+      <div class="panel-box">
+        <h3>Add Photo to Gallery</h3>
+        <form id="galleryForm">
+          <div class="form-field">
+            <label>Photo Caption / Title</label>
+            <input type="text" id="photoTitle" placeholder="e.g. Science Exhibition 2026" />
+          </div>
+          <div class="form-field">
+            <label>Image File *</label>
+            <input type="file" id="photoFile" accept="image/*" required />
+          </div>
+          <div class="form-field" style="flex-direction: row; align-items: center; gap: 8px;">
+            <input type="checkbox" id="photoIsSlider" />
+            <label for="photoIsSlider" style="cursor: pointer; text-transform: none;">Feature in Homepage Slider</label>
+          </div>
+          <button type="submit" id="savePhotoBtn" class="btn-submit">Upload Photo</button>
+          <p id="photoStatus" class="status-alert"></p>
+        </form>
+      </div>
+
+      <div class="panel-box">
+        <h3>Uploaded Photos</h3>
+        <div class="table-responsive">
+          <table class="styled-table">
+            <thead>
+              <tr>
+                <th>Preview</th>
+                <th>Caption</th>
+                <th>Slider</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="galleryTableBody">
+              <tr><td colspan="4" style="text-align: center; color: #64748b;">Loading gallery...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
 
   <script src="app.js"></script>
 </body>
