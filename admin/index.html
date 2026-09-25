@@ -71,13 +71,13 @@
     .btn-submit { background: #0b3c5d; color: #ffffff; border: none; padding: 11px 24px; font-size: 0.95rem; font-weight: 600; border-radius: 6px; cursor: pointer; }
     .btn-submit:hover { background: #072a42; }
 
-    /* Action Buttons in Archive (Correction 5: Edit Button) */
+    /* Action Buttons in Archive */
     .btn-edit { background: #0284c7; color: #ffffff; border: none; padding: 5px 11px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; margin-right: 6px; font-weight: 600; }
     .btn-edit:hover { background: #0369a1; }
     .btn-delete { background: #ef4444; color: #ffffff; border: none; padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; }
     .btn-delete:hover { background: #dc2626; }
 
-    /* Dynamic Subject Rows (Correction 4) */
+    /* Dynamic Subject Rows */
     .subject-row { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
     .subject-row input { flex: 2; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 0.9rem; }
     .subject-row input.mark-input { flex: 1; text-align: center; }
@@ -189,13 +189,13 @@
           </div>
         </div>
 
-        <!-- TAB 2: STUDENT RESULTS WITH BULK IMPORT/EXPORT & EDITING -->
+        <!-- TAB 2: STUDENT RESULTS -->
         <div id="tab-results-admin" class="admin-tab-pane">
           
-          <!-- CORRECTION 3: BULK IMPORT & EXPORT EXCEL TOOL -->
+          <!-- BULK IMPORT & EXPORT EXCEL TOOL -->
           <div class="panel-card" style="border-top: 4px solid #0284c7; background: #f0f9ff;">
             <h3>
-              <span>📊 Bulk Student Results Excel / CSV Tool (Correction 3)</span>
+              <span>📊 Bulk Student Results Excel / CSV Tool</span>
               <span style="font-size:0.8rem; background:#bae6fd; color:#0369a1; padding:3px 8px; border-radius:4px;">Classwise Bulk Upload</span>
             </h3>
             <p style="color: #475569; font-size: 0.9rem; margin-bottom: 16px;">
@@ -279,14 +279,14 @@
             <p id="promoStatusMsg" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
           </div>
 
-          <!-- ADD & EDIT STUDENT RESULT FORM (CORRECTION 4: DYNAMIC CUSTOM SUBJECTS) -->
+          <!-- ADD & EDIT STUDENT RESULT FORM (Roll Number input has NO placeholder) -->
           <div class="panel-card" id="studentFormPanel">
             <h3 id="formModeTitle">Add Student Marksheet</h3>
             <form id="studentResultForm">
               <input type="hidden" id="editingRecordId" value="" />
 
               <div class="form-grid-3">
-                <div class="form-field"><label>Roll Number *</label><input type="text" id="srRoll" placeholder="e.g. 01, 14, 2025-06-14" required /></div>
+                <div class="form-field"><label>Roll Number *</label><input type="text" id="srRoll" required /></div>
                 <div class="form-field"><label>Student Name *</label><input type="text" id="srName" placeholder="Full Name" required /></div>
                 <div class="form-field"><label>Date of Birth *</label><input type="date" id="srDob" required /></div>
               </div>
@@ -315,7 +315,7 @@
                 <div class="form-field"><label>Section</label><input type="text" id="srSection" value="A" /></div>
               </div>
 
-              <!-- DYNAMIC EDITABLE SUBJECTS (CORRECTION 4) -->
+              <!-- DYNAMIC EDITABLE SUBJECTS -->
               <div style="margin: 20px 0 10px; padding: 16px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
                   <h4 style="color:#0b3c5d; font-size:1rem; margin:0;">Editable Subjects & Marks Breakdown</h4>
@@ -342,7 +342,7 @@
             </form>
           </div>
 
-          <!-- ARCHIVE TABLE (CORRECTION 5: EDIT BUTTON ADDED) -->
+          <!-- ARCHIVE TABLE -->
           <div class="panel-card">
             <h3>Uploaded Results Archive</h3>
             <div class="table-responsive">
