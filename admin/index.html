@@ -62,6 +62,7 @@
     .profile-info-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; }
     .profile-info-item span.label { color: #475569; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; }
     .profile-info-item span.val { color: #0b3c5d; font-weight: 700; font-size: 1rem; }
+    .profile-info-item span.val.empty { color: #94a3b8; font-weight: 500; font-style: italic; }
 
     .form-grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
     .form-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
@@ -149,7 +150,7 @@
 
       <div class="workspace-content">
 
-        <!-- TAB 0: DASHBOARD -->
+        <!-- TAB 0: DASHBOARD WITH ALL CAMPUS FIELDS RESTORED -->
         <div id="tab-dashboard" class="admin-tab-pane show">
           <div class="welcome-hero-card">
             <h2 class="hero-welcome-small">Welcome to</h2>
@@ -157,31 +158,62 @@
             <div class="hero-badge-pill">🏛️ NESTS • MINISTRY OF TRIBAL AFFAIRS</div>
           </div>
           <div class="panel-card">
-            <h3><span>🏫 Campus & Institutional Details</span></h3>
+            <h3>
+              <span>🏫 Campus & Institutional Details</span>
+              <button type="button" class="btn-submit" style="padding: 6px 14px; font-size: 0.85rem;" onclick="switchAdminTab('tab-institution', document.querySelectorAll('.sidebar-btn')[1])">
+                ✏️ Edit Details
+              </button>
+            </h3>
             <div class="profile-info-list">
               <div class="profile-info-item"><span class="label">Institution Name</span><span class="val" id="viewInstName">EMRS Subdega</span></div>
               <div class="profile-info-item"><span class="label">Location</span><span class="val" id="viewInstLoc">Subdega, Sundargarh, Odisha - 770014</span></div>
+              <div class="profile-info-item"><span class="label">Governing Body</span><span class="val" id="viewInstGov">NESTS, New Delhi</span></div>
+              <div class="profile-info-item"><span class="label">Curriculum / Board</span><span class="val" id="viewInstCurr">CBSE Residential</span></div>
               <div class="profile-info-item"><span class="label">Official Email</span><span class="val" id="viewInstEmail">emrssubdega@gmail.com</span></div>
+              <div class="profile-info-item"><span class="label">Office Phone / Helpline</span><span class="val" id="viewInstPhone">-</span></div>
+              <div class="profile-info-item"><span class="label">CBSE Affiliation No.</span><span class="val" id="viewInstCbseAff">-</span></div>
+              <div class="profile-info-item"><span class="label">School Code</span><span class="val" id="viewInstSchCode">-</span></div>
+              <div class="profile-info-item"><span class="label">UDISE+ Code</span><span class="val" id="viewInstUdise">-</span></div>
+              <div class="profile-info-item"><span class="label">Principal Name</span><span class="val" id="viewInstPrincipal">-</span></div>
+              <div class="profile-info-item"><span class="label">Academic Session</span><span class="val" id="viewInstSession">-</span></div>
             </div>
           </div>
         </div>
 
-        <!-- TAB 1: EDIT CAMPUS & DETAILS -->
+        <!-- TAB 1: EDIT CAMPUS & DETAILS WITH ALL FIELDS RESTORED -->
         <div id="tab-institution" class="admin-tab-pane">
           <div class="panel-card">
             <h3>Edit Campus & Institution Details</h3>
+            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">
+              Update any detail below. All affiliation and helpline fields are <strong>optional</strong> — leave any blank if you do not have them yet. Empty fields will automatically remain hidden on the live website.
+            </p>
             <form id="institutionForm">
-              <div class="form-field"><label>Institution Name</label><input type="text" id="instName" placeholder="EMRS Subdega" /></div>
-              <div class="form-field"><label>Location / Address</label><input type="text" id="instLocation" placeholder="Subdega, Sundargarh, Odisha - 770014" /></div>
+              <div class="form-field"><label>Institution Name</label><input type="text" id="instName" placeholder="e.g. EMRS Subdega" /></div>
+              <div class="form-field"><label>Location / Address</label><input type="text" id="instLocation" placeholder="e.g. Subdega, Sundargarh, Odisha - 770014" /></div>
+              
               <div class="form-grid-2">
-                <div class="form-field"><label>Governing Body</label><input type="text" id="instGovBody" placeholder="NESTS, New Delhi" /></div>
-                <div class="form-field"><label>Curriculum / Board</label><input type="text" id="instCurriculum" placeholder="CBSE Residential" /></div>
+                <div class="form-field"><label>Governing Body</label><input type="text" id="instGovBody" placeholder="e.g. NESTS, New Delhi" /></div>
+                <div class="form-field"><label>Curriculum / Board</label><input type="text" id="instCurriculum" placeholder="e.g. CBSE Residential" /></div>
               </div>
+
               <div class="form-grid-2">
-                <div class="form-field"><label>Official Email</label><input type="email" id="instEmail" placeholder="emrssubdega@gmail.com" /></div>
-                <div class="form-field"><label>Office Phone / Helpline</label><input type="text" id="instOfficePhone" /></div>
+                <div class="form-field"><label>Official Email Address</label><input type="email" id="instEmail" placeholder="e.g. emrssubdega@gmail.com" /></div>
+                <div class="form-field"><label>Office Phone / Helpline (Optional)</label><input type="text" id="instOfficePhone" placeholder="e.g. +91 94370 XXXXX" /></div>
               </div>
-              <button type="submit" id="saveInstBtn" class="btn-submit">Save Institutional Details</button>
+
+              <div class="form-grid-2">
+                <div class="form-field"><label>CBSE Affiliation No. (Optional)</label><input type="text" id="instCbseAff" placeholder="e.g. 15200XX" /></div>
+                <div class="form-field"><label>School Code (Optional)</label><input type="text" id="instSchoolCode" placeholder="e.g. 171XX" /></div>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-field"><label>UDISE+ Code (Optional)</label><input type="text" id="instUdise" placeholder="e.g. 2105150XXXX" /></div>
+                <div class="form-field"><label>Academic Session (Optional)</label><input type="text" id="instSession" placeholder="e.g. 2026-2027" /></div>
+              </div>
+
+              <div class="form-field"><label>Principal Name (Optional)</label><input type="text" id="instPrincipal" placeholder="e.g. Dr. / Shri ..." /></div>
+
+              <button type="submit" id="saveInstBtn" class="btn-submit" style="margin-top: 10px;">Save Institutional Details</button>
               <p id="instStatus" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
             </form>
           </div>
@@ -289,7 +321,6 @@
                 <div class="form-field"><label>Date of Birth *</label><input type="date" id="srDob" onchange="autoFillDobWords(this.value)" required /></div>
               </div>
 
-              <!-- Father's Name, Mother's Name & DOB in Words -->
               <div class="form-grid-3">
                 <div class="form-field"><label>Father's Name</label><input type="text" id="srFatherName" placeholder="Father's Full Name" /></div>
                 <div class="form-field"><label>Mother's Name</label><input type="text" id="srMotherName" placeholder="Mother's Full Name" /></div>
@@ -327,7 +358,6 @@
                   <button type="button" onclick="addNewSubjectRow('', 100, 0)" class="btn-add-sub">+ Add Custom Subject</button>
                 </div>
                 <p style="color:#64748b; font-size:0.85rem; margin-bottom:12px;">Customize, add or delete subjects as required for this student/class.</p>
-
                 <div id="dynamicSubjectsContainer"></div>
               </div>
 
@@ -409,7 +439,7 @@
           </div>
         </div>
 
-        <!-- TAB 4: DOCUMENTS (ALL 10 PUBLIC CATEGORIES MATCHED) -->
+        <!-- TAB 4: DOCUMENTS (10 MATCHING CATEGORIES) -->
         <div id="tab-docs" class="admin-tab-pane">
           <div class="panel-card">
             <h3>Upload Official Document</h3>
@@ -451,7 +481,7 @@
           </div>
         </div>
 
-        <!-- TAB 5: NOTICE BOARD (NO CIRCULARS TEXT) -->
+        <!-- TAB 5: NOTICE BOARD -->
         <div id="tab-notices" class="admin-tab-pane">
           <div class="panel-card">
             <h3>Publish Notice</h3>
@@ -477,7 +507,7 @@
           </div>
         </div>
 
-        <!-- TAB 6: PHOTO GALLERY (HOMEPAGE SLIDER TOGGLE INCLUDED) -->
+        <!-- TAB 6: PHOTO GALLERY -->
         <div id="tab-gallery" class="admin-tab-pane">
           <div class="panel-card">
             <h3>Add Photo to Gallery</h3>
