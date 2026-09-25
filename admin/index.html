@@ -222,9 +222,7 @@
       justify-content: space-between;
     }
 
-    /* ========================================================
-       CENTERED ELEGANT WELCOME HERO BANNER
-       ======================================================== */
+    /* Welcome Hero Banner */
     .welcome-hero-card {
       background: linear-gradient(135deg, #0b3c5d 0%, #072a42 100%);
       color: #ffffff;
@@ -301,6 +299,11 @@
       color: #0b3c5d;
       font-weight: 700;
       font-size: 1rem;
+    }
+    .profile-info-item span.val.empty {
+      color: #94a3b8;
+      font-weight: 500;
+      font-style: italic;
     }
 
     /* Forms */
@@ -496,7 +499,6 @@
         <!-- TAB 0: DASHBOARD OVERVIEW -->
         <div id="tab-dashboard" class="admin-tab-pane show">
           
-          <!-- Welcome Hero Banner (Minimal & Centered without extra subtitle) -->
           <div class="welcome-hero-card">
             <h2 class="hero-welcome-small">Welcome to</h2>
             <h1 class="hero-school-title">EKLAVYA MODEL RESIDENTIAL SCHOOL, SUBDEGA</h1>
@@ -532,41 +534,104 @@
                 <span class="label">Official Email</span>
                 <span class="val" id="viewInstEmail">emrssubdega@gmail.com</span>
               </div>
+
+              <!-- Part B Optional Fields in Dashboard View -->
+              <div class="profile-info-item">
+                <span class="label">CBSE Affiliation No.</span>
+                <span class="val" id="viewInstCbseAff">-</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="label">School Code</span>
+                <span class="val" id="viewInstSchCode">-</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="label">UDISE+ Code</span>
+                <span class="val" id="viewInstUdise">-</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="label">Helpline / Office Phone</span>
+                <span class="val" id="viewInstPhone">-</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="label">Principal Name</span>
+                <span class="val" id="viewInstPrincipal">-</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="label">Academic Session</span>
+                <span class="val" id="viewInstSession">-</span>
+              </div>
             </div>
           </div>
 
         </div>
 
-        <!-- TAB 1: EDIT CAMPUS & INSTITUTION DETAILS -->
+        <!-- TAB 1: EDIT CAMPUS & INSTITUTION DETAILS (WITH OPTIONAL PART B FIELDS) -->
         <div id="tab-institution" class="admin-tab-pane">
           <div class="panel-card">
             <h3>Edit Campus & Institution Details</h3>
             <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">
-              Update the institutional details below. Changes are saved directly to the database.
+              Update any detail below. All new affiliation/contact fields are <strong>optional</strong> — leave any blank if you do not have them yet. Empty fields will automatically remain hidden on the live website.
             </p>
             <form id="institutionForm">
               <div class="form-field">
-                <label>Institution Name *</label>
-                <input type="text" id="instName" required placeholder="EMRS Subdega" />
+                <label>Institution Name</label>
+                <input type="text" id="instName" placeholder="e.g. EMRS Subdega" />
               </div>
               <div class="form-field">
-                <label>Location *</label>
-                <input type="text" id="instLocation" required placeholder="Subdega, Sundargarh, Odisha - 770014" />
+                <label>Location / Full Address</label>
+                <input type="text" id="instLocation" placeholder="e.g. Subdega, Sundargarh, Odisha - 770014" />
               </div>
+
               <div class="form-grid-2">
                 <div class="form-field">
-                  <label>Governing Body *</label>
-                  <input type="text" id="instGovBody" required placeholder="NESTS, New Delhi" />
+                  <label>Governing Body</label>
+                  <input type="text" id="instGovBody" placeholder="e.g. NESTS, New Delhi" />
                 </div>
                 <div class="form-field">
-                  <label>Curriculum / Board *</label>
-                  <input type="text" id="instCurriculum" required placeholder="CBSE Residential" />
+                  <label>Curriculum / Board</label>
+                  <input type="text" id="instCurriculum" placeholder="e.g. CBSE Residential" />
                 </div>
               </div>
-              <div class="form-field">
-                <label>Official Email Address *</label>
-                <input type="email" id="instEmail" required placeholder="emrssubdega@gmail.com" />
+
+              <div class="form-grid-2">
+                <div class="form-field">
+                  <label>Official Email Address</label>
+                  <input type="email" id="instEmail" placeholder="e.g. emrssubdega@gmail.com" />
+                </div>
+                <div class="form-field">
+                  <label>Office Phone / Helpline (Optional)</label>
+                  <input type="text" id="instOfficePhone" placeholder="e.g. +91 94370 XXXXX" />
+                </div>
               </div>
+
+              <!-- Part B Specific Fields (Completely Optional) -->
+              <div class="form-grid-2">
+                <div class="form-field">
+                  <label>CBSE Affiliation No. (Optional)</label>
+                  <input type="text" id="instCbseAff" placeholder="e.g. 15200XX" />
+                </div>
+                <div class="form-field">
+                  <label>School Code (Optional)</label>
+                  <input type="text" id="instSchoolCode" placeholder="e.g. 171XX" />
+                </div>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-field">
+                  <label>UDISE+ Code (Optional)</label>
+                  <input type="text" id="instUdise" placeholder="e.g. 2105150XXXX" />
+                </div>
+                <div class="form-field">
+                  <label>Academic Session (Optional)</label>
+                  <input type="text" id="instSession" placeholder="e.g. 2026-2027" />
+                </div>
+              </div>
+
+              <div class="form-field">
+                <label>Principal Name (Optional)</label>
+                <input type="text" id="instPrincipal" placeholder="e.g. Dr. / Shri ..." />
+              </div>
+
               <button type="submit" id="saveInstBtn" class="btn-submit" style="margin-top: 10px;">Save Institutional Details</button>
               <p id="instStatus" class="status-alert"></p>
             </form>
