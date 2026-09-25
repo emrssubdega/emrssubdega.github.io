@@ -106,6 +106,7 @@
       transition: all 0.2s ease;
       font-family: inherit;
       border-left: 4px solid transparent;
+      text-decoration: none;
     }
     .sidebar-btn:hover {
       background: #072a42;
@@ -147,7 +148,7 @@
     }
     .top-navbar {
       background: #ffffff;
-      padding: 16px 30px;
+      padding: 14px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -157,6 +158,31 @@
       font-size: 1.25rem;
       font-weight: 800;
       color: #0b3c5d;
+    }
+
+    /* Top-Right Action Area */
+    .navbar-right-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .live-website-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #0b3c5d;
+      color: #ffffff;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+    .live-website-btn:hover {
+      background: #072a42;
+      color: #38bdf8;
+      transform: translateY(-1px);
     }
     .user-info {
       font-size: 0.88rem;
@@ -320,6 +346,8 @@
       .sidebar { width: 100%; }
       .sidebar-menu { flex-direction: row; flex-wrap: wrap; }
       .sidebar-btn { width: auto; padding: 10px 14px; }
+      .top-navbar { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .navbar-right-actions { width: 100%; justify-content: space-between; }
     }
   </style>
 </head>
@@ -343,6 +371,9 @@
           <a href="javascript:void(0)" id="showForgotBtn" style="font-size: 0.85rem; color: #0284c7; text-decoration: none; font-weight: 600;">Forgot Password?</a>
         </div>
         <button id="loginBtn" class="btn-submit" style="width: 100%;">Sign In</button>
+        <div style="text-align: center; margin-top: 15px;">
+          <a href="../" target="_blank" style="font-size: 0.85rem; color: #0284c7; text-decoration: none; font-weight: 600;">← Return to Live Website</a>
+        </div>
         <p id="loginMsg" class="status-alert" style="color: #dc2626; text-align: center;"></p>
       </div>
 
@@ -364,7 +395,7 @@
 
   <!-- 2. ADMIN DASHBOARD WORKSPACE WITH LEFT SIDEBAR -->
   <div id="dashboardView" class="admin-wrapper" style="display: none;">
-    <!-- LEFT SIDEBAR -->
+    <!-- LEFT SIDEBAR (No live button here) -->
     <aside class="sidebar">
       <div class="sidebar-header">
         <h2>EMRS Subdega</h2>
@@ -396,9 +427,15 @@
 
     <!-- MAIN PANEL -->
     <main class="main-panel">
+      <!-- TOP NAVBAR: LIVE BUTTON IS LOCATED EXCLUSIVELY ON THE RIGHT SIDE HERE -->
       <div class="top-navbar">
         <div class="page-title" id="pageTitleHeading">Dashboard Overview</div>
-        <div class="user-info">Logged in as: <strong id="adminUserBadge">Admin</strong></div>
+        <div class="navbar-right-actions">
+          <div class="user-info">Logged in as: <strong id="adminUserBadge">Admin</strong></div>
+          <a href="../" target="_blank" class="live-website-btn" title="Open Public Website in new tab">
+            <span>🌐</span> Live Website ↗
+          </a>
+        </div>
       </div>
 
       <div class="workspace-content">
