@@ -239,7 +239,7 @@
     }
     .dot.active { background: #f97316; width: 24px; border-radius: 6px; }
 
-    .content-container { max-width: 1250px; margin: 35px auto; padding: 0 20px; }
+    .content-container { max-width: 1280px; margin: 35px auto; padding: 0 20px; }
     .content-card {
       background: #ffffff;
       border-radius: 10px;
@@ -283,7 +283,7 @@
       font-size: 0.95rem;
     }
 
-    /* Staff Details Horizontal Row Styling (PHOTO RIGHT, SINGLE LINE, NATURAL PROPORTION) */
+    /* Staff Details Horizontal Row Styling */
     .staff-category-block {
       margin-bottom: 45px;
     }
@@ -310,23 +310,25 @@
       border: 1px solid #e2e8f0;
       border-left: 5px solid #0b3c5d;
       border-radius: 8px;
-      padding: 16px 20px;
+      padding: 18px 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 20px;
+      gap: 24px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.04);
       overflow-x: auto;
     }
     .staff-horizontal-card:hover {
       box-shadow: 0 6px 16px rgba(0,0,0,0.08);
     }
-    /* All text items in exact single line */
+    
+    /* Strict single line layout with centered column values */
     .staff-fields-row {
       display: flex;
       align-items: center;
       flex-wrap: nowrap;
-      gap: 28px;
+      justify-content: space-between;
+      gap: 30px;
       flex: 1;
       text-transform: uppercase;
       white-space: nowrap;
@@ -334,33 +336,41 @@
     .staff-field {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      align-items: center;
+      text-align: center;
+      gap: 6px;
+      min-width: 110px;
     }
+    /* Larger header labels */
     .staff-label {
-      font-size: 0.68rem;
-      font-weight: 700;
-      color: #64748b;
-      letter-spacing: 0.5px;
+      font-size: 0.84rem;
+      font-weight: 800;
+      color: #334155;
+      letter-spacing: 0.6px;
     }
+    /* Proportional centered details */
     .staff-value {
       font-size: 0.95rem;
-      font-weight: 700;
+      font-weight: 600;
       color: #1e293b;
+      text-align: center;
     }
     .staff-value.highlight {
       color: #0b3c5d;
       font-size: 1.05rem;
+      font-weight: 800;
     }
     .staff-badge {
       display: inline-block;
       background: #e0f2fe;
       color: #0369a1;
-      padding: 2px 8px;
+      padding: 3px 10px;
       border-radius: 4px;
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       font-weight: 700;
     }
-    /* Photo on the Right with natural original proportions */
+
+    /* Photo on the right in natural proportions */
     .staff-photo-wrapper {
       flex-shrink: 0;
       display: flex;
@@ -370,6 +380,7 @@
       border: 1px solid #cbd5e1;
       border-radius: 6px;
       background: #f8fafc;
+      margin-left: 10px;
     }
     .staff-photo {
       max-height: 90px;
@@ -417,9 +428,9 @@
       .header-tagline { align-items: flex-start; }
       .navbar { justify-content: flex-start; }
       .slider-container { height: 260px; }
-      .staff-horizontal-card { flex-direction: column; align-items: flex-start; gap: 14px; }
-      .staff-fields-row { flex-direction: column; align-items: flex-start; gap: 10px; white-space: normal; }
-      .staff-photo-wrapper { align-self: flex-start; }
+      .staff-horizontal-card { flex-direction: column; align-items: center; gap: 14px; }
+      .staff-fields-row { flex-direction: column; align-items: center; gap: 12px; white-space: normal; }
+      .staff-photo-wrapper { margin-left: 0; }
     }
   </style>
 
@@ -438,6 +449,16 @@
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
+    };
+
+    // Helper: Converts YYYY-MM-DD to DD-MM-YYYY
+    window.formatDateDMY = function(dateStr) {
+      if (!dateStr || dateStr === '-') return '-';
+      var parts = dateStr.split('-');
+      if (parts.length === 3) {
+        return parts[2] + '-' + parts[1] + '-' + parts[0];
+      }
+      return dateStr;
     };
 
     window.goToTab = function(tabId) {
@@ -484,7 +505,8 @@
 
       list.innerHTML = matches.map(function(doc, index) {
         var displayNo = doc.circular_no ? doc.circular_no : ('#' + (matches.length - index));
-        var displayDate = doc.doc_date || (doc.created_at ? doc.created_at.split('T')[0] : '-');
+        var rawDate = doc.doc_date || (doc.created_at ? doc.created_at.split('T')[0] : '-');
+        var displayDate = window.formatDateDMY(rawDate);
 
         return '<tr style="border-bottom: 1px solid #e2e8f0; background: ' + (index % 2 === 0 ? '#ffffff' : '#f8fafc') + ';">' +
           '<td style="padding: 12px 14px; text-align: center; border: 1px solid #e2e8f0; font-weight: 600; color: #334155;">' + window.escapeHtml(displayNo) + '</td>' +
@@ -550,10 +572,11 @@
       }
 
       var html = window.allNotices.map(function(item) {
+        var dmyNoticeDate = window.formatDateDMY(item.notice_date);
         return '<div class="notice-item">' +
           '<div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;">' +
             '<span style="color:#0f172a; font-weight:600; font-size:1.05rem;">' + window.escapeHtml(item.title || '') + '</span>' +
-            '<span style="font-size:0.85rem; color:#64748b; background:#e2e8f0; padding:2px 8px; border-radius:4px;">' + window.escapeHtml(item.notice_date || '') + '</span>' +
+            '<span style="font-size:0.85rem; color:#64748b; background:#e2e8f0; padding:2px 8px; border-radius:4px;">' + window.escapeHtml(dmyNoticeDate) + '</span>' +
           '</div>' +
           '<p style="color:#475569; font-size:0.95rem; line-height:1.5;">' + window.escapeHtml(item.body || '') + '</p>' +
         '</div>';
@@ -563,7 +586,7 @@
       if (hCont) hCont.innerHTML = html;
     };
 
-    // RENDER STAFF DETAILS (PHOTO ON THE RIGHT, STRICT SINGLE LINE, NATURAL RATIO, ALL CAPS)
+    // RENDER STAFF DETAILS (LARGER LABELS, CENTERED UNDER HEADINGS, DD-MM-YYYY DATES, PHOTO ON RIGHT)
     window.renderStaff = function() {
       var categories = ['PRINCIPAL', 'PGT', 'TGT', 'NON-TEACHING'];
       var staffData = window.allStaff || [];
@@ -587,8 +610,8 @@
           var name = String(s.name || '').toUpperCase();
           var empId = String(s.employee_id || '-').toUpperCase();
           var desig = String(s.designation || '').toUpperCase();
-          var dojNests = String(s.doj_nests || '-').toUpperCase();
-          var dojEmrs = String(s.doj_emrs || '-').toUpperCase();
+          var dojNests = window.formatDateDMY(s.doj_nests);
+          var dojEmrs = window.formatDateDMY(s.doj_emrs);
 
           return '<div class="staff-horizontal-card">' +
             '<div class="staff-fields-row">' +
@@ -759,7 +782,7 @@
     </div>
   </section>
 
-  <!-- 5. STAFF DETAIL VIEW (PHOTO ON RIGHT, EXACT SINGLE LINE, ALL CAPS) -->
+  <!-- 5. STAFF DETAIL VIEW (PHOTO ON RIGHT, SINGLE LINE, CENTERED VALUES, DD-MM-YYYY) -->
   <section id="tab-staff" class="tab-section" style="display: none;">
     <div class="content-container">
       <div class="content-card" style="border-top: 4px solid #0b3c5d;">
