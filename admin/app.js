@@ -56,6 +56,16 @@ function populateDesignations() {
   }).join("");
 }
 
+// Helper: Format YYYY-MM-DD to DD-MM-YYYY
+function formatDateDMY(dateStr) {
+  if (!dateStr || dateStr === '-') return '-';
+  var parts = dateStr.split('-');
+  if (parts.length === 3) {
+    return parts[2] + '-' + parts[1] + '-' + parts[0];
+  }
+  return dateStr;
+}
+
 // Left Sidebar Tab Switcher
 window.switchAdminTab = function(tabId, btn) {
   var panes = document.querySelectorAll(".admin-tab-pane");
@@ -72,15 +82,6 @@ window.switchAdminTab = function(tabId, btn) {
   if (heading && btn) {
     heading.textContent = btn.textContent.trim().replace(/^[^a-zA-Z0-9]+/, '');
   }
-};
-
-window.jumpToTab = function(tabId) {
-  var btns = document.querySelectorAll(".sidebar-btn");
-  btns.forEach(function(b) {
-    if (b.getAttribute("onclick") && b.getAttribute("onclick").includes(tabId)) {
-      b.click();
-    }
-  });
 };
 
 // Check Session
@@ -271,8 +272,8 @@ async function loadAdminStaff() {
           '<td>' + (s.employee_id || '') + '</td>' +
           '<td><span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-weight:700; font-size:0.8rem;">' + (s.category || '') + '</span></td>' +
           '<td>' + (s.designation || '') + '</td>' +
-          '<td>' + (s.doj_nests || '-') + '</td>' +
-          '<td>' + (s.doj_emrs || '-') + '</td>' +
+          '<td>' + formatDateDMY(s.doj_nests) + '</td>' +
+          '<td>' + formatDateDMY(s.doj_emrs) + '</td>' +
           '<td><button type="button" class="btn-delete" onclick="deleteStaff(\'' + s.id + '\')">Delete</button></td>' +
         '</tr>';
       }).join("");
@@ -343,7 +344,7 @@ async function loadAdminDocs() {
       tbody.innerHTML = res.data.map(function(d) {
         return '<tr>' +
           '<td>' + (d.circular_no || '-') + '</td>' +
-          '<td>' + (d.doc_date || '-') + '</td>' +
+          '<td>' + formatDateDMY(d.doc_date) + '</td>' +
           '<td>' + (d.category || '-') + '</td>' +
           '<td>' + (d.title || '-') + '</td>' +
           '<td><a href="' + d.file_url + '" target="_blank" style="color:#0284c7; font-weight:600;">Download</a></td>' +
@@ -399,7 +400,7 @@ async function loadAdminNotices() {
     if (res.data.length > 0) {
       tbody.innerHTML = res.data.map(function(n) {
         return '<tr>' +
-          '<td>' + (n.notice_date || '-') + '</td>' +
+          '<td>' + formatDateDMY(n.notice_date) + '</td>' +
           '<td><strong>' + (n.title || '') + '</strong></td>' +
           '<td>' + (n.body || '') + '</td>' +
           '<td><button type="button" class="btn-delete" onclick="deleteNotice(\'' + n.id + '\')">Delete</button></td>' +
