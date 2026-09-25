@@ -106,12 +106,12 @@
     .btn-search-res { background: #0b3c5d; color: #ffffff; border: none; padding: 11px 26px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.95rem; margin-top: 20px; }
     .btn-search-res:hover { background: #072a42; }
 
-    /* Printable A4 Marksheet Container */
+    /* Marksheet Container (Web View) */
     .marksheet-container {
       background: #ffffff;
       border: 3px double #0b3c5d;
       border-radius: 10px;
-      padding: 28px 32px 24px;
+      padding: 35px 40px;
       margin-top: 25px;
       display: none;
       box-shadow: 0 6px 22px rgba(0,0,0,0.08);
@@ -120,27 +120,26 @@
       margin-right: auto;
     }
 
-    /* Header with Logo + One-Line School Name */
     .marksheet-header {
       border-bottom: 2px solid #0b3c5d;
-      padding-bottom: 14px;
-      margin-bottom: 16px;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
     }
     .ms-header-top {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 16px;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
     .ms-emrs-logo {
-      width: 58px;
-      height: 58px;
+      width: 65px;
+      height: 65px;
       object-fit: contain;
       flex-shrink: 0;
     }
     .marksheet-header h2 {
-      font-size: 1.42rem;
+      font-size: 1.48rem;
       color: #0b3c5d;
       font-weight: 900;
       text-transform: uppercase;
@@ -149,69 +148,68 @@
       white-space: nowrap;
     }
     .marksheet-header p {
-      font-size: 0.86rem;
+      font-size: 0.9rem;
       color: #475569;
-      margin: 2px 0 0;
+      margin: 3px 0 0;
       text-align: center;
     }
     .marksheet-header .ms-sub-title {
-      margin-top: 8px;
+      margin-top: 12px;
       color: #f97316;
-      font-size: 1.15rem;
+      font-size: 1.25rem;
       letter-spacing: 1px;
       font-weight: 800;
       text-align: center;
     }
 
-    /* Student Meta Details Grid */
     .student-meta-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px 16px;
+      gap: 12px 18px;
       background: #f8fafc;
-      padding: 14px 18px;
-      border-radius: 6px;
+      padding: 16px 20px;
+      border-radius: 8px;
       border: 1px solid #e2e8f0;
-      margin-bottom: 18px;
+      margin-bottom: 22px;
     }
-    .meta-item span.lbl { font-size: 0.74rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.4px; }
-    .meta-item span.val { font-size: 0.92rem; font-weight: 800; color: #0f172a; display: block; margin-top: 1px; }
+    .meta-item span.lbl { font-size: 0.76rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+    .meta-item span.val { font-size: 0.96rem; font-weight: 800; color: #0f172a; display: block; margin-top: 2px; }
 
-    /* Academic Marks Table */
-    .marks-table { width: 100%; border-collapse: collapse; margin-bottom: 18px; }
-    .marks-table th { background: #f1f5f9; color: #0b3c5d; padding: 10px 12px; border: 1px solid #cbd5e1; font-weight: 800; text-align: center; font-size: 0.9rem; }
-    .marks-table td { padding: 9px 12px; border: 1px solid #cbd5e1; text-align: center; font-size: 0.9rem; }
+    .marks-table { width: 100%; border-collapse: collapse; margin-bottom: 22px; }
+    .marks-table th { background: #f1f5f9; color: #0b3c5d; padding: 12px 14px; border: 1px solid #cbd5e1; font-weight: 800; text-align: center; font-size: 0.95rem; }
+    .marks-table td { padding: 11px 14px; border: 1px solid #cbd5e1; text-align: center; font-size: 0.95rem; }
     .marks-table tr:nth-child(even) { background: #f8fafc; }
 
-    /* Result Summary Box */
     .result-summary-box {
       display: flex;
       justify-content: space-around;
       align-items: center;
-      padding: 12px 18px;
+      padding: 15px 20px;
       background: #e0f2fe;
-      border-radius: 6px;
-      margin-top: 10px;
+      border-radius: 8px;
+      margin-top: 12px;
       border-left: 5px solid #0284c7;
     }
     .signature-block {
       display: flex;
       justify-content: space-between;
-      margin-top: 36px;
-      padding: 0 25px;
-      font-size: 0.88rem;
+      margin-top: 55px;
+      padding: 0 30px;
+      font-size: 0.92rem;
       font-weight: 700;
       color: #334155;
     }
-    .actions-row { display: flex; gap: 14px; justify-content: flex-end; margin-top: 24px; }
+    .actions-row { display: flex; gap: 14px; justify-content: flex-end; margin-top: 28px; }
     .btn-action-res { background: #f97316; color: #fff; border: none; padding: 10px 22px; border-radius: 6px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 0.92rem; }
     .btn-action-res:hover { background: #ea580c; }
 
-    /* Strict A4 Print (Eliminates bottom cutting & fits on one single page) */
+    /* =========================================================
+       PRECISE A4 FULL-PAGE EXPANDED PRINT STYLES (NO BLANK BOTTOM)
+       ========================================================= */
     @media print {
       @page {
         size: A4 portrait;
-        margin: 8mm 10mm;
+        margin: 8mm 8mm; /* Tight outer margins to maximize physical canvas */
       }
       html, body {
         background: #ffffff !important;
@@ -219,41 +217,103 @@
         padding: 0 !important;
         width: 100% !important;
         height: 100% !important;
-        overflow: hidden !important;
       }
       body * { visibility: hidden; }
       #studentMarksheetBlock, #studentMarksheetBlock * { visibility: visible; }
+      
       #studentMarksheetBlock {
         position: absolute;
         left: 0;
         top: 0;
         width: 100% !important;
-        max-width: 100% !important;
-        border: 3px double #0b3c5d !important;
-        border-radius: 8px !important;
-        padding: 22px 24px 20px !important;
+        /* Exact physical height to stretch across full A4 sheet */
+        height: 278mm !important;
+        min-height: 278mm !important;
+        max-height: 278mm !important;
+        border: 4px double #0b3c5d !important;
+        border-radius: 10px !important;
+        padding: 24px 28px 24px !important;
         margin: 0 !important;
         box-shadow: none !important;
         box-sizing: border-box !important;
+        
+        /* Flex distribution stretches components across the full 278mm height */
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
         page-break-inside: avoid !important;
         break-inside: avoid !important;
       }
-      .marksheet-header h2 {
-        font-size: 1.35rem !important;
-        white-space: nowrap !important;
+
+      .marksheet-header {
+        border-bottom: 2px solid #0b3c5d !important;
+        padding-bottom: 12px !important;
+        margin-bottom: 10px !important;
+      }
+      .ms-header-top {
+        gap: 14px !important;
+        margin-bottom: 4px !important;
       }
       .ms-emrs-logo {
-        width: 52px !important;
-        height: 52px !important;
+        width: 62px !important;
+        height: 62px !important;
       }
-      .marks-table th, .marks-table td {
-        padding: 8px 10px !important;
+      .marksheet-header h2 {
+        font-size: 1.4rem !important;
+        white-space: nowrap !important;
+        letter-spacing: 0.5px !important;
+      }
+      .marksheet-header p {
         font-size: 0.88rem !important;
+        margin: 2px 0 0 !important;
       }
+      .marksheet-header .ms-sub-title {
+        margin-top: 10px !important;
+        font-size: 1.22rem !important;
+      }
+
+      .student-meta-grid {
+        gap: 12px 18px !important;
+        padding: 14px 18px !important;
+        margin-bottom: 12px !important;
+      }
+      .meta-item span.lbl { font-size: 0.74rem !important; }
+      .meta-item span.val { font-size: 0.94rem !important; }
+
+      /* Expanded table rows stretch the subject area proportionately */
+      .marks-table {
+        margin-bottom: 12px !important;
+      }
+      .marks-table th {
+        padding: 12px 12px !important;
+        font-size: 0.96rem !important;
+      }
+      .marks-table td {
+        padding: 14px 12px !important;
+        font-size: 0.96rem !important;
+      }
+
+      .result-summary-box {
+        padding: 14px 18px !important;
+        margin-top: 8px !important;
+      }
+      .result-summary-box div div:last-child {
+        font-size: 1.25rem !important;
+      }
+
+      /* Anchors signature block cleanly at the bottom without overflow */
       .signature-block {
-        margin-top: 32px !important;
+        margin-top: 25px !important;
         padding: 0 20px !important;
+        margin-bottom: 4px !important;
       }
+      .signature-block > div {
+        border-top: 1.5px solid #475569 !important;
+        padding-top: 6px !important;
+        width: 180px !important;
+        font-size: 0.9rem !important;
+      }
+
       .actions-row { display: none !important; }
     }
 
@@ -364,7 +424,6 @@
 
     window.addEventListener('popstate', window.applyHashRoute);
 
-    // Render Documents List
     window.renderDocuments = function() {
       var list = document.getElementById('documentList');
       var title = document.getElementById('docHeading');
@@ -419,7 +478,6 @@
       window.renderDocuments();
     };
 
-    // Render Public Photo Gallery
     window.renderGallery = function() {
       var grid = document.getElementById("publicGalleryGrid");
       if (!grid) return;
@@ -434,7 +492,6 @@
       }).join("");
     };
 
-    // Render Notice Board
     window.renderNotices = function() {
       var nCont = document.getElementById("noticeList");
       var hCont = document.getElementById("homeNoticeList");
@@ -726,7 +783,7 @@
     </div>
   </section>
 
-  <!-- 2. STUDENT RESULTS VIEW (ONE-LINE SCHOOL NAME + LOGO + NO BOTTOM CUTTING) -->
+  <!-- 2. STUDENT RESULTS VIEW (EXPANDED TO FULL A4 PAPER HEIGHT) -->
   <section id="tab-results" class="tab-section" style="display: none;">
     <div class="content-container">
       
@@ -815,29 +872,29 @@
         <div class="result-summary-box">
           <div>
             <div style="font-size: 0.76rem; color: #475569; font-weight: 700;">TOTAL MARKS</div>
-            <div id="msTotal" style="font-size: 1.15rem; font-weight: 800; color: #0b3c5d;">-</div>
+            <div id="msTotal" style="font-size: 1.18rem; font-weight: 800; color: #0b3c5d;">-</div>
           </div>
           <div>
             <div style="font-size: 0.76rem; color: #475569; font-weight: 700;">PERCENTAGE</div>
-            <div id="msPercent" style="font-size: 1.15rem; font-weight: 800; color: #0b3c5d;">-</div>
+            <div id="msPercent" style="font-size: 1.18rem; font-weight: 800; color: #0b3c5d;">-</div>
           </div>
           <div>
             <div style="font-size: 0.76rem; color: #475569; font-weight: 700;">OVERALL GRADE</div>
-            <div id="msGrade" style="font-size: 1.15rem; font-weight: 800; color: #0b3c5d;">-</div>
+            <div id="msGrade" style="font-size: 1.18rem; font-weight: 800; color: #0b3c5d;">-</div>
           </div>
           <div>
             <div style="font-size: 0.76rem; color: #475569; font-weight: 700;">FINAL RESULT</div>
-            <div id="msStatusBadge" style="font-size: 1.15rem; font-weight: 900;">PASSED</div>
+            <div id="msStatusBadge" style="font-size: 1.18rem; font-weight: 900;">PASSED</div>
           </div>
         </div>
 
         <p id="msPromotionNotice" style="margin-top: 10px; padding: 8px 12px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; color: #166534; font-size: 0.88rem; display: none;"></p>
 
-        <!-- Official Signatures Block (Positioned safely above bottom border) -->
+        <!-- Official Signatures Block -->
         <div class="signature-block">
-          <div style="text-align: center; border-top: 1px solid #94a3b8; padding-top: 4px; width: 175px;">Class Teacher Signature</div>
-          <div style="text-align: center; border-top: 1px solid #94a3b8; padding-top: 4px; width: 175px;">Exam In-Charge</div>
-          <div style="text-align: center; border-top: 1px solid #94a3b8; padding-top: 4px; width: 175px;">Principal Signature</div>
+          <div style="text-align: center;">Class Teacher Signature</div>
+          <div style="text-align: center;">Exam In-Charge</div>
+          <div style="text-align: center;">Principal Signature</div>
         </div>
 
         <div class="actions-row">
