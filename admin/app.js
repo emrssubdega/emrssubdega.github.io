@@ -82,6 +82,10 @@ window.switchAdminTab = function(tabId, btn) {
   if (heading && btn) {
     heading.textContent = btn.textContent.trim().replace(/^[^a-zA-Z0-9]+/, '');
   }
+
+  if (tabId === 'tab-enquiries') {
+    loadAdminEnquiries();
+  }
 };
 
 // Check Session
@@ -107,6 +111,7 @@ async function checkSession() {
 
 function loadAllAdminData() {
   loadInstitutionDetails();
+  loadAdminEnquiries();
   loadAdminStaff();
   loadAdminDocs();
   loadAdminNotices();
@@ -116,7 +121,6 @@ function loadAllAdminData() {
 document.addEventListener("DOMContentLoaded", function() {
   populateDesignations();
 
-  // Forgot password toggling
   var showForgotBtn = document.getElementById("showForgotBtn");
   var backToLoginBtn = document.getElementById("backToLoginBtn");
   var loginSection = document.getElementById("loginSection");
@@ -163,7 +167,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
-  // Sign In handler
   var loginBtn = document.getElementById("loginBtn");
   if (loginBtn) {
     loginBtn.addEventListener("click", async function() {
@@ -182,7 +185,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
-  // Sign Out handler
   var logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", async function() {
@@ -194,7 +196,7 @@ document.addEventListener("DOMContentLoaded", function() {
   checkSession();
 });
 
-// ---------------- 0. INSTITUTION DETAILS CRUD (WITH PART B OPTIONAL FIELDS) ----------------
+// ---------------- 0. INSTITUTION DETAILS CRUD ----------------
 var institutionForm = document.getElementById("institutionForm");
 if (institutionForm) {
   institutionForm.addEventListener("submit", async function(e) {
@@ -248,7 +250,6 @@ async function loadInstitutionDetails() {
   if (res.data) {
     var d = res.data;
 
-    // Helper to render value or a subtle placeholder
     function setDashVal(elId, val) {
       var el = document.getElementById(elId);
       if (!el) return;
@@ -261,7 +262,6 @@ async function loadInstitutionDetails() {
       }
     }
 
-    // Update Dashboard Display Card
     setDashVal("viewInstName", d.institution_name);
     setDashVal("viewInstLoc", d.location);
     setDashVal("viewInstGov", d.governing_body);
@@ -274,7 +274,6 @@ async function loadInstitutionDetails() {
     setDashVal("viewInstPrincipal", d.principal_name);
     setDashVal("viewInstSession", d.academic_session);
 
-    // Populate Edit Form Inputs
     if (document.getElementById("instName")) document.getElementById("instName").value = d.institution_name || "";
     if (document.getElementById("instLocation")) document.getElementById("instLocation").value = d.location || "";
     if (document.getElementById("instGovBody")) document.getElementById("instGovBody").value = d.governing_body || "";
@@ -289,7 +288,50 @@ async function loadInstitutionDetails() {
   }
 }
 
-// ---------------- 1. STAFF CRUD ----------------
+// ---------------- 1. ENQUIRIES CRUD (OPTION 2) ----------------
+async function loadAdminEnquiries() {
+  var tbody = document.getElementById("enquiryTableBody");
+  var badge = document.getElementById("enquiryCountBadge");
+  if (!tbody || !client) return;
+
+  var res = await client.from("enquiries").select("*").order("created_at", { ascending: false });
+  if (res.data) {
+    if (badge) {
+      if (res.data.length > 0) {
+        badge.textContent = res.data.length;
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+    }
+
+    if (res.data.length > 0) {
+      tbody.innerHTML = res.data.map(function(enq) {
+        var rawDate = enq.created_at ? enq.created_at.split('T')[0] : '-';
+        var dmyDate = formatDateDMY(rawDate);
+        return '<tr>' +
+          '<td>' + dmyDate + '</td>' +
+          '<td><strong>' + (enq.name || '') + '</strong></td>' +
+          '<td><a href="tel:' + (enq.phone || '') + '" style="color:#0284c7; text-decoration:none; font-weight:600;">' + (enq.phone || '') + '</a></td>' +
+          '<td>' + (enq.email ? '<a href="mailto:' + enq.email + '" style="color:#0284c7;">' + enq.email + '</a>' : '-') + '</td>' +
+          '<td><span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-weight:700; font-size:0.8rem;">' + (enq.enquiry_type || 'General') + '</span></td>' +
+          '<td style="text-align:left; max-width:280px; word-break:break-word;">' + (enq.message || '') + '</td>' +
+          '<td><button type="button" class="btn-delete" onclick="deleteEnquiry(\'' + enq.id + '\')">Delete</button></td>' +
+        '</tr>';
+      }).join("");
+    } else {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #64748b;">No enquiries submitted yet.</td></tr>';
+    }
+  }
+}
+
+window.deleteEnquiry = async function(id) {
+  if (!confirm("Are you sure you want to delete this enquiry?")) return;
+  await client.from("enquiries").delete().eq("id", id);
+  loadAdminEnquiries();
+};
+
+// ---------------- 2. STAFF CRUD ----------------
 var staffForm = document.getElementById("staffForm");
 if (staffForm) {
   staffForm.addEventListener("submit", async function(e) {
@@ -383,7 +425,7 @@ window.deleteStaff = async function(id) {
   loadAdminStaff();
 };
 
-// ---------------- 2. DOCUMENTS CRUD ----------------
+// ---------------- 3. DOCUMENTS CRUD ----------------
 var docForm = document.getElementById("docForm");
 if (docForm) {
   docForm.addEventListener("submit", async function(e) {
@@ -455,7 +497,7 @@ window.deleteDoc = async function(id) {
   loadAdminDocs();
 };
 
-// ---------------- 3. NOTICES CRUD ----------------
+// ---------------- 4. NOTICES CRUD ----------------
 var noticeForm = document.getElementById("noticeForm");
 if (noticeForm) {
   noticeForm.addEventListener("submit", async function(e) {
@@ -490,7 +532,7 @@ async function loadAdminNotices() {
     if (res.data.length > 0) {
       tbody.innerHTML = res.data.map(function(n) {
         return '<tr>' +
-          '<td>' + (n.notice_date || '-') + '</td>' +
+          '<td>' + formatDateDMY(n.notice_date) + '</td>' +
           '<td><strong>' + (n.title || '') + '</strong></td>' +
           '<td>' + (n.body || '') + '</td>' +
           '<td><button type="button" class="btn-delete" onclick="deleteNotice(\'' + n.id + '\')">Delete</button></td>' +
@@ -508,7 +550,7 @@ window.deleteNotice = async function(id) {
   loadAdminNotices();
 };
 
-// ---------------- 4. GALLERY CRUD ----------------
+// ---------------- 5. GALLERY CRUD ----------------
 var galleryForm = document.getElementById("galleryForm");
 if (galleryForm) {
   galleryForm.addEventListener("submit", async function(e) {
