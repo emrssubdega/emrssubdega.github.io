@@ -751,7 +751,7 @@ window.deleteGallery = async function(id) {
   loadAdminGallery();
 };
 
-// ---------------- 6. STAFF CRUD (WITH EDIT & OPTIONAL PHOTO RE-UPLOAD) ----------------
+// ---------------- 6. STAFF CRUD (WITH EXACT 8 COLUMNS & EDIT BUTTON) ----------------
 var staffForm = document.getElementById("staffForm");
 if (staffForm) {
   staffForm.addEventListener("submit", async function(e) {
@@ -764,7 +764,6 @@ if (staffForm) {
     var existingPhoto = document.getElementById("existingStaffPhotoUrl").value.trim();
     var photoFile = document.getElementById("staffPhoto").files[0];
 
-    // If adding a new staff, photo is required
     if (!editingId && !photoFile) {
       status.style.color = "#dc2626";
       status.textContent = "Please select a staff photo (max 50 KB).";
@@ -780,7 +779,6 @@ if (staffForm) {
     try {
       var photoUrl = existingPhoto;
 
-      // Upload new photo if selected
       if (photoFile) {
         var filePath = "staff_" + Date.now() + ".jpg";
         var upRes = await client.storage.from("staff-photos").upload(filePath, photoFile, { upsert: true });
@@ -836,7 +834,6 @@ window.editStaff = async function(id) {
   document.getElementById("staffDojNests").value = s.doj_nests || '';
   document.getElementById("staffDojEmrs").value = s.doj_emrs || '';
 
-  // In edit mode, photo is optional (keeps existing photo if untouched)
   document.getElementById("staffPhoto").required = false;
   document.getElementById("staffPhotoLabel").textContent = "Update Staff Photo (Optional, leave blank to keep current)";
   document.getElementById("staffPhotoHelp").textContent = "Leave blank to keep existing photo. If uploading new, max size 50 KB.";
@@ -859,6 +856,7 @@ window.resetStaffForm = function() {
   document.getElementById("cancelStaffEditBtn").style.display = "none";
 };
 
+// Generates exactly 8 columns (matching table header)
 async function loadAdminStaff() {
   var tbody = document.getElementById("staffTableBody");
   if (!tbody || !client) return;
@@ -909,7 +907,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
-  // Top navbar Sign Out event listener
   var logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", async function() {
