@@ -106,6 +106,7 @@ async function checkSession() {
 }
 
 function loadAllAdminData() {
+  loadInstitutionDetails();
   loadAdminStaff();
   loadAdminDocs();
   loadAdminNotices();
@@ -193,6 +194,63 @@ document.addEventListener("DOMContentLoaded", function() {
   checkSession();
 });
 
+// ---------------- 0. INSTITUTION DETAILS CRUD ----------------
+var institutionForm = document.getElementById("institutionForm");
+if (institutionForm) {
+  institutionForm.addEventListener("submit", async function(e) {
+    e.preventDefault();
+    var status = document.getElementById("instStatus");
+    status.style.color = "#0284c7";
+    status.textContent = "Saving changes...";
+
+    var name = document.getElementById("instName").value.trim();
+    var loc = document.getElementById("instLocation").value.trim();
+    var gov = document.getElementById("instGovBody").value.trim();
+    var curr = document.getElementById("instCurriculum").value.trim();
+    var email = document.getElementById("instEmail").value.trim();
+
+    var res = await client.from("institution_details").upsert([{
+      id: "primary",
+      institution_name: name,
+      location: loc,
+      governing_body: gov,
+      curriculum: curr,
+      official_email: email,
+      updated_at: new Date().toISOString()
+    }]);
+
+    if (res.error) {
+      status.style.color = "#dc2626";
+      status.textContent = "Error: " + res.error.message;
+    } else {
+      status.style.color = "#16a34a";
+      status.textContent = "Institutional details updated successfully!";
+      loadInstitutionDetails();
+    }
+  });
+}
+
+async function loadInstitutionDetails() {
+  if (!client) return;
+  var res = await client.from("institution_details").select("*").eq("id", "primary").maybeSingle();
+  if (res.data) {
+    var d = res.data;
+    // Update Dashboard View
+    if (document.getElementById("viewInstName")) document.getElementById("viewInstName").textContent = d.institution_name || "-";
+    if (document.getElementById("viewInstLoc")) document.getElementById("viewInstLoc").textContent = d.location || "-";
+    if (document.getElementById("viewInstGov")) document.getElementById("viewInstGov").textContent = d.governing_body || "-";
+    if (document.getElementById("viewInstCurr")) document.getElementById("viewInstCurr").textContent = d.curriculum || "-";
+    if (document.getElementById("viewInstEmail")) document.getElementById("viewInstEmail").textContent = d.official_email || "-";
+
+    // Update Form Inputs
+    if (document.getElementById("instName")) document.getElementById("instName").value = d.institution_name || "";
+    if (document.getElementById("instLocation")) document.getElementById("instLocation").value = d.location || "";
+    if (document.getElementById("instGovBody")) document.getElementById("instGovBody").value = d.governing_body || "";
+    if (document.getElementById("instCurriculum")) document.getElementById("instCurriculum").value = d.curriculum || "";
+    if (document.getElementById("instEmail")) document.getElementById("instEmail").value = d.official_email || "";
+  }
+}
+
 // ---------------- 1. STAFF CRUD ----------------
 var staffForm = document.getElementById("staffForm");
 if (staffForm) {
@@ -258,12 +316,10 @@ if (staffForm) {
 
 async function loadAdminStaff() {
   var tbody = document.getElementById("staffTableBody");
-  var countEl = document.getElementById("dashCountStaff");
   if (!tbody) return;
 
   var res = await client.from("staff").select("*").order("created_at", { ascending: false });
   if (res.data) {
-    if (countEl) countEl.textContent = res.data.length;
     if (res.data.length > 0) {
       tbody.innerHTML = res.data.map(function(s) {
         return '<tr>' +
@@ -334,12 +390,10 @@ if (docForm) {
 
 async function loadAdminDocs() {
   var tbody = document.getElementById("docTableBody");
-  var countEl = document.getElementById("dashCountDocs");
   if (!tbody) return;
 
   var res = await client.from("documents").select("*").order("created_at", { ascending: false });
   if (res.data) {
-    if (countEl) countEl.textContent = res.data.length;
     if (res.data.length > 0) {
       tbody.innerHTML = res.data.map(function(d) {
         return '<tr>' +
@@ -391,12 +445,10 @@ if (noticeForm) {
 
 async function loadAdminNotices() {
   var tbody = document.getElementById("noticeTableBody");
-  var countEl = document.getElementById("dashCountNotices");
   if (!tbody) return;
 
   var res = await client.from("notices").select("*").order("notice_date", { ascending: false });
   if (res.data) {
-    if (countEl) countEl.textContent = res.data.length;
     if (res.data.length > 0) {
       tbody.innerHTML = res.data.map(function(n) {
         return '<tr>' +
@@ -459,12 +511,10 @@ if (galleryForm) {
 
 async function loadAdminGallery() {
   var tbody = document.getElementById("galleryTableBody");
-  var countEl = document.getElementById("dashCountGallery");
   if (!tbody) return;
 
   var res = await client.from("gallery").select("*").order("created_at", { ascending: false });
   if (res.data) {
-    if (countEl) countEl.textContent = res.data.length;
     if (res.data.length > 0) {
       tbody.innerHTML = res.data.map(function(g) {
         return '<tr>' +
