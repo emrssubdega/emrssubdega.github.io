@@ -263,12 +263,7 @@ if (studentResultForm) {
       totalMarks += sMarks;
       maxTotal += sMax;
 
-      subjectsArr.push({
-        name: sName,
-        max: sMax,
-        marks: sMarks,
-        grade: sGrade
-      });
+      subjectsArr.push({ name: sName, max: sMax, marks: sMarks, grade: sGrade });
     });
 
     var overallPercent = maxTotal > 0 ? (totalMarks / maxTotal) * 100 : 0;
@@ -339,9 +334,7 @@ window.editStudentResult = async function(id) {
   container.innerHTML = "";
   var subs = d.subjects || [];
   if (subs.length > 0) {
-    subs.forEach(function(s) {
-      addNewSubjectRow(s.name, s.max, s.marks);
-    });
+    subs.forEach(function(s) { addNewSubjectRow(s.name, s.max, s.marks); });
   } else {
     initDefaultSubjects();
   }
@@ -758,47 +751,144 @@ window.deleteGallery = async function(id) {
   loadAdminGallery();
 };
 
-// ---------------- 6. STAFF CRUD ----------------
+// ---------------- 6. STAFF CRUD (WITH EDIT & OPTIONAL PHOTO RE-UPLOAD) ----------------
 var staffForm = document.getElementById("staffForm");
 if (staffForm) {
   staffForm.addEventListener("submit", async function(e) {
     e.preventDefault();
+    var status = document.getElementById("staffStatus");
+    status.style.color = "#0284c7";
+    status.textContent = "Saving staff record...";
+
+    var editingId = document.getElementById("editingStaffId").value.trim();
+    var existingPhoto = document.getElementById("existingStaffPhotoUrl").value.trim();
     var photoFile = document.getElementById("staffPhoto").files[0];
-    if (!photoFile) return;
 
-    var filePath = "staff_" + Date.now() + ".jpg";
-    await client.storage.from("staff-photos").upload(filePath, photoFile, { upsert: true });
-    var pub = client.storage.from("staff-photos").getPublicUrl(filePath);
+    // If adding a new staff, photo is required
+    if (!editingId && !photoFile) {
+      status.style.color = "#dc2626";
+      status.textContent = "Please select a staff photo (max 50 KB).";
+      return;
+    }
 
-    await client.from("staff").insert([{
-      name: document.getElementById("staffName").value.trim().toUpperCase(),
-      employee_id: document.getElementById("staffEmpId").value.trim().toUpperCase(),
-      category: document.getElementById("staffCategory").value.toUpperCase(),
-      designation: document.getElementById("staffDesignation").value.toUpperCase(),
-      photo_url: pub.data.publicUrl
-    }]);
-    staffForm.reset();
-    loadAdminStaff();
+    if (photoFile && photoFile.size > 51200) {
+      status.style.color = "#dc2626";
+      status.textContent = "File too large (" + Math.round(photoFile.size / 1024) + " KB). Photo must be under 50 KB!";
+      return;
+    }
+
+    try {
+      var photoUrl = existingPhoto;
+
+      // Upload new photo if selected
+      if (photoFile) {
+        var filePath = "staff_" + Date.now() + ".jpg";
+        var upRes = await client.storage.from("staff-photos").upload(filePath, photoFile, { upsert: true });
+        if (upRes.error) throw upRes.error;
+        var pub = client.storage.from("staff-photos").getPublicUrl(filePath);
+        photoUrl = pub.data.publicUrl;
+      }
+
+      var record = {
+        name: document.getElementById("staffName").value.trim().toUpperCase(),
+        employee_id: document.getElementById("staffEmpId").value.trim().toUpperCase(),
+        category: document.getElementById("staffCategory").value.toUpperCase(),
+        designation: document.getElementById("staffDesignation").value.toUpperCase(),
+        doj_nests: document.getElementById("staffDojNests").value || null,
+        doj_emrs: document.getElementById("staffDojEmrs").value || null,
+        photo_url: photoUrl
+      };
+
+      var res;
+      if (editingId) {
+        res = await client.from("staff").update(record).eq("id", editingId);
+      } else {
+        res = await client.from("staff").insert([record]);
+      }
+
+      if (res.error) throw res.error;
+
+      status.style.color = "#16a34a";
+      status.textContent = editingId ? "Staff member updated successfully!" : "Staff member added successfully!";
+      resetStaffForm();
+      loadAdminStaff();
+    } catch(err) {
+      status.style.color = "#dc2626";
+      status.textContent = "Error: " + err.message;
+    }
   });
 }
+
+window.editStaff = async function(id) {
+  var res = await client.from("staff").select("*").eq("id", id).maybeSingle();
+  if (res.error || !res.data) {
+    alert("Could not load staff record for editing.");
+    return;
+  }
+
+  var s = res.data;
+  document.getElementById("editingStaffId").value = s.id;
+  document.getElementById("existingStaffPhotoUrl").value = s.photo_url || '';
+  document.getElementById("staffName").value = s.name || '';
+  document.getElementById("staffEmpId").value = s.employee_id || '';
+  document.getElementById("staffCategory").value = s.category || 'PRINCIPAL';
+  document.getElementById("staffDesignation").value = s.designation || '';
+  document.getElementById("staffDojNests").value = s.doj_nests || '';
+  document.getElementById("staffDojEmrs").value = s.doj_emrs || '';
+
+  // In edit mode, photo is optional (keeps existing photo if untouched)
+  document.getElementById("staffPhoto").required = false;
+  document.getElementById("staffPhotoLabel").textContent = "Update Staff Photo (Optional, leave blank to keep current)";
+  document.getElementById("staffPhotoHelp").textContent = "Leave blank to keep existing photo. If uploading new, max size 50 KB.";
+
+  document.getElementById("staffFormModeTitle").textContent = "✏️ Edit Staff Member: " + s.name;
+  document.getElementById("saveStaffBtn").textContent = "Update Staff Member";
+  document.getElementById("cancelStaffEditBtn").style.display = "inline-block";
+  document.getElementById("staffFormPanel").scrollIntoView({ behavior: 'smooth' });
+};
+
+window.resetStaffForm = function() {
+  document.getElementById("editingStaffId").value = "";
+  document.getElementById("existingStaffPhotoUrl").value = "";
+  document.getElementById("staffForm").reset();
+  document.getElementById("staffPhoto").required = true;
+  document.getElementById("staffPhotoLabel").textContent = "Staff Photo (Max 50 KB, .jpg / .png) *";
+  document.getElementById("staffPhotoHelp").textContent = "Maximum file size allowed is 50 KB.";
+  document.getElementById("staffFormModeTitle").textContent = "Add New Staff Member";
+  document.getElementById("saveStaffBtn").textContent = "Add Staff Member";
+  document.getElementById("cancelStaffEditBtn").style.display = "none";
+};
 
 async function loadAdminStaff() {
   var tbody = document.getElementById("staffTableBody");
   if (!tbody || !client) return;
+
   var res = await client.from("staff").select("*").order("created_at", { ascending: false });
   if (res.data) {
-    tbody.innerHTML = res.data.map(function(s) {
-      return '<tr>' +
-        '<td><img src="' + (s.photo_url || '') + '" style="max-height:45px;" /></td>' +
-        '<td>' + s.name + '</td><td>' + s.employee_id + '</td><td>' + s.category + '</td><td>' + s.designation + '</td>' +
-        '<td><button type="button" class="btn-delete" onclick="deleteStaff(\'' + s.id + '\')">Delete</button></td>' +
-      '</tr>';
-    }).join("");
+    if (res.data.length > 0) {
+      tbody.innerHTML = res.data.map(function(s) {
+        return '<tr>' +
+          '<td><img src="' + (s.photo_url || '') + '" style="max-height:48px; max-width:48px; object-fit:contain; border-radius:4px; border:1px solid #cbd5e1;" /></td>' +
+          '<td><strong>' + s.name + '</strong></td>' +
+          '<td>' + s.employee_id + '</td>' +
+          '<td><span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-weight:700; font-size:0.8rem;">' + s.category + '</span></td>' +
+          '<td>' + s.designation + '</td>' +
+          '<td>' + formatDateDMY(s.doj_nests) + '</td>' +
+          '<td>' + formatDateDMY(s.doj_emrs) + '</td>' +
+          '<td>' +
+            '<button type="button" class="btn-edit" onclick="editStaff(\'' + s.id + '\')">✏️ Edit</button>' +
+            '<button type="button" class="btn-delete" onclick="deleteStaff(\'' + s.id + '\')">Delete</button>' +
+          '</td>' +
+        '</tr>';
+      }).join("");
+    } else {
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#64748b;">No staff records yet.</td></tr>';
+    }
   }
 }
 
 window.deleteStaff = async function(id) {
-  if (!confirm("Delete staff member?")) return;
+  if (!confirm("Delete this staff member?")) return;
   await client.from("staff").delete().eq("id", id);
   loadAdminStaff();
 };
@@ -819,6 +909,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
+  // Top navbar Sign Out event listener
   var logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", async function() {
