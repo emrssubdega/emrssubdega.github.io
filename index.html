@@ -106,37 +106,61 @@
     .btn-search-res { background: #0b3c5d; color: #ffffff; border: none; padding: 11px 26px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.95rem; margin-top: 20px; }
     .btn-search-res:hover { background: #072a42; }
 
-    /* Printable Single Page Marksheet */
+    /* Printable A4 Marksheet Container */
     .marksheet-container {
-      background: #ffffff; border: 2px solid #0b3c5d; border-radius: 8px; padding: 25px 25px; margin-top: 25px; display: none; box-shadow: 0 4px 16px rgba(0,0,0,0.06); max-width: 900px; margin-left: auto; margin-right: auto;
+      background: #ffffff; border: 3px double #0b3c5d; border-radius: 12px; padding: 40px 45px; margin-top: 25px; display: none; box-shadow: 0 6px 22px rgba(0,0,0,0.08); max-width: 950px; margin-left: auto; margin-right: auto;
     }
-    .marksheet-header { text-align: center; border-bottom: 2px solid #0b3c5d; padding-bottom: 10px; margin-bottom: 14px; }
-    .marksheet-header h2 { font-size: 1.25rem; color: #0b3c5d; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; }
-    .marksheet-header p { font-size: 0.82rem; color: #475569; margin: 0; }
-    .student-meta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; background: #f8fafc; padding: 10px 14px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 14px; }
-    .meta-item span.lbl { font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
-    .meta-item span.val { font-size: 0.88rem; font-weight: 800; color: #0f172a; display: block; }
-    .marks-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
-    .marks-table th { background: #f1f5f9; color: #1e293b; padding: 7px 10px; border: 1px solid #cbd5e1; font-weight: 700; text-align: center; font-size: 0.82rem; }
-    .marks-table td { padding: 6px 10px; border: 1px solid #cbd5e1; text-align: center; font-size: 0.84rem; }
+    .marksheet-header { text-align: center; border-bottom: 2px solid #0b3c5d; padding-bottom: 18px; margin-bottom: 22px; }
+    .marksheet-header h2 { font-size: 1.6rem; color: #0b3c5d; font-weight: 900; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.8px; }
+    .marksheet-header p { font-size: 0.92rem; color: #475569; margin: 0; }
+    .student-meta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px 18px; background: #f8fafc; padding: 18px 22px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 24px; }
+    .meta-item span.lbl { font-size: 0.78rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+    .meta-item span.val { font-size: 0.98rem; font-weight: 800; color: #0f172a; display: block; margin-top: 2px; }
+    .marks-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+    .marks-table th { background: #f1f5f9; color: #0b3c5d; padding: 12px 14px; border: 1px solid #cbd5e1; font-weight: 800; text-align: center; font-size: 0.95rem; }
+    .marks-table td { padding: 12px 14px; border: 1px solid #cbd5e1; text-align: center; font-size: 0.95rem; }
     .marks-table tr:nth-child(even) { background: #f8fafc; }
-    .result-summary-box { display: flex; justify-content: space-around; align-items: center; padding: 10px 14px; background: #e0f2fe; border-radius: 6px; margin-top: 10px; border-left: 4px solid #0284c7; }
-    .actions-row { display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px; }
-    .btn-action-res { background: #f97316; color: #fff; border: none; padding: 9px 18px; border-radius: 6px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 0.9rem; }
+    .result-summary-box { display: flex; justify-content: space-around; align-items: center; padding: 16px 20px; background: #e0f2fe; border-radius: 8px; margin-top: 14px; border-left: 5px solid #0284c7; }
+    .actions-row { display: flex; gap: 14px; justify-content: flex-end; margin-top: 30px; }
+    .btn-action-res { background: #f97316; color: #fff; border: none; padding: 11px 22px; border-radius: 6px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 0.95rem; }
     .btn-action-res:hover { background: #ea580c; }
 
-    /* Single-Page Strict Print Rules */
+    /* Strict Full-Page A4 Print Configuration */
     @media print {
-      @page { size: A4 portrait; margin: 10mm; }
-      html, body { background: #fff !important; margin: 0 !important; padding: 0 !important; width: 100% !important; height: auto !important; }
+      @page {
+        size: A4 portrait;
+        margin: 10mm 12mm;
+      }
+      html, body {
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+      }
       body * { visibility: hidden; }
       #studentMarksheetBlock, #studentMarksheetBlock * { visibility: visible; }
       #studentMarksheetBlock {
-        position: absolute; left: 0; top: 0; width: 100% !important; max-width: 100% !important;
-        border: 2px solid #0b3c5d !important; padding: 15px !important; margin: 0 !important;
-        box-shadow: none !important; page-break-inside: avoid !important; break-inside: avoid !important;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100% !important;
+        height: 98% !important;
+        max-width: 100% !important;
+        border: 4px double #0b3c5d !important;
+        padding: 35px 30px !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
       }
       .actions-row { display: none !important; }
+      .marksheet-header h2 { font-size: 1.6rem !important; }
+      .marks-table th, .marks-table td { padding: 12px 14px !important; font-size: 1rem !important; }
+      .signature-block { margin-top: auto !important; padding-top: 40px !important; }
     }
 
     /* Staff Cards */
@@ -182,7 +206,38 @@
       return dateStr;
     };
 
-    // TAB ROUTING WITH URL HASH (Remembers page across reloads)
+    // Helper: Convert YYYY-MM-DD into formal English words
+    window.convertDateToWords = function(dateStr) {
+      if (!dateStr) return '';
+      var parts = dateStr.split('-');
+      if (parts.length !== 3) return dateStr;
+      var y = parseInt(parts[0], 10);
+      var m = parseInt(parts[1], 10);
+      var d = parseInt(parts[2], 10);
+
+      var days = ["", "First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth", "Ninth", "Tenth",
+        "Eleventh", "Twelfth", "Thirteenth", "Fourteenth", "Fifteenth", "Sixteenth", "Seventeenth", "Eighteenth", "Nineteenth", "Twentieth",
+        "Twenty-First", "Twenty-Second", "Twenty-Third", "Twenty-Fourth", "Twenty-Fifth", "Twenty-Sixth", "Twenty-Seventh", "Twenty-Eighth", "Twenty-Ninth", "Thirtieth", "Thirty-First"];
+      var months = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      
+      var ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+      var tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+
+      function numToWords(n) {
+        if (n < 20) return ones[n];
+        if (n < 100) return tens[Math.floor(n / 10)] + (n % 10 !== 0 ? " " + ones[n % 10] : "");
+        if (n < 1000) return ones[Math.floor(n / 100)] + " Hundred" + (n % 100 !== 0 ? " " + numToWords(n % 100) : "");
+        if (n < 1000000) return numToWords(Math.floor(n / 1000)) + " Thousand" + (n % 1000 !== 0 ? " " + numToWords(n % 1000) : "");
+        return String(n);
+      }
+
+      var dayWord = (d >= 1 && d <= 31) ? days[d] : String(d);
+      var monthWord = (m >= 1 && m <= 12) ? months[m] : String(m);
+      var yearWord = numToWords(y);
+
+      return (dayWord + " " + monthWord + " " + yearWord).toUpperCase();
+    };
+
     window.goToTab = function(tabId, updateHash) {
       if (updateHash === undefined) updateHash = true;
       var tabs = ['tab-home', 'tab-documents', 'tab-notices', 'tab-gallery', 'tab-staff', 'tab-results'];
@@ -192,7 +247,6 @@
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
-      // Update URL hash without forcing a page refresh
       if (updateHash) {
         var hashKey = tabId.replace('tab-', '');
         history.pushState(null, null, '#' + hashKey);
@@ -204,7 +258,6 @@
       if (tabId === 'tab-staff') window.renderStaff();
     };
 
-    // Reads current hash when browser reloads or back/forward is clicked
     window.applyHashRoute = function() {
       var hash = window.location.hash.replace('#', '').trim().toLowerCase();
       var tabId = 'tab-home';
@@ -364,7 +417,7 @@
       }
     };
 
-    // SEARCH STUDENT RESULT & MARKSHEET
+    // SEARCH STUDENT RESULT & MARKSHEET (FULL A4 + FATHER/MOTHER/DOB IN WORDS)
     window.currentStudentResult = null;
     window.searchStudentResult = async function(e) {
       if (e) e.preventDefault();
@@ -397,20 +450,27 @@
       window.currentStudentResult = res.data;
       var d = res.data;
 
-      document.getElementById('msStudentName').textContent = d.student_name.toUpperCase();
-      document.getElementById('msRollNo').textContent = d.roll_no;
+      // Populate Marksheet Metadata
+      document.getElementById('msStudentName').textContent = d.student_name ? d.student_name.toUpperCase() : '-';
+      document.getElementById('msFatherName').textContent = d.father_name ? d.father_name.toUpperCase() : '-';
+      document.getElementById('msMotherName').textContent = d.mother_name ? d.mother_name.toUpperCase() : '-';
+      document.getElementById('msRollNo').textContent = d.roll_no || '-';
       document.getElementById('msClass').textContent = d.class_name + ' (' + (d.section || 'A') + ')';
-      document.getElementById('msSession').textContent = d.academic_session;
+      document.getElementById('msSession').textContent = d.academic_session || '-';
       document.getElementById('msDob').textContent = window.formatDateDMY(d.dob);
+      
+      var wordsDob = d.dob_in_words ? d.dob_in_words.toUpperCase() : window.convertDateToWords(d.dob);
+      document.getElementById('msDobWords').textContent = wordsDob || '-';
 
+      // Populate Subject Marks
       var subTbody = document.getElementById('msSubjectsBody');
       var subs = d.subjects || [];
       subTbody.innerHTML = subs.map(function(s) {
         return '<tr>' +
-          '<td style="text-align:left; font-weight:600;">' + window.escapeHtml(s.name) + '</td>' +
+          '<td style="text-align:left; font-weight:700; color:#1e293b;">' + window.escapeHtml(s.name) + '</td>' +
           '<td>' + (s.max || 100) + '</td>' +
-          '<td>' + (s.marks != null ? s.marks : '-') + '</td>' +
-          '<td><strong>' + (s.grade || '-') + '</strong></td>' +
+          '<td style="font-weight:700;">' + (s.marks != null ? s.marks : '-') + '</td>' +
+          '<td><strong style="color:#0b3c5d;">' + (s.grade || '-') + '</strong></td>' +
         '</tr>';
       }).join('');
 
@@ -425,7 +485,7 @@
       var promP = document.getElementById('msPromotionNotice');
       if (d.promoted_to_class && d.promoted_session) {
         promP.style.display = 'block';
-        promP.innerHTML = '🎉 <strong>Promotion Status:</strong> Promoted to <u>' + window.escapeHtml(d.promoted_to_class) + '</u> for Session <u>' + window.escapeHtml(d.promoted_session) + '</u>.';
+        promP.innerHTML = '🎉 <strong>Promotion Status:</strong> Promoted to <u>' + window.escapeHtml(d.promoted_to_class) + '</u> for Academic Session <u>' + window.escapeHtml(d.promoted_session) + '</u>.';
       } else {
         promP.style.display = 'none';
       }
@@ -441,31 +501,35 @@
     window.downloadCertificate = function() {
       if (!window.currentStudentResult) return;
       var d = window.currentStudentResult;
+      var wordsDob = d.dob_in_words ? d.dob_in_words.toUpperCase() : window.convertDateToWords(d.dob);
       var certWindow = window.open('', '_blank');
       certWindow.document.write(
         '<!DOCTYPE html><html><head><title>Certificate - ' + d.student_name + '</title>' +
         '<style>' +
           'body { font-family: "Georgia", serif; text-align: center; padding: 40px; background: #fafafa; }' +
-          '.cert-box { border: 10px double #0b3c5d; padding: 40px 30px; background: #fff; max-width: 850px; margin: 0 auto; }' +
+          '.cert-box { border: 10px double #0b3c5d; padding: 45px 35px; background: #fff; max-width: 850px; margin: 0 auto; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }' +
           'h1 { color: #0b3c5d; font-size: 2.2rem; text-transform: uppercase; margin-bottom: 5px; }' +
-          'h3 { color: #f97316; font-size: 1.3rem; margin-top: 0; font-weight: normal; }' +
-          'p.cert-text { font-size: 1.25rem; line-height: 2; margin: 30px 0; color: #1e293b; }' +
-          '.name { font-size: 1.5rem; font-weight: bold; text-decoration: underline; color: #0b3c5d; }' +
-          '.footer-sign { display: flex; justify-content: space-between; margin-top: 60px; padding: 0 40px; font-weight: bold; color: #334155; }' +
+          'h3 { color: #f97316; font-size: 1.25rem; margin-top: 0; font-weight: normal; }' +
+          'p.cert-text { font-size: 1.2rem; line-height: 2.2; margin: 30px 0; color: #1e293b; text-align: justify; }' +
+          '.name { font-size: 1.35rem; font-weight: bold; text-decoration: underline; color: #0b3c5d; }' +
+          '.footer-sign { display: flex; justify-content: space-between; margin-top: 70px; padding: 0 40px; font-weight: bold; color: #334155; }' +
         '</style></head><body>' +
         '<div class="cert-box">' +
           '<h1>EKLAVYA MODEL RESIDENTIAL SCHOOL, SUBDEGA</h1>' +
           '<h3>Ministry of Tribal Affairs, Govt. of India</h3>' +
-          '<h2 style="margin-top:25px; text-decoration:underline;">PROMOTION CERTIFICATE</h2>' +
+          '<h2 style="margin-top:25px; text-decoration:underline; font-size:1.6rem; color:#0b3c5d;">PROMOTION CERTIFICATE</h2>' +
           '<p class="cert-text">' +
-            'This is to certify that <span class="name">' + d.student_name.toUpperCase() + '</span>, ' +
-            'bearing Roll No: <strong>' + d.roll_no + '</strong>, has successfully passed ' +
-            '<strong>' + d.class_name + '</strong> in Academic Session <strong>' + d.academic_session + '</strong> ' +
+            'This is to certify that <span class="name">' + (d.student_name ? d.student_name.toUpperCase() : '') + '</span>, ' +
+            (d.father_name ? 'Son/Daughter of <strong>Shri ' + d.father_name.toUpperCase() + '</strong> and ' : '') +
+            (d.mother_name ? '<strong>Smt. ' + d.mother_name.toUpperCase() + '</strong>, ' : '') +
+            'bearing Roll No: <strong>' + d.roll_no + '</strong>, Date of Birth: <strong>' + window.formatDateDMY(d.dob) + '</strong> (' + wordsDob + '), ' +
+            'has successfully passed <strong>' + d.class_name + '</strong> in Academic Session <strong>' + d.academic_session + '</strong> ' +
             'securing <strong>' + d.percentage + '%</strong> (Grade ' + (d.grade || 'A') + ').<br/>' +
-            (d.promoted_to_class ? 'The student is declared <strong>PROMOTED</strong> to <strong>' + d.promoted_to_class + '</strong> for Session <strong>' + (d.promoted_session || 'Next Academic Year') + '</strong>.' : '') +
+            (d.promoted_to_class ? 'The student is declared <strong>PROMOTED</strong> to <strong>' + d.promoted_to_class + '</strong> for Academic Session <strong>' + (d.promoted_session || 'Next Academic Year') + '</strong>.' : '') +
           '</p>' +
           '<div class="footer-sign">' +
             '<div>Exam In-Charge</div>' +
+            '<div>Class Teacher</div>' +
             '<div>Principal / Headmaster</div>' +
           '</div>' +
         '</div>' +
@@ -561,7 +625,7 @@
     </div>
   </section>
 
-  <!-- 2. STUDENT RESULTS VIEW -->
+  <!-- 2. STUDENT RESULTS VIEW (FULL A4 FORMAT + DETAILS) -->
   <section id="tab-results" class="tab-section" style="display: none;">
     <div class="content-container">
       
@@ -605,64 +669,76 @@
         </form>
       </div>
 
-      <!-- Marksheet Output Block -->
+      <!-- Full-Page A4 Marksheet Output Block -->
       <div id="studentMarksheetBlock" class="marksheet-container">
         
+        <!-- Header -->
         <div class="marksheet-header">
           <h2>EKLAVYA MODEL RESIDENTIAL SCHOOL, SUBDEGA</h2>
-          <p>Sundargarh, Odisha - 770014 | NESTS • Ministry of Tribal Affairs</p>
-          <h3 style="margin-top: 6px; color: #f97316; font-size: 1.05rem; letter-spacing: 0.5px;">ANNUAL PROGRESS & MARKS STATEMENT</h3>
+          <p>AT/PO: SUBDEGA, DIST: SUNDARGARH, ODISHA - 770014</p>
+          <p style="font-weight:600; color:#0b3c5d; margin-top:2px;">Under NESTS, Ministry of Tribal Affairs, Govt. of India</p>
+          <h3 style="margin-top: 10px; color: #f97316; font-size: 1.2rem; letter-spacing: 1px; font-weight: 800;">ANNUAL PROGRESS & MARKS STATEMENT</h3>
         </div>
 
+        <!-- Student Meta Details Grid -->
         <div class="student-meta-grid">
           <div class="meta-item"><span class="lbl">Student Name</span><span class="val" id="msStudentName">-</span></div>
           <div class="meta-item"><span class="lbl">Roll Number</span><span class="val" id="msRollNo">-</span></div>
           <div class="meta-item"><span class="lbl">Class & Section</span><span class="val" id="msClass">-</span></div>
-          <div class="meta-item"><span class="lbl">Session</span><span class="val" id="msSession">-</span></div>
+
+          <div class="meta-item"><span class="lbl">Father's Name</span><span class="val" id="msFatherName">-</span></div>
+          <div class="meta-item"><span class="lbl">Mother's Name</span><span class="val" id="msMotherName">-</span></div>
+          <div class="meta-item"><span class="lbl">Academic Session</span><span class="val" id="msSession">-</span></div>
+
           <div class="meta-item"><span class="lbl">Date of Birth</span><span class="val" id="msDob">-</span></div>
+          <div class="meta-item" style="grid-column: span 2;"><span class="lbl">DOB In Words</span><span class="val" id="msDobWords">-</span></div>
         </div>
 
+        <!-- Academic Marks Table -->
         <table class="marks-table">
           <thead>
             <tr>
-              <th style="text-align: left;">Subject Name</th>
-              <th>Max Marks</th>
-              <th>Marks Obtained</th>
-              <th>Grade</th>
+              <th style="text-align: left; width: 45%;">Subject Name</th>
+              <th style="width: 18%;">Maximum Marks</th>
+              <th style="width: 20%;">Marks Obtained</th>
+              <th style="width: 17%;">Grade</th>
             </tr>
           </thead>
           <tbody id="msSubjectsBody"></tbody>
         </table>
 
+        <!-- Result Summary Box -->
         <div class="result-summary-box">
           <div>
-            <div style="font-size: 0.75rem; color: #475569; font-weight: 700;">TOTAL MARKS</div>
-            <div id="msTotal" style="font-size: 1.05rem; font-weight: 800; color: #0b3c5d;">-</div>
+            <div style="font-size: 0.82rem; color: #475569; font-weight: 700;">TOTAL MARKS</div>
+            <div id="msTotal" style="font-size: 1.25rem; font-weight: 800; color: #0b3c5d;">-</div>
           </div>
           <div>
-            <div style="font-size: 0.75rem; color: #475569; font-weight: 700;">PERCENTAGE</div>
-            <div id="msPercent" style="font-size: 1.05rem; font-weight: 800; color: #0b3c5d;">-</div>
+            <div style="font-size: 0.82rem; color: #475569; font-weight: 700;">PERCENTAGE</div>
+            <div id="msPercent" style="font-size: 1.25rem; font-weight: 800; color: #0b3c5d;">-</div>
           </div>
           <div>
-            <div style="font-size: 0.75rem; color: #475569; font-weight: 700;">OVERALL GRADE</div>
-            <div id="msGrade" style="font-size: 1.05rem; font-weight: 800; color: #0b3c5d;">-</div>
+            <div style="font-size: 0.82rem; color: #475569; font-weight: 700;">OVERALL GRADE</div>
+            <div id="msGrade" style="font-size: 1.25rem; font-weight: 800; color: #0b3c5d;">-</div>
           </div>
           <div>
-            <div style="font-size: 0.75rem; color: #475569; font-weight: 700;">RESULT STATUS</div>
-            <div id="msStatusBadge" style="font-size: 1.05rem; font-weight: 900;">PASSED</div>
+            <div style="font-size: 0.82rem; color: #475569; font-weight: 700;">FINAL RESULT</div>
+            <div id="msStatusBadge" style="font-size: 1.25rem; font-weight: 900;">PASSED</div>
           </div>
         </div>
 
-        <p id="msPromotionNotice" style="margin-top: 12px; padding: 8px 12px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 4px; color: #166534; font-size: 0.85rem; display: none;"></p>
+        <p id="msPromotionNotice" style="margin-top: 14px; padding: 10px 14px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; color: #166534; font-size: 0.95rem; display: none;"></p>
 
-        <div style="display: flex; justify-content: space-between; margin-top: 35px; padding: 0 20px; font-size: 0.85rem; font-weight: 700; color: #334155;">
-          <div>Class Teacher Signature</div>
-          <div>Exam In-Charge</div>
-          <div>Principal Signature</div>
+        <!-- Official Signatures Block (Positioned at bottom in print) -->
+        <div class="signature-block" style="display: flex; justify-content: space-between; margin-top: 50px; padding: 0 30px; font-size: 0.92rem; font-weight: 700; color: #334155;">
+          <div style="text-align: center; border-top: 1px solid #94a3b8; padding-top: 6px; width: 180px;">Class Teacher Signature</div>
+          <div style="text-align: center; border-top: 1px solid #94a3b8; padding-top: 6px; width: 180px;">Exam In-Charge</div>
+          <div style="text-align: center; border-top: 1px solid #94a3b8; padding-top: 6px; width: 180px;">Principal Signature</div>
         </div>
 
+        <!-- Action Buttons (Hidden on paper print) -->
         <div class="actions-row">
-          <button type="button" onclick="window.printMarksheet()" class="btn-action-res">🖨️ Print Marksheet (Single Page)</button>
+          <button type="button" onclick="window.printMarksheet()" class="btn-action-res">🖨️ Print Full A4 Marksheet</button>
           <button type="button" onclick="window.downloadCertificate()" class="btn-action-res" style="background:#0284c7;">📄 Download Certificate</button>
         </div>
 
@@ -806,7 +882,6 @@
         }
       }
 
-      // Check current hash on initial page load (prevents jumping back to home)
       window.applyHashRoute();
 
       try {
