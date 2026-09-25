@@ -93,7 +93,7 @@
       font-weight: 700;
     }
 
-    /* Navbar */
+    /* Navbar (CONTACT US REMOVED) */
     .navbar {
       position: sticky;
       top: 0;
@@ -431,21 +431,51 @@
     .lightbox .caption { color: white; margin-top: 15px; font-size: 1.1rem; }
     .lightbox .close { position: absolute; top: 20px; right: 35px; color: white; font-size: 40px; cursor: pointer; }
 
-    footer.site-footer { background: #0f172a; color: #94a3b8; padding: 50px 20px 25px; margin-top: auto; }
+    /* Footer Styling */
+    footer.site-footer {
+      background: #0f172a;
+      color: #94a3b8;
+      padding: 45px 20px 25px;
+      margin-top: auto;
+    }
     .footer-content {
       max-width: 1200px;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 35px;
-      padding-bottom: 35px;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 40px;
+      padding-bottom: 30px;
       border-bottom: 1px solid #1e293b;
     }
-    .footer-col h3 { color: #ffffff; margin-bottom: 15px; font-size: 1.15rem; }
-    .footer-col p { font-size: 0.95rem; margin-bottom: 10px; color: #cbd5e1; }
-    .footer-col a { color: #38bdf8; text-decoration: none; }
-    .footer-bottom { max-width: 1200px; margin: 25px auto 0; text-align: center; font-size: 0.88rem; }
-    .footer-bottom a { color: #64748b; text-decoration: none; }
+    .footer-col h3 {
+      color: #ffffff;
+      margin-bottom: 15px;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+    .footer-col p {
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+    .footer-col a {
+      color: #38bdf8;
+      text-decoration: none;
+    }
+    .footer-col a:hover {
+      text-decoration: underline;
+    }
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 22px auto 0;
+      text-align: center;
+      font-size: 0.88rem;
+    }
+    .footer-bottom a {
+      color: #64748b;
+      text-decoration: none;
+    }
 
     @media (max-width: 900px) {
       .top-header { flex-direction: column; align-items: flex-start; }
@@ -456,6 +486,7 @@
       .staff-horizontal-card { flex-direction: column; align-items: center; gap: 14px; }
       .staff-fields-row { flex-direction: column; align-items: center; gap: 12px; white-space: normal; }
       .staff-photo-wrapper { margin-left: 0; }
+      .footer-content { grid-template-columns: 1fr; }
     }
   </style>
 
@@ -487,7 +518,7 @@
     };
 
     window.goToTab = function(tabId) {
-      var tabs = ['tab-home', 'tab-documents', 'tab-notices', 'tab-gallery', 'tab-contact', 'tab-staff'];
+      var tabs = ['tab-home', 'tab-documents', 'tab-notices', 'tab-gallery', 'tab-staff'];
       for (var i = 0; i < tabs.length; i++) {
         var el = document.getElementById(tabs[i]);
         if (el) {
@@ -673,21 +704,19 @@
       });
     };
 
-    // RENDER OPTIONAL DYNAMIC INSTITUTION DETAILS (PART B)
-    // Only elements with non-empty values are displayed
+    // RENDER DYNAMIC INSTITUTION DETAILS DIRECTLY LINKED TO DATABASE
     window.renderInstitutionDetails = function(data) {
       if (!data) return;
       var name = data.institution_name || 'EMRS Subdega';
-      var loc = data.location || 'At/Po: Subdega, District: Sundargarh, Odisha - 770014';
+      var loc = data.location || 'Subdega, Sundargarh, Odisha - 770014';
       var email = data.official_email || 'emrssubdega@gmail.com';
       var cbseAff = (data.cbse_affiliation_no || '').trim();
       var schCode = (data.school_code || '').trim();
       var udise = (data.udise_code || '').trim();
       var phone = (data.office_phone || '').trim();
-      var principal = (data.principal_name || '').trim();
       var session = (data.academic_session || '').trim();
 
-      // 1. Home Badges (Only displayed if filled)
+      // Home Badges Strip (Only filled items shown)
       var strip = document.getElementById('instBadgeStrip');
       if (strip) {
         var badges = [];
@@ -704,38 +733,7 @@
         }
       }
 
-      // 2. Contact Us Section (Only non-empty rows shown)
-      var cAddr = document.getElementById('contactAddress');
-      var cEmail = document.getElementById('contactEmail');
-      var cPhoneRow = document.getElementById('contactPhoneRow');
-      var cPhoneVal = document.getElementById('contactPhoneVal');
-      var cPrincRow = document.getElementById('contactPrincipalRow');
-      var cPrincVal = document.getElementById('contactPrincipalVal');
-
-      if (cAddr) cAddr.textContent = loc;
-      if (cEmail) {
-        cEmail.textContent = email;
-        cEmail.href = 'mailto:' + email;
-      }
-      if (cPhoneRow && cPhoneVal) {
-        if (phone) {
-          cPhoneRow.style.display = 'block';
-          cPhoneVal.textContent = phone;
-          cPhoneVal.href = 'tel:' + phone.replace(/[^0-9+]/g, '');
-        } else {
-          cPhoneRow.style.display = 'none';
-        }
-      }
-      if (cPrincRow && cPrincVal) {
-        if (principal) {
-          cPrincRow.style.display = 'block';
-          cPrincVal.textContent = principal;
-        } else {
-          cPrincRow.style.display = 'none';
-        }
-      }
-
-      // 3. Footer Dynamic Elements
+      // Footer Dynamic Details (Directly linked to Campus Details database table)
       var fName = document.getElementById('footerSchoolName');
       var fAddr = document.getElementById('footerAddress');
       var fEmail = document.getElementById('footerEmail');
@@ -795,7 +793,7 @@
     </div>
   </div>
 
-  <!-- Navbar -->
+  <!-- Navbar (Cleanly configured without Contact Us link) -->
   <nav class="navbar">
     <div class="nav-links">
       <button type="button" class="nav-link-btn" onclick="window.goToTab('tab-home')">HOME</button>
@@ -817,7 +815,6 @@
       </div>
       <button type="button" class="nav-link-btn" onclick="window.goToTab('tab-notices')">NOTICES</button>
       <button type="button" class="nav-link-btn" onclick="window.goToTab('tab-gallery')">GALLERY</button>
-      <button type="button" class="nav-link-btn" onclick="window.goToTab('tab-contact')">CONTACT US</button>
       <a href="admin/" style="display:block;">ADMIN PORTAL</a>
     </div>
   </nav>
@@ -847,7 +844,6 @@
           Our focus is on the comprehensive development of students through high academic standards, sports, and cultural enrichment.
         </p>
         
-        <!-- Optional Institution Badges (Appears only when codes are entered in Admin) -->
         <div id="instBadgeStrip" class="inst-badge-strip" style="display: none;"></div>
       </div>
     </div>
@@ -943,29 +939,6 @@
     </div>
   </section>
 
-  <!-- 6. CONTACT US VIEW (DYNAMIC WITH CONDITIONAL ROWS) -->
-  <section id="tab-contact" class="tab-section" style="display: none;">
-    <div class="content-container">
-      <div class="content-card" style="border-top: 4px solid #0b3c5d;">
-        <h2 style="color: #0b3c5d; font-size: 1.8rem; margin-bottom: 12px;">Contact Us</h2>
-        <p style="color: #475569; margin-bottom: 12px;"><strong>Address:</strong> <span id="contactAddress">At/Po: Subdega, District: Sundargarh, Odisha - 770014</span></p>
-        <p style="color: #475569; margin-bottom: 12px;"><strong>Email:</strong> <a id="contactEmail" href="mailto:emrssubdega@gmail.com" style="color: #0284c7;">emrssubdega@gmail.com</a></p>
-        
-        <!-- Optional phone row -->
-        <p id="contactPhoneRow" style="color: #475569; margin-bottom: 12px; display: none;">
-          <strong>Helpline / Phone:</strong> <a id="contactPhoneVal" href="#" style="color: #0284c7;"></a>
-        </p>
-
-        <!-- Optional principal desk row -->
-        <p id="contactPrincipalRow" style="color: #475569; margin-bottom: 12px; display: none;">
-          <strong>Principal:</strong> <span id="contactPrincipalVal"></span>
-        </p>
-
-        <p style="color: #475569;"><strong>Staff Portal:</strong> <a href="admin/" style="color: #0284c7;">Admin Dashboard Login</a></p>
-      </div>
-    </div>
-  </section>
-
   <!-- Lightbox -->
   <div id="lightbox" class="lightbox">
     <span class="close" id="closeBtn">&times;</span>
@@ -973,27 +946,29 @@
     <div id="lightboxCaption" class="caption"></div>
   </div>
 
-  <!-- Footer (DYNAMIC WITH OPTIONAL DETAILS) -->
+  <!-- Footer (CONTACT US CONFIGURED WITH ADDRESS DIRECTLY ABOVE SCHOOL MAIL) -->
   <footer class="site-footer">
     <div class="footer-content">
+      
+      <!-- Column 1: School Identity -->
       <div class="footer-col">
         <h3 id="footerSchoolName">EMRS Subdega</h3>
         <p>A premier residential institution dedicated to quality CBSE education for tribal students under the Ministry of Tribal Affairs, Govt. of India.</p>
-        <p id="footerAffP" style="font-size: 0.85rem; color: #94a3b8; display: none;">
+        <p id="footerAffP" style="font-size: 0.85rem; color: #94a3b8; display: none; margin-top: 10px;">
           <strong style="color: #cbd5e1;" id="footerAffVal"></strong>
         </p>
       </div>
+
+      <!-- Column 2: Contact Us (Address directly above Email, no Portal line, no Campus Location header) -->
       <div class="footer-col">
-        <h3>Campus Location</h3>
-        <p id="footerAddress">At/Po: Subdega, District: Sundargarh, Odisha - 770014</p>
-      </div>
-      <div class="footer-col">
-        <h3>Contact Us & Portal</h3>
-        <p>Email: <a id="footerEmail" href="mailto:emrssubdega@gmail.com">emrssubdega@gmail.com</a></p>
+        <h3>Contact Us</h3>
+        <p id="footerAddress" style="color: #e2e8f0; font-weight: 500;">Subdega, Sundargarh, Odisha - 770014</p>
+        <p style="margin-top: 10px;">Email: <a id="footerEmail" href="mailto:emrssubdega1@gmail.com">emrssubdega1@gmail.com</a></p>
         <p id="footerPhoneP" style="display: none;">Phone: <a id="footerPhone" href="#" style="color: #38bdf8;"></a></p>
-        <p>Portal: <a href="admin/">Staff & Admin Login</a></p>
       </div>
+
     </div>
+
     <div class="footer-bottom">
       <p>&copy; EMRS Subdega. All rights reserved. | <a href="admin/">Admin Login</a></p>
     </div>
