@@ -202,7 +202,7 @@
       background: #ffffff;
       border: 1px solid #e2e8f0;
       border-radius: 8px;
-      padding: 20px;
+      padding: 22px 20px;
       display: flex;
       align-items: center;
       gap: 16px;
@@ -290,11 +290,13 @@
       font-weight: 700;
       padding: 12px 14px;
       border: 1px solid #e2e8f0;
+      text-align: center;
     }
     .styled-table td {
       padding: 12px 14px;
       border: 1px solid #e2e8f0;
       color: #1e293b;
+      text-align: center;
     }
     .styled-table tr:nth-child(even) { background: #f8fafc; }
     .btn-delete {
@@ -431,17 +433,6 @@
                 <h4>Photos</h4>
                 <div class="stat-number" id="dashCountGallery">0</div>
               </div>
-            </div>
-          </div>
-
-          <div class="panel-card">
-            <h3>Quick Actions</h3>
-            <p style="color: #64748b; margin-bottom: 16px; font-size: 0.95rem;">Jump directly to common tasks:</p>
-            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-              <button type="button" class="btn-submit" onclick="jumpToTab('tab-staff')">+ Add Staff Member</button>
-              <button type="button" class="btn-submit" style="background: #0284c7;" onclick="jumpToTab('tab-docs')">+ Upload Circular</button>
-              <button type="button" class="btn-submit" style="background: #16a34a;" onclick="jumpToTab('tab-notices')">+ Post Announcement</button>
-              <button type="button" class="btn-submit" style="background: #9333ea;" onclick="jumpToTab('tab-gallery')">+ Add Photos</button>
             </div>
           </div>
         </div>
