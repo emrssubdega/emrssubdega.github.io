@@ -11,416 +11,79 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      padding: 0;
+      width: 100%; height: 100%; margin: 0; padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #f1f5f9;
-      color: #1e293b;
+      background: #f1f5f9; color: #1e293b;
     }
+    .login-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; background: #f8fafc; }
+    .login-card { background: #ffffff; padding: 35px 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); width: 100%; max-width: 420px; border-top: 4px solid #0b3c5d; }
+    .login-card h2 { color: #0b3c5d; font-size: 1.45rem; margin-bottom: 6px; text-align: center; font-weight: 800; }
+    .login-card p { color: #64748b; font-size: 0.88rem; text-align: center; margin-bottom: 22px; }
 
-    /* 1. Login Container */
-    .login-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-      background: #f8fafc;
-    }
-    .login-card {
-      background: #ffffff;
-      padding: 35px 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      width: 100%;
-      max-width: 420px;
-      border-top: 4px solid #0b3c5d;
-    }
-    .login-card h2 {
-      color: #0b3c5d;
-      font-size: 1.45rem;
-      margin-bottom: 6px;
-      text-align: center;
-      font-weight: 800;
-    }
-    .login-card p {
-      color: #64748b;
-      font-size: 0.88rem;
-      text-align: center;
-      margin-bottom: 22px;
-    }
-
-    /* 2. Admin Two-Column Layout */
-    .admin-wrapper {
-      display: flex;
-      width: 100%;
-      min-height: 100vh;
-    }
-
-    /* Left Sidebar */
-    .sidebar {
-      width: 260px;
-      background: #0b3c5d;
-      color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-      border-right: 3px solid #f97316;
-    }
-    .sidebar-header {
-      padding: 24px 20px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-    }
-    .sidebar-header h2 {
-      font-size: 1.25rem;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      color: #ffffff;
-      margin-bottom: 2px;
-    }
-    .sidebar-header p {
-      font-size: 0.82rem;
-      color: #93c5fd;
-    }
-    .sidebar-menu {
-      display: flex;
-      flex-direction: column;
-      padding: 15px 0;
-      gap: 4px;
-      flex: 1;
-    }
+    .admin-wrapper { display: flex; width: 100%; min-height: 100vh; }
+    .sidebar { width: 260px; background: #0b3c5d; color: #ffffff; display: flex; flex-direction: column; flex-shrink: 0; border-right: 3px solid #f97316; }
+    .sidebar-header { padding: 24px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.12); }
+    .sidebar-header h2 { font-size: 1.25rem; font-weight: 800; color: #ffffff; margin-bottom: 2px; }
+    .sidebar-header p { font-size: 0.82rem; color: #93c5fd; }
+    .sidebar-menu { display: flex; flex-direction: column; padding: 15px 0; gap: 4px; flex: 1; }
     .sidebar-btn {
-      width: 100%;
-      text-align: left;
-      background: none;
-      border: none;
-      color: #cbd5e1;
-      padding: 13px 20px;
-      font-size: 0.92rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      transition: all 0.2s ease;
-      font-family: inherit;
-      border-left: 4px solid transparent;
-      text-decoration: none;
+      width: 100%; text-align: left; background: none; border: none; color: #cbd5e1; padding: 13px 20px;
+      font-size: 0.92rem; font-weight: 600; cursor: pointer; display: flex; align-items: center;
+      justify-content: space-between; gap: 12px; font-family: inherit; border-left: 4px solid transparent; text-decoration: none;
     }
-    .sidebar-btn-content {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .sidebar-btn:hover {
-      background: #072a42;
-      color: #38bdf8;
-    }
-    .sidebar-btn.active {
-      background: #072a42;
-      color: #ffffff;
-      border-left-color: #f97316;
-    }
-    .badge-counter {
-      background: #f97316;
-      color: #ffffff;
-      font-size: 0.72rem;
-      padding: 2px 7px;
-      border-radius: 10px;
-      font-weight: 700;
-    }
-    .sidebar-footer {
-      padding: 15px;
-      border-top: 1px solid rgba(255, 255, 255, 0.12);
-    }
-    .logout-btn {
-      width: 100%;
-      background: #ef4444;
-      color: #ffffff;
-      border: none;
-      padding: 10px;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    .logout-btn:hover { background: #dc2626; }
+    .sidebar-btn-content { display: flex; align-items: center; gap: 12px; }
+    .sidebar-btn:hover { background: #072a42; color: #38bdf8; }
+    .sidebar-btn.active { background: #072a42; color: #ffffff; border-left-color: #f97316; }
+    .badge-counter { background: #f97316; color: #ffffff; font-size: 0.72rem; padding: 2px 7px; border-radius: 10px; font-weight: 700; }
+    .sidebar-footer { padding: 15px; border-top: 1px solid rgba(255, 255, 255, 0.12); }
+    .logout-btn { width: 100%; background: #ef4444; color: #ffffff; border: none; padding: 10px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
-    /* Right Content Area */
-    .main-panel {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-      overflow-y: auto;
-    }
-    .top-navbar {
-      background: #ffffff;
-      padding: 14px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #e2e8f0;
-    }
-    .page-title {
-      font-size: 1.25rem;
-      font-weight: 800;
-      color: #0b3c5d;
-    }
+    .main-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow-y: auto; }
+    .top-navbar { background: #ffffff; padding: 14px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; }
+    .page-title { font-size: 1.25rem; font-weight: 800; color: #0b3c5d; }
+    .navbar-right-actions { display: flex; align-items: center; gap: 16px; }
+    .live-website-btn { display: inline-flex; align-items: center; gap: 6px; background: #0b3c5d; color: #ffffff; padding: 8px 16px; border-radius: 6px; font-size: 0.88rem; font-weight: 700; text-decoration: none; }
+    .workspace-content { padding: 30px; max-width: 1200px; width: 100%; }
 
-    /* Top-Right Action Area */
-    .navbar-right-actions {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-    .live-website-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: #0b3c5d;
-      color: #ffffff;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-size: 0.88rem;
-      font-weight: 700;
-      text-decoration: none;
-      transition: background 0.2s ease, transform 0.15s ease;
-    }
-    .live-website-btn:hover {
-      background: #072a42;
-      color: #38bdf8;
-      transform: translateY(-1px);
-    }
-    .user-info {
-      font-size: 0.88rem;
-      color: #64748b;
-    }
-    .workspace-content {
-      padding: 30px;
-      max-width: 1200px;
-      width: 100%;
-    }
+    .admin-tab-pane { display: none; }
+    .admin-tab-pane.show { display: block; }
+    .panel-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 26px; margin-bottom: 25px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04); }
+    .panel-card h3 { color: #0b3c5d; font-size: 1.2rem; margin-bottom: 18px; padding-bottom: 8px; border-bottom: 1px solid #f1f5f9; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
 
-    /* Panels & Cards */
-    .admin-tab-pane {
-      display: none;
-    }
-    .admin-tab-pane.show {
-      display: block;
-    }
-    .panel-card {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 26px;
-      margin-bottom: 25px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-    }
-    .panel-card h3 {
-      color: #0b3c5d;
-      font-size: 1.2rem;
-      margin-bottom: 18px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid #f1f5f9;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    /* Welcome Hero Banner */
     .welcome-hero-card {
-      background: linear-gradient(135deg, #0b3c5d 0%, #072a42 100%);
-      color: #ffffff;
-      border-radius: 12px;
-      padding: 40px 30px;
-      margin-bottom: 28px;
-      position: relative;
-      overflow: hidden;
-      border-top: 4px solid #f97316;
-      box-shadow: 0 8px 24px rgba(11, 60, 93, 0.18);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 8px;
+      background: linear-gradient(135deg, #0b3c5d 0%, #072a42 100%); color: #ffffff; border-radius: 12px;
+      padding: 40px 30px; margin-bottom: 28px; border-top: 4px solid #f97316; box-shadow: 0 8px 24px rgba(11, 60, 93, 0.18);
+      display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px;
     }
-    .hero-welcome-small {
-      font-size: 1.35rem;
-      font-weight: 600;
-      color: #93c5fd;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      margin: 0;
-    }
-    .hero-school-title {
-      font-size: 1.9rem;
-      font-weight: 900;
-      letter-spacing: 0.8px;
-      color: #ffffff;
-      text-transform: uppercase;
-      line-height: 1.3;
-      margin: 0;
-    }
-    .hero-badge-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(255, 255, 255, 0.12);
-      color: #fed7aa;
-      padding: 6px 16px;
-      border-radius: 20px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      margin-top: 6px;
-      border: 1px solid rgba(254, 215, 170, 0.35);
-    }
+    .hero-welcome-small { font-size: 1.35rem; font-weight: 600; color: #93c5fd; letter-spacing: 1px; text-transform: uppercase; margin: 0; }
+    .hero-school-title { font-size: 1.9rem; font-weight: 900; letter-spacing: 0.8px; color: #ffffff; text-transform: uppercase; margin: 0; }
+    .hero-badge-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.12); color: #fed7aa; padding: 6px 16px; border-radius: 20px; font-size: 0.82rem; font-weight: 700; text-transform: uppercase; margin-top: 6px; border: 1px solid rgba(254, 215, 170, 0.35); }
 
-    /* Institutional Details Display */
-    .profile-info-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      font-size: 0.95rem;
-    }
-    .profile-info-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px 18px;
-      background: #f8fafc;
-      border-radius: 8px;
-      border: 1px solid #e2e8f0;
-    }
-    .profile-info-item span.label {
-      color: #475569;
-      font-weight: 700;
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .profile-info-item span.val {
-      color: #0b3c5d;
-      font-weight: 700;
-      font-size: 1rem;
-    }
-    .profile-info-item span.val.empty {
-      color: #94a3b8;
-      font-weight: 500;
-      font-style: italic;
-    }
+    .profile-info-list { display: flex; flex-direction: column; gap: 12px; }
+    .profile-info-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; }
+    .profile-info-item span.label { color: #475569; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; }
+    .profile-info-item span.val { color: #0b3c5d; font-weight: 700; font-size: 1rem; }
+    .profile-info-item span.val.empty { color: #94a3b8; font-style: italic; }
 
-    /* Forms */
-    .form-grid-2 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 16px;
-    }
-    .form-field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 14px;
-    }
-    .form-field label {
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: #475569;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .form-field input, .form-field select, .form-field textarea {
-      padding: 10px 14px;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
-      font-size: 0.95rem;
-      outline: none;
-      font-family: inherit;
-    }
-    .form-field input:focus, .form-field select:focus, .form-field textarea:focus {
-      border-color: #0b3c5d;
-    }
-    .btn-submit {
-      background: #0b3c5d;
-      color: #ffffff;
-      border: none;
-      padding: 11px 24px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      border-radius: 6px;
-      cursor: pointer;
-      font-family: inherit;
-      transition: background 0.2s;
-    }
+    .form-grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+    .form-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+    .form-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .form-field label { font-size: 0.82rem; font-weight: 700; color: #475569; text-transform: uppercase; }
+    .form-field input, .form-field select, .form-field textarea { padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.95rem; outline: none; font-family: inherit; }
+    .btn-submit { background: #0b3c5d; color: #ffffff; border: none; padding: 11px 24px; font-size: 0.95rem; font-weight: 600; border-radius: 6px; cursor: pointer; }
     .btn-submit:hover { background: #072a42; }
 
-    /* Tables */
-    .table-responsive {
-      overflow-x: auto;
-      margin-top: 15px;
-    }
-    .styled-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-      text-align: left;
-    }
-    .styled-table th {
-      background: #f1f5f9;
-      color: #334155;
-      font-weight: 700;
-      padding: 12px 14px;
-      border: 1px solid #e2e8f0;
-      text-align: center;
-    }
-    .styled-table td {
-      padding: 12px 14px;
-      border: 1px solid #e2e8f0;
-      color: #1e293b;
-      text-align: center;
-    }
+    .table-responsive { overflow-x: auto; margin-top: 15px; }
+    .styled-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    .styled-table th { background: #f1f5f9; color: #334155; font-weight: 700; padding: 12px 14px; border: 1px solid #e2e8f0; text-align: center; }
+    .styled-table td { padding: 12px 14px; border: 1px solid #e2e8f0; color: #1e293b; text-align: center; }
     .styled-table tr:nth-child(even) { background: #f8fafc; }
-    .btn-delete {
-      background: #ef4444;
-      color: #ffffff;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 4px;
-      font-size: 0.8rem;
-      cursor: pointer;
-    }
-    .btn-delete:hover { background: #dc2626; }
-    .status-alert {
-      margin-top: 10px;
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
-
-    @media (max-width: 820px) {
-      .admin-wrapper { flex-direction: column; }
-      .sidebar { width: 100%; }
-      .sidebar-menu { flex-direction: row; flex-wrap: wrap; }
-      .sidebar-btn { width: auto; padding: 10px 14px; }
-      .top-navbar { flex-direction: column; align-items: flex-start; gap: 10px; }
-      .navbar-right-actions { width: 100%; justify-content: space-between; }
-      .hero-school-title { font-size: 1.4rem; }
-      .profile-info-item { flex-direction: column; align-items: flex-start; gap: 4px; }
-    }
+    .btn-delete { background: #ef4444; color: #ffffff; border: none; padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; }
   </style>
 </head>
 <body>
 
-  <!-- 1. LOGIN & FORGOT PASSWORD SCREEN -->
+  <!-- 1. LOGIN SCREEN -->
   <div id="loginView" class="login-container">
     <div class="login-card">
       <div id="loginSection">
@@ -434,35 +97,14 @@
           <label>Password</label>
           <input type="password" id="password" placeholder="••••••••" />
         </div>
-        <div style="text-align: right; margin-bottom: 16px;">
-          <a href="javascript:void(0)" id="showForgotBtn" style="font-size: 0.85rem; color: #0284c7; text-decoration: none; font-weight: 600;">Forgot Password?</a>
-        </div>
         <button id="loginBtn" class="btn-submit" style="width: 100%;">Sign In</button>
-        <div style="text-align: center; margin-top: 15px;">
-          <a href="../" target="_blank" style="font-size: 0.85rem; color: #0284c7; text-decoration: none; font-weight: 600;">← Return to Live Website</a>
-        </div>
-        <p id="loginMsg" class="status-alert" style="color: #dc2626; text-align: center;"></p>
-      </div>
-
-      <div id="forgotSection" style="display: none;">
-        <h2>Reset Password</h2>
-        <p>Enter your registered email to receive a password recovery link.</p>
-        <div class="form-field">
-          <label>Registered Email</label>
-          <input type="email" id="resetEmail" placeholder="admin@example.com" />
-        </div>
-        <button id="sendResetBtn" class="btn-submit" style="width: 100%;">Send Reset Link</button>
-        <div style="text-align: center; margin-top: 15px;">
-          <a href="javascript:void(0)" id="backToLoginBtn" style="font-size: 0.85rem; color: #64748b; text-decoration: none;">← Back to Sign In</a>
-        </div>
-        <p id="resetMsg" class="status-alert" style="text-align: center;"></p>
+        <p id="loginMsg" style="color: #dc2626; text-align: center; margin-top: 10px; font-size: 0.9rem; font-weight: 600;"></p>
       </div>
     </div>
   </div>
 
-  <!-- 2. ADMIN DASHBOARD WORKSPACE WITH LEFT SIDEBAR -->
+  <!-- 2. ADMIN DASHBOARD WORKSPACE -->
   <div id="dashboardView" class="admin-wrapper" style="display: none;">
-    <!-- LEFT SIDEBAR -->
     <aside class="sidebar">
       <div class="sidebar-header">
         <h2>EMRS Subdega</h2>
@@ -475,9 +117,8 @@
         <button type="button" class="sidebar-btn" onclick="switchAdminTab('tab-institution', this)">
           <div class="sidebar-btn-content"><span>🏫</span> Campus & Details</div>
         </button>
-        <button type="button" class="sidebar-btn" onclick="switchAdminTab('tab-enquiries', this)">
-          <div class="sidebar-btn-content"><span>📬</span> Enquiries</div>
-          <span id="enquiryCountBadge" class="badge-counter" style="display: none;">0</span>
+        <button type="button" class="sidebar-btn" onclick="switchAdminTab('tab-results-admin', this)">
+          <div class="sidebar-btn-content"><span>🎓</span> Student Results</div>
         </button>
         <button type="button" class="sidebar-btn" onclick="switchAdminTab('tab-staff', this)">
           <div class="sidebar-btn-content"><span>👥</span> Staff Details</div>
@@ -493,37 +134,29 @@
         </button>
       </nav>
       <div class="sidebar-footer">
-        <button type="button" id="logoutBtn" class="logout-btn">
-          <span>🚪</span> Sign Out
-        </button>
+        <button type="button" id="logoutBtn" class="logout-btn"><span>🚪</span> Sign Out</button>
       </div>
     </aside>
 
-    <!-- MAIN PANEL -->
     <main class="main-panel">
-      <!-- TOP NAVBAR -->
       <div class="top-navbar">
         <div class="page-title" id="pageTitleHeading">Dashboard Overview</div>
         <div class="navbar-right-actions">
           <div class="user-info">Logged in as: <strong id="adminUserBadge">Admin</strong></div>
-          <a href="../" target="_blank" class="live-website-btn" title="Open Public Website in new tab">
-            <span>🌐</span> Live Website ↗
-          </a>
+          <a href="../" target="_blank" class="live-website-btn"><span>🌐</span> Live Website ↗</a>
         </div>
       </div>
 
       <div class="workspace-content">
 
-        <!-- TAB 0: DASHBOARD OVERVIEW -->
+        <!-- TAB 0: DASHBOARD -->
         <div id="tab-dashboard" class="admin-tab-pane show">
-          
           <div class="welcome-hero-card">
             <h2 class="hero-welcome-small">Welcome to</h2>
             <h1 class="hero-school-title">EKLAVYA MODEL RESIDENTIAL SCHOOL, SUBDEGA</h1>
             <div class="hero-badge-pill">🏛️ NESTS • MINISTRY OF TRIBAL AFFAIRS</div>
           </div>
 
-          <!-- Campus & Institutional Details View -->
           <div class="panel-card">
             <h3>
               <span>🏫 Campus & Institutional Details</span>
@@ -532,175 +165,192 @@
               </button>
             </h3>
             <div class="profile-info-list">
-              <div class="profile-info-item">
-                <span class="label">Institution Name</span>
-                <span class="val" id="viewInstName">EMRS Subdega</span>
-              </div>
-              <div class="profile-info-item">
-                <span class="label">Location</span>
-                <span class="val" id="viewInstLoc">Subdega, Sundargarh, Odisha - 770014</span>
-              </div>
-              <div class="profile-info-item">
-                <span class="label">Governing Body</span>
-                <span class="val" id="viewInstGov">NESTS, New Delhi</span>
-              </div>
-              <div class="profile-info-item">
-                <span class="label">Curriculum / Board</span>
-                <span class="val" id="viewInstCurr">CBSE Residential</span>
-              </div>
-              <div class="profile-info-item">
-                <span class="label">Official Email</span>
-                <span class="val" id="viewInstEmail">emrssubdega@gmail.com</span>
-              </div>
-
-              <div class="profile-info-item">
-                <span class="label">CBSE Affiliation No.</span>
-                <span class="val" id="viewInstCbseAff">-</span>
-              </div>
-              <div class="profile-info-item">
-                <span class="label">School Code</span>
-                <span class="val" id="viewInstSchCode">-</span>
-              </div>
-              <div class="profile-info-item">
-                <span class="label">UDISE+ Code</span>
-                <span class="val" id="viewInstUdise">-</span>
-              </div>
-              <div class="profile-info-item">
-                <span class="label">Helpline / Office Phone</span>
-                <span class="val" id="viewInstPhone">-</span>
-              </div>
-              <div class="profile-info-item">
-                <span class="label">Principal Name</span>
-                <span class="val" id="viewInstPrincipal">-</span>
-              </div>
-              <div class="profile-info-item">
-                <span class="label">Academic Session</span>
-                <span class="val" id="viewInstSession">-</span>
-              </div>
+              <div class="profile-info-item"><span class="label">Institution Name</span><span class="val" id="viewInstName">EMRS Subdega</span></div>
+              <div class="profile-info-item"><span class="label">Location</span><span class="val" id="viewInstLoc">Subdega, Sundargarh, Odisha - 770014</span></div>
+              <div class="profile-info-item"><span class="label">Governing Body</span><span class="val" id="viewInstGov">NESTS, New Delhi</span></div>
+              <div class="profile-info-item"><span class="label">Curriculum / Board</span><span class="val" id="viewInstCurr">CBSE Residential</span></div>
+              <div class="profile-info-item"><span class="label">Official Email</span><span class="val" id="viewInstEmail">emrssubdega@gmail.com</span></div>
+              <div class="profile-info-item"><span class="label">CBSE Affiliation No.</span><span class="val" id="viewInstCbseAff">-</span></div>
+              <div class="profile-info-item"><span class="label">School Code</span><span class="val" id="viewInstSchCode">-</span></div>
+              <div class="profile-info-item"><span class="label">Academic Session</span><span class="val" id="viewInstSession">-</span></div>
             </div>
           </div>
-
         </div>
 
-        <!-- TAB 1: EDIT CAMPUS & INSTITUTION DETAILS -->
+        <!-- TAB 1: EDIT CAMPUS & DETAILS -->
         <div id="tab-institution" class="admin-tab-pane">
           <div class="panel-card">
             <h3>Edit Campus & Institution Details</h3>
-            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">
-              Update any detail below. All new affiliation/contact fields are <strong>optional</strong> — leave any blank if you do not have them yet.
-            </p>
             <form id="institutionForm">
-              <div class="form-field">
-                <label>Institution Name</label>
-                <input type="text" id="instName" placeholder="e.g. EMRS Subdega" />
-              </div>
-              <div class="form-field">
-                <label>Location / Full Address</label>
-                <input type="text" id="instLocation" placeholder="e.g. Subdega, Sundargarh, Odisha - 770014" />
-              </div>
-
+              <div class="form-field"><label>Institution Name</label><input type="text" id="instName" placeholder="EMRS Subdega" /></div>
+              <div class="form-field"><label>Location / Address</label><input type="text" id="instLocation" placeholder="Subdega, Sundargarh, Odisha - 770014" /></div>
               <div class="form-grid-2">
-                <div class="form-field">
-                  <label>Governing Body</label>
-                  <input type="text" id="instGovBody" placeholder="e.g. NESTS, New Delhi" />
-                </div>
-                <div class="form-field">
-                  <label>Curriculum / Board</label>
-                  <input type="text" id="instCurriculum" placeholder="e.g. CBSE Residential" />
-                </div>
+                <div class="form-field"><label>Governing Body</label><input type="text" id="instGovBody" placeholder="NESTS, New Delhi" /></div>
+                <div class="form-field"><label>Curriculum / Board</label><input type="text" id="instCurriculum" placeholder="CBSE Residential" /></div>
               </div>
-
               <div class="form-grid-2">
-                <div class="form-field">
-                  <label>Official Email Address</label>
-                  <input type="email" id="instEmail" placeholder="e.g. emrssubdega@gmail.com" />
-                </div>
-                <div class="form-field">
-                  <label>Office Phone / Helpline (Optional)</label>
-                  <input type="text" id="instOfficePhone" placeholder="e.g. +91 94370 XXXXX" />
-                </div>
+                <div class="form-field"><label>Official Email</label><input type="email" id="instEmail" placeholder="emrssubdega@gmail.com" /></div>
+                <div class="form-field"><label>Office Phone / Helpline</label><input type="text" id="instOfficePhone" /></div>
               </div>
-
               <div class="form-grid-2">
-                <div class="form-field">
-                  <label>CBSE Affiliation No. (Optional)</label>
-                  <input type="text" id="instCbseAff" placeholder="e.g. 15200XX" />
-                </div>
-                <div class="form-field">
-                  <label>School Code (Optional)</label>
-                  <input type="text" id="instSchoolCode" placeholder="e.g. 171XX" />
-                </div>
+                <div class="form-field"><label>CBSE Affiliation No.</label><input type="text" id="instCbseAff" /></div>
+                <div class="form-field"><label>School Code</label><input type="text" id="instSchoolCode" /></div>
               </div>
-
               <div class="form-grid-2">
-                <div class="form-field">
-                  <label>UDISE+ Code (Optional)</label>
-                  <input type="text" id="instUdise" placeholder="e.g. 2105150XXXX" />
-                </div>
-                <div class="form-field">
-                  <label>Academic Session (Optional)</label>
-                  <input type="text" id="instSession" placeholder="e.g. 2026-2027" />
-                </div>
+                <div class="form-field"><label>UDISE+ Code</label><input type="text" id="instUdise" /></div>
+                <div class="form-field"><label>Academic Session</label><input type="text" id="instSession" placeholder="2025-2026" /></div>
               </div>
-
-              <div class="form-field">
-                <label>Principal Name (Optional)</label>
-                <input type="text" id="instPrincipal" placeholder="e.g. Dr. / Shri ..." />
-              </div>
-
-              <button type="submit" id="saveInstBtn" class="btn-submit" style="margin-top: 10px;">Save Institutional Details</button>
-              <p id="instStatus" class="status-alert"></p>
+              <button type="submit" id="saveInstBtn" class="btn-submit">Save Institutional Details</button>
+              <p id="instStatus" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
             </form>
           </div>
         </div>
 
-        <!-- TAB 2: ENQUIRIES & MESSAGES (OPTION 2) -->
-        <div id="tab-enquiries" class="admin-tab-pane">
-          <div class="panel-card">
+        <!-- TAB 2: STUDENT RESULTS & BATCH PROMOTION (OPTION A) -->
+        <div id="tab-results-admin" class="admin-tab-pane">
+          
+          <!-- BATCH PROMOTION TOOL (OPTION A) -->
+          <div class="panel-card" style="border-top: 4px solid #f97316; background: #fffaf5;">
             <h3>
-              <span>📬 Admission & Public Enquiries</span>
-              <button type="button" class="btn-submit" style="padding: 6px 14px; font-size: 0.85rem;" onclick="loadAdminEnquiries()">
-                🔄 Refresh
-              </button>
+              <span>⚡ Batch Promotion Tool (Option A)</span>
+              <span style="font-size:0.8rem; background:#fed7aa; color:#9a3412; padding:3px 8px; border-radius:4px;">Safe Academic Session Rollover</span>
             </h3>
             <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 16px;">
-              Parent and visitor queries submitted from the public portal.
+              Promote all passed students from an exam batch into the next class of a new academic session. <strong>Existing students in other classes or previous sessions will remain untouched.</strong>
             </p>
+            
+            <div class="form-grid-3">
+              <div class="form-field">
+                <label>Current Session</label>
+                <select id="promoFromSession">
+                  <option value="2025-2026">2025–2026</option>
+                  <option value="2024-2025">2024–2025</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Current Class</label>
+                <select id="promoFromClass">
+                  <option value="Class VI">Class VI</option>
+                  <option value="Class VII">Class VII</option>
+                  <option value="Class VIII">Class VIII</option>
+                  <option value="Class IX">Class IX</option>
+                  <option value="Class X">Class X</option>
+                  <option value="Class XI">Class XI</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Promote To Class</label>
+                <select id="promoToClass">
+                  <option value="Class VII">Class VII</option>
+                  <option value="Class VIII">Class VIII</option>
+                  <option value="Class IX">Class IX</option>
+                  <option value="Class X">Class X</option>
+                  <option value="Class XI">Class XI</option>
+                  <option value="Class XII">Class XII</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-field" style="max-width: 320px;">
+              <label>Target New Session</label>
+              <input type="text" id="promoToSession" value="2026-2027" placeholder="e.g. 2026-2027" />
+            </div>
+
+            <button type="button" onclick="executeBatchPromotion()" class="btn-submit" style="background:#ea580c;">🚀 Promote Passed Students Batch</button>
+            <p id="promoStatusMsg" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
+          </div>
+
+          <!-- ADD STUDENT RESULT FORM -->
+          <div class="panel-card">
+            <h3>Add / Update Student Marksheet</h3>
+            <form id="studentResultForm">
+              <div class="form-grid-3">
+                <div class="form-field"><label>Roll Number *</label><input type="text" id="srRoll" placeholder="e.g. 2025-06-14" required /></div>
+                <div class="form-field"><label>Student Name *</label><input type="text" id="srName" placeholder="Full Name" required /></div>
+                <div class="form-field"><label>Date of Birth *</label><input type="date" id="srDob" required /></div>
+              </div>
+
+              <div class="form-grid-3">
+                <div class="form-field">
+                  <label>Academic Session *</label>
+                  <select id="srSession" required>
+                    <option value="2025-2026">2025–2026</option>
+                    <option value="2026-2027">2026–2027</option>
+                    <option value="2024-2025">2024–2025</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label>Class *</label>
+                  <select id="srClass" required>
+                    <option value="Class VI">Class VI</option>
+                    <option value="Class VII">Class VII</option>
+                    <option value="Class VIII">Class VIII</option>
+                    <option value="Class IX">Class IX</option>
+                    <option value="Class X">Class X</option>
+                    <option value="Class XI">Class XI</option>
+                    <option value="Class XII">Class XII</option>
+                  </select>
+                </div>
+                <div class="form-field"><label>Section</label><input type="text" id="srSection" value="A" /></div>
+              </div>
+
+              <!-- 5 Core Subjects -->
+              <h4 style="color:#0b3c5d; margin:16px 0 8px; font-size:0.95rem;">Subject Marks Breakdown (Out of 100)</h4>
+              <div class="form-grid-3">
+                <div class="form-field"><label>English Marks</label><input type="number" id="subEnglish" value="85" max="100" /></div>
+                <div class="form-field"><label>Hindi Marks</label><input type="number" id="subHindi" value="80" max="100" /></div>
+                <div class="form-field"><label>Mathematics</label><input type="number" id="subMaths" value="90" max="100" /></div>
+                <div class="form-field"><label>Science</label><input type="number" id="subScience" value="88" max="100" /></div>
+                <div class="form-field"><label>Social Science</label><input type="number" id="subSst" value="82" max="100" /></div>
+                <div class="form-field">
+                  <label>Result Status</label>
+                  <select id="srStatus">
+                    <option value="PASSED">PASSED</option>
+                    <option value="FAILED">FAILED</option>
+                  </select>
+                </div>
+              </div>
+
+              <button type="submit" class="btn-submit" style="margin-top: 10px;">Save Student Result</button>
+              <p id="srStatusMsg" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
+            </form>
+          </div>
+
+          <!-- RESULTS DIRECTORY -->
+          <div class="panel-card">
+            <h3>Uploaded Results Archive</h3>
             <div class="table-responsive">
               <table class="styled-table">
                 <thead>
                   <tr>
-                    <th>Date</th>
+                    <th>Roll No</th>
                     <th>Name</th>
-                    <th>Phone</th>
-                    <th>Email</th>
-                    <th>Type</th>
-                    <th>Message</th>
+                    <th>Class</th>
+                    <th>Session</th>
+                    <th>Total</th>
+                    <th>%</th>
+                    <th>Status</th>
+                    <th>Promoted To</th>
                     <th>Action</th>
                   </tr>
                 </thead>
-                <tbody id="enquiryTableBody">
-                  <tr><td colspan="7" style="text-align: center; color: #64748b;">Loading enquiries...</td></tr>
+                <tbody id="studentResultsTableBody">
+                  <tr><td colspan="9" style="text-align: center; color: #64748b;">Loading results...</td></tr>
                 </tbody>
               </table>
             </div>
           </div>
+
         </div>
 
-        <!-- TAB 3: STAFF DETAILS -->
+        <!-- TAB 3: STAFF -->
         <div id="tab-staff" class="admin-tab-pane">
           <div class="panel-card">
             <h3>Add New Staff Member</h3>
             <form id="staffForm">
               <div class="form-grid-2">
-                <div class="form-field">
-                  <label>Full Name *</label>
-                  <input type="text" id="staffName" placeholder="e.g. SUDHIR KUMAR" required style="text-transform: uppercase;" />
-                </div>
-                <div class="form-field">
-                  <label>Employee ID *</label>
-                  <input type="text" id="staffEmpId" placeholder="e.g. 241408659" required style="text-transform: uppercase;" />
-                </div>
+                <div class="form-field"><label>Full Name *</label><input type="text" id="staffName" required /></div>
+                <div class="form-field"><label>Employee ID *</label><input type="text" id="staffEmpId" required /></div>
                 <div class="form-field">
                   <label>Category *</label>
                   <select id="staffCategory" required>
@@ -710,50 +360,21 @@
                     <option value="NON-TEACHING">4. NON-TEACHING</option>
                   </select>
                 </div>
-                <div class="form-field">
-                  <label>Designation *</label>
-                  <select id="staffDesignation" required>
-                    <!-- Populated automatically from app.js -->
-                  </select>
-                </div>
-                <div class="form-field">
-                  <label>Date of Joining in NESTS</label>
-                  <input type="date" id="staffDojNests" />
-                </div>
-                <div class="form-field">
-                  <label>Date of Joining in EMRS Subdega</label>
-                  <input type="date" id="staffDojEmrs" />
-                </div>
+                <div class="form-field"><label>Designation *</label><select id="staffDesignation" required></select></div>
+                <div class="form-field"><label>Date of Joining in NESTS</label><input type="date" id="staffDojNests" /></div>
+                <div class="form-field"><label>Date of Joining in EMRS Subdega</label><input type="date" id="staffDojEmrs" /></div>
               </div>
-              <div class="form-field">
-                <label>Staff Photo (Max 50 KB, .jpg / .png) *</label>
-                <input type="file" id="staffPhoto" accept="image/jpeg,image/png" required />
-                <small style="color: #64748b;">Maximum file size allowed is 50 KB.</small>
-              </div>
+              <div class="form-field"><label>Staff Photo (Max 50 KB) *</label><input type="file" id="staffPhoto" accept="image/*" required /></div>
               <button type="submit" id="saveStaffBtn" class="btn-submit">Add Staff Member</button>
-              <p id="staffStatus" class="status-alert"></p>
+              <p id="staffStatus" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
             </form>
           </div>
-
           <div class="panel-card">
             <h3>Current Staff Directory</h3>
             <div class="table-responsive">
               <table class="styled-table">
-                <thead>
-                  <tr>
-                    <th>Photo</th>
-                    <th>Name</th>
-                    <th>Emp ID</th>
-                    <th>Category</th>
-                    <th>Designation</th>
-                    <th>DOJ NESTS</th>
-                    <th>DOJ EMRS</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody id="staffTableBody">
-                  <tr><td colspan="8" style="text-align: center; color: #64748b;">Loading staff records...</td></tr>
-                </tbody>
+                <thead><tr><th>Photo</th><th>Name</th><th>Emp ID</th><th>Category</th><th>Designation</th><th>Action</th></tr></thead>
+                <tbody id="staffTableBody"><tr><td colspan="6" style="text-align:center;">Loading...</td></tr></tbody>
               </table>
             </div>
           </div>
@@ -765,14 +386,8 @@
             <h3>Upload Official Document / Circular</h3>
             <form id="docForm">
               <div class="form-grid-2">
-                <div class="form-field">
-                  <label>Circular / Ref Number</label>
-                  <input type="text" id="docCircularNo" placeholder="e.g. CIR/2026/01" />
-                </div>
-                <div class="form-field">
-                  <label>Document Date</label>
-                  <input type="date" id="docDate" />
-                </div>
+                <div class="form-field"><label>Circular / Ref Number</label><input type="text" id="docCircularNo" /></div>
+                <div class="form-field"><label>Document Date</label><input type="date" id="docDate" /></div>
                 <div class="form-field" style="grid-column: 1 / -1;">
                   <label>Category</label>
                   <select id="docCategory">
@@ -780,47 +395,14 @@
                     <option value="General Notice">General Notice</option>
                     <option value="Exam Notice">Exam Notice</option>
                     <option value="Rules & Regulations">Rules & Regulations</option>
-                    <option value="Committees">Committees</option>
-                    <option value="Result Analysis">Result Analysis</option>
-                    <option value="Transfer Certificate">Transfer Certificate</option>
-                    <option value="Admission Notice">Admission Notice</option>
-                    <option value="Tenders">Tenders</option>
-                    <option value="Career">Career</option>
                   </select>
                 </div>
               </div>
-              <div class="form-field">
-                <label>Subject / Document Title *</label>
-                <input type="text" id="docTitle" placeholder="e.g. Mandatory Disclosure Details" required />
-              </div>
-              <div class="form-field">
-                <label>Select PDF File *</label>
-                <input type="file" id="docFile" accept="application/pdf" required />
-              </div>
+              <div class="form-field"><label>Title *</label><input type="text" id="docTitle" required /></div>
+              <div class="form-field"><label>Select PDF *</label><input type="file" id="docFile" accept="application/pdf" required /></div>
               <button type="submit" id="saveDocBtn" class="btn-submit">Upload Document</button>
-              <p id="docStatus" class="status-alert"></p>
+              <p id="docStatus" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
             </form>
-          </div>
-
-          <div class="panel-card">
-            <h3>Uploaded Documents List</h3>
-            <div class="table-responsive">
-              <table class="styled-table">
-                <thead>
-                  <tr>
-                    <th>Ref No.</th>
-                    <th>Date</th>
-                    <th>Category</th>
-                    <th>Subject</th>
-                    <th>File</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody id="docTableBody">
-                  <tr><td colspan="6" style="text-align: center; color: #64748b;">Loading documents...</td></tr>
-                </tbody>
-              </table>
-            </div>
           </div>
         </div>
 
@@ -830,41 +412,13 @@
             <h3>Publish School Announcement</h3>
             <form id="noticeForm">
               <div class="form-grid-2">
-                <div class="form-field">
-                  <label>Notice Title *</label>
-                  <input type="text" id="noticeTitle" required />
-                </div>
-                <div class="form-field">
-                  <label>Notice Date *</label>
-                  <input type="date" id="noticeDate" required />
-                </div>
+                <div class="form-field"><label>Title *</label><input type="text" id="noticeTitle" required /></div>
+                <div class="form-field"><label>Date *</label><input type="date" id="noticeDate" required /></div>
               </div>
-              <div class="form-field">
-                <label>Notice Description *</label>
-                <textarea id="noticeBody" rows="4" required></textarea>
-              </div>
+              <div class="form-field"><label>Description *</label><textarea id="noticeBody" rows="4" required></textarea></div>
               <button type="submit" id="saveNoticeBtn" class="btn-submit">Publish Notice</button>
-              <p id="noticeStatus" class="status-alert"></p>
+              <p id="noticeStatus" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
             </form>
-          </div>
-
-          <div class="panel-card">
-            <h3>Active Notices</h3>
-            <div class="table-responsive">
-              <table class="styled-table">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Title</th>
-                    <th>Description</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody id="noticeTableBody">
-                  <tr><td colspan="4" style="text-align: center; color: #64748b;">Loading notices...</td></tr>
-                </tbody>
-              </table>
-            </div>
           </div>
         </div>
 
@@ -873,40 +427,14 @@
           <div class="panel-card">
             <h3>Add Photo to Gallery</h3>
             <form id="galleryForm">
-              <div class="form-field">
-                <label>Photo Caption / Title</label>
-                <input type="text" id="photoTitle" placeholder="e.g. Science Exhibition 2026" />
-              </div>
-              <div class="form-field">
-                <label>Image File *</label>
-                <input type="file" id="photoFile" accept="image/*" required />
-              </div>
-              <div class="form-field" style="flex-direction: row; align-items: center; gap: 8px;">
-                <input type="checkbox" id="photoIsSlider" />
-                <label for="photoIsSlider" style="cursor: pointer; text-transform: none;">Feature in Homepage Slider</label>
+              <div class="form-field"><label>Caption</label><input type="text" id="photoTitle" /></div>
+              <div class="form-field"><label>Image File *</label><input type="file" id="photoFile" accept="image/*" required /></div>
+              <div class="form-field" style="flex-direction:row; align-items:center; gap:8px;">
+                <input type="checkbox" id="photoIsSlider" /><label for="photoIsSlider" style="cursor:pointer; text-transform:none;">Feature in Homepage Slider</label>
               </div>
               <button type="submit" id="savePhotoBtn" class="btn-submit">Upload Photo</button>
-              <p id="photoStatus" class="status-alert"></p>
+              <p id="photoStatus" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
             </form>
-          </div>
-
-          <div class="panel-card">
-            <h3>Uploaded Photos</h3>
-            <div class="table-responsive">
-              <table class="styled-table">
-                <thead>
-                  <tr>
-                    <th>Preview</th>
-                    <th>Caption</th>
-                    <th>Slider</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody id="galleryTableBody">
-                  <tr><td colspan="4" style="text-align: center; color: #64748b;">Loading gallery...</td></tr>
-                </tbody>
-              </table>
-            </div>
           </div>
         </div>
 
