@@ -94,15 +94,49 @@
     .dot { width: 11px; height: 11px; background: rgba(255, 255, 255, 0.5); border-radius: 50%; cursor: pointer; }
     .dot.active { background: #f97316; width: 24px; border-radius: 6px; }
 
+    /* Enquiry Form Card */
+    .enquiry-form-card {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 30px;
+      border-top: 4px solid #f97316;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    }
+    .enquiry-form-card h2 {
+      color: #0b3c5d;
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+    .enquiry-form-card p.form-desc {
+      color: #64748b;
+      font-size: 0.95rem;
+      margin-bottom: 22px;
+    }
+    .btn-submit-enquiry {
+      background: #0b3c5d;
+      color: #ffffff;
+      border: none;
+      padding: 12px 28px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s ease;
+    }
+    .btn-submit-enquiry:hover { background: #072a42; }
+
     /* Results Search Card */
     .results-search-card {
       background: #ffffff; border-radius: 12px; padding: 32px; border-top: 5px solid #0b3c5d; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); margin-bottom: 30px;
     }
+    .form-grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
     .form-grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 18px; }
-    .form-field { display: flex; flex-direction: column; gap: 6px; }
+    .form-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
     .form-field label { font-size: 0.82rem; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; }
-    .form-field input, .form-field select { padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.95rem; outline: none; font-family: inherit; }
-    .form-field input:focus, .form-field select:focus { border-color: #0b3c5d; }
+    .form-field input, .form-field select, .form-field textarea { padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.95rem; outline: none; font-family: inherit; }
+    .form-field input:focus, .form-field select:focus, .form-field textarea:focus { border-color: #0b3c5d; }
     .btn-search-res { background: #0b3c5d; color: #ffffff; border: none; padding: 11px 26px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.95rem; margin-top: 20px; }
     .btn-search-res:hover { background: #072a42; }
 
@@ -119,7 +153,6 @@
       margin-left: auto;
       margin-right: auto;
     }
-
     .marksheet-header {
       border-bottom: 2px solid #0b3c5d;
       padding-bottom: 15px;
@@ -203,13 +236,11 @@
     .btn-action-res { background: #f97316; color: #fff; border: none; padding: 10px 22px; border-radius: 6px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 0.92rem; }
     .btn-action-res:hover { background: #ea580c; }
 
-    /* =========================================================
-       PRECISE A4 FULL-PAGE EXPANDED PRINT STYLES (NO BLANK BOTTOM)
-       ========================================================= */
+    /* Strict A4 Print Configuration */
     @media print {
       @page {
         size: A4 portrait;
-        margin: 8mm 8mm; /* Tight outer margins to maximize physical canvas */
+        margin: 8mm 8mm;
       }
       html, body {
         background: #ffffff !important;
@@ -226,7 +257,6 @@
         left: 0;
         top: 0;
         width: 100% !important;
-        /* Exact physical height to stretch across full A4 sheet */
         height: 278mm !important;
         min-height: 278mm !important;
         max-height: 278mm !important;
@@ -236,8 +266,6 @@
         margin: 0 !important;
         box-shadow: none !important;
         box-sizing: border-box !important;
-        
-        /* Flex distribution stretches components across the full 278mm height */
         display: flex !important;
         flex-direction: column !important;
         justify-content: space-between !important;
@@ -250,70 +278,25 @@
         padding-bottom: 12px !important;
         margin-bottom: 10px !important;
       }
-      .ms-header-top {
-        gap: 14px !important;
-        margin-bottom: 4px !important;
-      }
-      .ms-emrs-logo {
-        width: 62px !important;
-        height: 62px !important;
-      }
-      .marksheet-header h2 {
-        font-size: 1.4rem !important;
-        white-space: nowrap !important;
-        letter-spacing: 0.5px !important;
-      }
-      .marksheet-header p {
-        font-size: 0.88rem !important;
-        margin: 2px 0 0 !important;
-      }
-      .marksheet-header .ms-sub-title {
-        margin-top: 10px !important;
-        font-size: 1.22rem !important;
-      }
+      .ms-header-top { gap: 14px !important; margin-bottom: 4px !important; }
+      .ms-emrs-logo { width: 62px !important; height: 62px !important; }
+      .marksheet-header h2 { font-size: 1.4rem !important; white-space: nowrap !important; letter-spacing: 0.5px !important; }
+      .marksheet-header p { font-size: 0.88rem !important; margin: 2px 0 0 !important; }
+      .marksheet-header .ms-sub-title { margin-top: 10px !important; font-size: 1.22rem !important; }
 
-      .student-meta-grid {
-        gap: 12px 18px !important;
-        padding: 14px 18px !important;
-        margin-bottom: 12px !important;
-      }
+      .student-meta-grid { gap: 12px 18px !important; padding: 14px 18px !important; margin-bottom: 12px !important; }
       .meta-item span.lbl { font-size: 0.74rem !important; }
       .meta-item span.val { font-size: 0.94rem !important; }
 
-      /* Expanded table rows stretch the subject area proportionately */
-      .marks-table {
-        margin-bottom: 12px !important;
-      }
-      .marks-table th {
-        padding: 12px 12px !important;
-        font-size: 0.96rem !important;
-      }
-      .marks-table td {
-        padding: 14px 12px !important;
-        font-size: 0.96rem !important;
-      }
+      .marks-table { margin-bottom: 12px !important; }
+      .marks-table th { padding: 12px 12px !important; font-size: 0.96rem !important; }
+      .marks-table td { padding: 14px 12px !important; font-size: 0.96rem !important; }
 
-      .result-summary-box {
-        padding: 14px 18px !important;
-        margin-top: 8px !important;
-      }
-      .result-summary-box div div:last-child {
-        font-size: 1.25rem !important;
-      }
+      .result-summary-box { padding: 14px 18px !important; margin-top: 8px !important; }
+      .result-summary-box div div:last-child { font-size: 1.25rem !important; }
 
-      /* Anchors signature block cleanly at the bottom without overflow */
-      .signature-block {
-        margin-top: 25px !important;
-        padding: 0 20px !important;
-        margin-bottom: 4px !important;
-      }
-      .signature-block > div {
-        border-top: 1.5px solid #475569 !important;
-        padding-top: 6px !important;
-        width: 180px !important;
-        font-size: 0.9rem !important;
-      }
-
+      .signature-block { margin-top: 25px !important; padding: 0 20px !important; margin-bottom: 4px !important; }
+      .signature-block > div { border-top: 1.5px solid #475569 !important; padding-top: 6px !important; width: 180px !important; font-size: 0.9rem !important; }
       .actions-row { display: none !important; }
     }
 
@@ -424,6 +407,49 @@
 
     window.addEventListener('popstate', window.applyHashRoute);
 
+    // Public Enquiry Submission Engine
+    function setupEnquiryForm() {
+      var form = document.getElementById('publicEnquiryForm');
+      if (!form) return;
+
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        var msgEl = document.getElementById('enqStatusMsg');
+        var btn = document.getElementById('enqSubmitBtn');
+        msgEl.style.color = '#0284c7';
+        msgEl.textContent = 'Submitting your enquiry...';
+        btn.disabled = true;
+
+        var name = document.getElementById('enqName').value.trim();
+        var phone = document.getElementById('enqPhone').value.trim();
+        var email = document.getElementById('enqEmail').value.trim() || null;
+        var type = document.getElementById('enqType').value;
+        var msg = document.getElementById('enqMessage').value.trim();
+
+        try {
+          var ins = await window.client.from('enquiries').insert([{
+            name: name,
+            phone: phone,
+            email: email,
+            enquiry_type: type,
+            message: msg
+          }]);
+
+          if (ins.error) throw ins.error;
+
+          msgEl.style.color = '#16a34a';
+          msgEl.textContent = 'Thank you! Your enquiry has been received. Our office will contact you soon.';
+          form.reset();
+        } catch(err) {
+          msgEl.style.color = '#dc2626';
+          msgEl.textContent = 'Could not submit enquiry: ' + err.message;
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    }
+
+    // Render Documents List
     window.renderDocuments = function() {
       var list = document.getElementById('documentList');
       var title = document.getElementById('docHeading');
@@ -478,6 +504,7 @@
       window.renderDocuments();
     };
 
+    // Render Public Photo Gallery
     window.renderGallery = function() {
       var grid = document.getElementById("publicGalleryGrid");
       if (!grid) return;
@@ -492,6 +519,7 @@
       }).join("");
     };
 
+    // Render Notice Board
     window.renderNotices = function() {
       var nCont = document.getElementById("noticeList");
       var hCont = document.getElementById("homeNoticeList");
@@ -746,7 +774,7 @@
     </div>
   </nav>
 
-  <!-- 1. HOME VIEW -->
+  <!-- 1. HOME VIEW (WITH ADMISSION & GENERAL ENQUIRY RESTORED) -->
   <section id="tab-home" class="tab-section" style="display: block;">
     <div class="slider-container" id="homeSlider">
       <div class="slide active">
@@ -773,6 +801,51 @@
       </div>
     </div>
 
+    <!-- RESTORED: Public Admission & General Enquiry Form -->
+    <div class="content-container">
+      <div class="enquiry-form-card">
+        <h2>Admission & General Enquiry</h2>
+        <p class="form-desc">Have a question regarding admissions, academic curriculum, or hostel facilities? Submit your enquiry below and our office will get in touch with you.</p>
+        
+        <form id="publicEnquiryForm">
+          <div class="form-grid-2">
+            <div class="form-field">
+              <label>Applicant / Guardian Name *</label>
+              <input type="text" id="enqName" placeholder="Full Name" required />
+            </div>
+            <div class="form-field">
+              <label>Contact Phone Number *</label>
+              <input type="tel" id="enqPhone" placeholder="10-digit mobile number" required pattern="[0-9]{10}" />
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-field">
+              <label>Email Address (Optional)</label>
+              <input type="email" id="enqEmail" placeholder="name@example.com" />
+            </div>
+            <div class="form-field">
+              <label>Enquiry Type *</label>
+              <select id="enqType" required>
+                <option value="Admission Enquiry">Admission Enquiry (Class VI)</option>
+                <option value="Hostel & Facilities">Hostel & Residential Facilities</option>
+                <option value="Academic Curriculum">Academic & CBSE Curriculum</option>
+                <option value="General Query">General Query</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label>Message / Question *</label>
+            <textarea id="enqMessage" rows="4" placeholder="Please write your query details here..." required></textarea>
+          </div>
+
+          <button type="submit" id="enqSubmitBtn" class="btn-submit-enquiry">Submit Enquiry</button>
+          <p id="enqStatusMsg" style="margin-top: 12px; font-weight: 600; font-size: 0.95rem;"></p>
+        </form>
+      </div>
+    </div>
+
     <div class="content-container">
       <div class="content-card" style="border-top: 4px solid #0b3c5d;">
         <h2 style="color: #0b3c5d; font-size: 1.5rem; margin-bottom: 14px;">Notice Board</h2>
@@ -783,7 +856,7 @@
     </div>
   </section>
 
-  <!-- 2. STUDENT RESULTS VIEW (EXPANDED TO FULL A4 PAPER HEIGHT) -->
+  <!-- 2. STUDENT RESULTS VIEW -->
   <section id="tab-results" class="tab-section" style="display: none;">
     <div class="content-container">
       
@@ -830,7 +903,6 @@
       <!-- Marksheet Output Block -->
       <div id="studentMarksheetBlock" class="marksheet-container">
         
-        <!-- Header with EMRS Logo and Single-Line School Title -->
         <div class="marksheet-header">
           <div class="ms-header-top">
             <img src="logo.png" alt="EMRS Logo" class="ms-emrs-logo" onerror="this.src='https://nests.tribal.gov.in/assets/images/emrs_logo.png'" />
@@ -841,7 +913,6 @@
           <div class="ms-sub-title">ANNUAL PROGRESS & MARKS STATEMENT</div>
         </div>
 
-        <!-- Student Meta Details Grid -->
         <div class="student-meta-grid">
           <div class="meta-item"><span class="lbl">Student Name</span><span class="val" id="msStudentName">-</span></div>
           <div class="meta-item"><span class="lbl">Roll Number</span><span class="val" id="msRollNo">-</span></div>
@@ -855,7 +926,6 @@
           <div class="meta-item" style="grid-column: span 2;"><span class="lbl">DOB In Words</span><span class="val" id="msDobWords">-</span></div>
         </div>
 
-        <!-- Academic Marks Table -->
         <table class="marks-table">
           <thead>
             <tr>
@@ -868,7 +938,6 @@
           <tbody id="msSubjectsBody"></tbody>
         </table>
 
-        <!-- Result Summary Box -->
         <div class="result-summary-box">
           <div>
             <div style="font-size: 0.76rem; color: #475569; font-weight: 700;">TOTAL MARKS</div>
@@ -890,7 +959,6 @@
 
         <p id="msPromotionNotice" style="margin-top: 10px; padding: 8px 12px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; color: #166534; font-size: 0.88rem; display: none;"></p>
 
-        <!-- Official Signatures Block -->
         <div class="signature-block">
           <div style="text-align: center;">Class Teacher Signature</div>
           <div style="text-align: center;">Exam In-Charge</div>
@@ -1043,6 +1111,7 @@
       }
 
       window.applyHashRoute();
+      setupEnquiryForm();
 
       try {
         var instRes = await window.client.from("institution_details").select("*").eq("id", "primary").maybeSingle();
