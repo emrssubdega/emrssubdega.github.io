@@ -34,12 +34,12 @@
     .sidebar-btn-content { display: flex; align-items: center; gap: 12px; }
     .sidebar-btn:hover { background: #072a42; color: #38bdf8; }
     .sidebar-btn.active { background: #072a42; color: #ffffff; border-left-color: #f97316; }
+    .badge-counter { background: #f97316; color: #ffffff; font-size: 0.72rem; padding: 2px 7px; border-radius: 10px; font-weight: 700; }
 
     .main-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow-y: auto; }
     .top-navbar { background: #ffffff; padding: 14px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; }
     .page-title { font-size: 1.25rem; font-weight: 800; color: #0b3c5d; }
     
-    /* Top Navbar Right Actions: User info, Live Website, Sign Out */
     .navbar-right-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
     .live-website-btn {
       display: inline-flex; align-items: center; gap: 6px; background: #0b3c5d; color: #ffffff;
@@ -131,6 +131,10 @@
         <button type="button" class="sidebar-btn" onclick="switchAdminTab('tab-institution', this)">
           <div class="sidebar-btn-content"><span>🏫</span> Campus & Details</div>
         </button>
+        <button type="button" class="sidebar-btn" onclick="switchAdminTab('tab-enquiries', this)">
+          <div class="sidebar-btn-content"><span>📬</span> Enquiries</div>
+          <span id="enquiryCountBadge" class="badge-counter" style="display: none;">0</span>
+        </button>
         <button type="button" class="sidebar-btn" onclick="switchAdminTab('tab-results-admin', this)">
           <div class="sidebar-btn-content"><span>🎓</span> Student Results</div>
         </button>
@@ -150,17 +154,16 @@
     </aside>
 
     <main class="main-panel">
-      <!-- TOP NAVBAR (WITH SIGN OUT BUTTON ON TOP RIGHT) -->
       <div class="top-navbar">
         <div class="page-title" id="pageTitleHeading">Dashboard Overview</div>
         <div class="navbar-right-actions">
           <div class="user-info" style="font-size: 0.86rem; color: #64748b;">
             Logged in: <strong id="adminUserBadge" style="color: #0b3c5d;">Admin</strong>
           </div>
-          <a href="../" target="_blank" class="live-website-btn" title="Open public portal">
+          <a href="../" target="_blank" class="live-website-btn">
             <span>🌐</span> Live Website ↗
           </a>
-          <button type="button" id="logoutBtn" class="top-logout-btn" title="Sign out of admin session">
+          <button type="button" id="logoutBtn" class="top-logout-btn">
             <span>🚪</span> Sign Out
           </button>
         </div>
@@ -202,9 +205,6 @@
         <div id="tab-institution" class="admin-tab-pane">
           <div class="panel-card">
             <h3>Edit Campus & Institution Details</h3>
-            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">
-              Update any detail below. All affiliation and helpline fields are <strong>optional</strong> — leave any blank if you do not have them yet.
-            </p>
             <form id="institutionForm">
               <div class="form-field"><label>Institution Name</label><input type="text" id="instName" placeholder="e.g. EMRS Subdega" /></div>
               <div class="form-field"><label>Location / Address</label><input type="text" id="instLocation" placeholder="e.g. Subdega, Sundargarh, Odisha - 770014" /></div>
@@ -234,6 +234,39 @@
               <button type="submit" id="saveInstBtn" class="btn-submit" style="margin-top: 10px;">Save Institutional Details</button>
               <p id="instStatus" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
             </form>
+          </div>
+        </div>
+
+        <!-- TAB: RESTORED ENQUIRIES TAB -->
+        <div id="tab-enquiries" class="admin-tab-pane">
+          <div class="panel-card">
+            <h3>
+              <span>📬 Admission & Public Enquiries</span>
+              <button type="button" class="btn-submit" style="padding: 6px 14px; font-size: 0.85rem;" onclick="loadAdminEnquiries()">
+                🔄 Refresh
+              </button>
+            </h3>
+            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 16px;">
+              Parent and visitor queries submitted from the public portal.
+            </p>
+            <div class="table-responsive">
+              <table class="styled-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Type</th>
+                    <th>Message</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="enquiryTableBody">
+                  <tr><td colspan="7" style="text-align: center; color: #64748b;">Loading enquiries...</td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -325,7 +358,6 @@
             <p id="promoStatusMsg" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
           </div>
 
-          <!-- ADD & EDIT STUDENT RESULT FORM -->
           <div class="panel-card" id="studentFormPanel">
             <h3 id="formModeTitle">Add Student Marksheet</h3>
             <form id="studentResultForm">
@@ -418,7 +450,7 @@
 
         </div>
 
-        <!-- TAB 3: STAFF (WITH DYNAMIC EDIT / ADD MODE) -->
+        <!-- TAB 3: STAFF -->
         <div id="tab-staff" class="admin-tab-pane">
           <div class="panel-card" id="staffFormPanel">
             <h3 id="staffFormModeTitle">Add New Staff Member</h3>
@@ -578,6 +610,6 @@
     </main>
   </div>
 
-  <script src="app.js?v=2.3"></script>
+  <script src="app.js?v=2.4"></script>
 </body>
 </html>
