@@ -65,7 +65,6 @@ window.autoFillDobWords = function(dateStr) {
   }
 };
 
-// TAB SWITCHER WITH URL HASH PERSISTENCE
 window.switchAdminTab = function(tabId, btn, updateHash) {
   if (updateHash === undefined) updateHash = true;
 
@@ -78,7 +77,6 @@ window.switchAdminTab = function(tabId, btn, updateHash) {
   var activePane = document.getElementById(tabId);
   if (activePane) activePane.classList.add("show");
 
-  // Highlight matching sidebar button if not explicitly passed
   if (!btn) {
     btns.forEach(function(b) {
       var attr = b.getAttribute("onclick") || "";
@@ -92,7 +90,6 @@ window.switchAdminTab = function(tabId, btn, updateHash) {
   var heading = document.getElementById("pageTitleHeading");
   if (heading && btn) heading.textContent = btn.textContent.trim().replace(/^[^a-zA-Z0-9]+/, '');
 
-  // Update URL hash without page reload
   if (updateHash) {
     var key = tabId.replace("tab-", "").replace("-admin", "");
     history.pushState(null, null, "#" + key);
@@ -104,15 +101,16 @@ window.switchAdminTab = function(tabId, btn, updateHash) {
   if (tabId === 'tab-gallery') loadAdminGallery();
   if (tabId === 'tab-staff') loadAdminStaff();
   if (tabId === 'tab-institution') loadInstitutionDetails();
+  if (tabId === 'tab-enquiries') loadAdminEnquiries();
 };
 
-// READS CURRENT HASH ON REFRESH & BROWSER NAVIGATION
 window.applyAdminHashRoute = function() {
   var hash = window.location.hash.replace("#", "").trim().toLowerCase();
   var tabMap = {
     "dashboard": "tab-dashboard",
     "institution": "tab-institution",
     "campus": "tab-institution",
+    "enquiries": "tab-enquiries",
     "results": "tab-results-admin",
     "student-results": "tab-results-admin",
     "staff": "tab-staff",
@@ -151,6 +149,7 @@ async function checkSession() {
 
 function loadAllAdminData() {
   loadInstitutionDetails();
+  loadAdminEnquiries();
   loadAdminStudentResults();
   loadAdminStaff();
   loadAdminDocs();
@@ -249,6 +248,49 @@ async function loadInstitutionDetails() {
     if (document.getElementById("instPrincipal")) document.getElementById("instPrincipal").value = d.principal_name || "";
   }
 }
+
+// ---------------- RESTORED: ENQUIRIES CRUD ----------------
+async function loadAdminEnquiries() {
+  var tbody = document.getElementById("enquiryTableBody");
+  var badge = document.getElementById("enquiryCountBadge");
+  if (!tbody || !client) return;
+
+  var res = await client.from("enquiries").select("*").order("created_at", { ascending: false });
+  if (res.data) {
+    if (badge) {
+      if (res.data.length > 0) {
+        badge.textContent = res.data.length;
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+    }
+
+    if (res.data.length > 0) {
+      tbody.innerHTML = res.data.map(function(enq) {
+        var rawDate = enq.created_at ? enq.created_at.split('T')[0] : '-';
+        var dmyDate = formatDateDMY(rawDate);
+        return '<tr>' +
+          '<td>' + dmyDate + '</td>' +
+          '<td><strong>' + (enq.name || '') + '</strong></td>' +
+          '<td><a href="tel:' + (enq.phone || '') + '" style="color:#0284c7; text-decoration:none; font-weight:600;">' + (enq.phone || '') + '</a></td>' +
+          '<td>' + (enq.email ? '<a href="mailto:' + enq.email + '" style="color:#0284c7;">' + enq.email + '</a>' : '-') + '</td>' +
+          '<td><span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-weight:700; font-size:0.8rem;">' + (enq.enquiry_type || 'General') + '</span></td>' +
+          '<td style="text-align:left; max-width:280px; word-break:break-word;">' + (enq.message || '') + '</td>' +
+          '<td><button type="button" class="btn-delete" onclick="deleteEnquiry(\'' + enq.id + '\')">Delete</button></td>' +
+        '</tr>';
+      }).join("");
+    } else {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #64748b;">No enquiries submitted yet.</td></tr>';
+    }
+  }
+}
+
+window.deleteEnquiry = async function(id) {
+  if (!confirm("Are you sure you want to delete this enquiry?")) return;
+  await client.from("enquiries").delete().eq("id", id);
+  loadAdminEnquiries();
+};
 
 // ---------------- DYNAMIC CUSTOM SUBJECT EDITOR ----------------
 var DEFAULT_SUBJECTS = ["English", "Hindi", "Mathematics", "Science", "Social Science"];
