@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EMRS Subdega - Staff Leave Portal</title>
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../supabase-config.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%; margin: 0; padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f1f5f9; color: #1e293b;
+    }
+
+    /* Login Box */
+    .login-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; background: #f8fafc; }
+    .login-card { background: #ffffff; padding: 35px 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); width: 100%; max-width: 440px; border-top: 4px solid #0b3c5d; }
+    .login-card h2 { color: #0b3c5d; font-size: 1.45rem; margin-bottom: 6px; text-align: center; font-weight: 800; }
+    .login-card p { color: #64748b; font-size: 0.88rem; text-align: center; margin-bottom: 22px; }
+
+    /* Main Dashboard Layout */
+    .portal-wrapper { display: flex; flex-direction: column; min-height: 100vh; }
+    .portal-nav {
+      background: #0b3c5d; color: #ffffff; padding: 14px 30px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 3px solid #f97316;
+    }
+    .portal-nav h1 { font-size: 1.25rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+    .nav-actions { display: flex; align-items: center; gap: 14px; }
+    .btn-logout { background: #ef4444; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.85rem; }
+
+    .portal-content { max-width: 1150px; margin: 30px auto; padding: 0 20px; width: 100%; }
+
+    /* Balance Cards */
+    .balance-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-bottom: 25px; }
+    .balance-card { background: #ffffff; border-radius: 10px; padding: 20px; border: 1px solid #e2e8f0; border-left: 5px solid #0284c7; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    .balance-card.cl { border-left-color: #0284c7; }
+    .balance-card.el { border-left-color: #10b981; }
+    .balance-card.ml { border-left-color: #f59e0b; }
+    .balance-card .title { font-size: 0.82rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
+    .balance-card .nums { font-size: 1.7rem; font-weight: 900; color: #0b3c5d; margin: 6px 0 2px; }
+    .balance-card .sub { font-size: 0.8rem; color: #475569; }
+
+    /* Card Panels */
+    .panel-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 26px; margin-bottom: 25px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04); }
+    .panel-card h3 { color: #0b3c5d; font-size: 1.2rem; margin-bottom: 18px; padding-bottom: 8px; border-bottom: 1px solid #f1f5f9; font-weight: 700; }
+
+    .form-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+    .form-grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+    .form-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .form-field label { font-size: 0.82rem; font-weight: 700; color: #475569; text-transform: uppercase; }
+    .form-field input, .form-field select, .form-field textarea { padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.95rem; outline: none; font-family: inherit; }
+    .form-field input:focus, .form-field select:focus, .form-field textarea:focus { border-color: #0b3c5d; }
+    .btn-submit { background: #0b3c5d; color: #ffffff; border: none; padding: 11px 24px; font-size: 0.95rem; font-weight: 700; border-radius: 6px; cursor: pointer; }
+    .btn-submit:hover { background: #072a42; }
+
+    /* Tables */
+    .table-responsive { overflow-x: auto; margin-top: 15px; }
+    .styled-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    .styled-table th { background: #f1f5f9; color: #334155; font-weight: 700; padding: 12px 14px; border: 1px solid #e2e8f0; text-align: center; }
+    .styled-table td { padding: 12px 14px; border: 1px solid #e2e8f0; color: #1e293b; text-align: center; }
+    .styled-table tr:nth-child(even) { background: #f8fafc; }
+
+    .badge-status { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; }
+    .badge-status.PENDING { background: #fef3c7; color: #b45309; }
+    .badge-status.APPROVED { background: #dcfce7; color: #15803d; }
+    .badge-status.REJECTED { background: #fee2e2; color: #b91c1c; }
+  </style>
+</head>
+<body>
+
+  <!-- 1. STAFF LOGIN VIEW -->
+  <div id="staffLoginView" class="login-container">
+    <div class="login-card">
+      <h2>Staff Portal Login</h2>
+      <p>EMRS Subdega Employee Leave System</p>
+
+      <form onsubmit="handleStaffLogin(event)">
+        <div class="form-field">
+          <label>Employee ID *</label>
+          <input type="text" id="loginEmpId" placeholder="e.g. 241408659" required />
+        </div>
+        <button type="submit" class="btn-submit" style="width: 100%;">Access Portal</button>
+        <p id="loginError" style="color: #dc2626; text-align: center; margin-top: 12px; font-size: 0.88rem; font-weight: 600;"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. STAFF DASHBOARD & LEAVE MANAGER -->
+  <div id="staffDashboardView" class="portal-wrapper" style="display: none;">
+    <header class="portal-nav">
+      <div>
+        <h1>EMRS Subdega - Staff Portal</h1>
+        <small style="color: #93c5fd;">Logged in as: <strong id="loggedStaffName">-</strong> (<span id="loggedStaffEmpId">-</span>)</small>
+      </div>
+      <div class="nav-actions">
+        <button type="button" onclick="logoutStaff()" class="btn-logout">🚪 Exit</button>
+      </div>
+    </header>
+
+    <main class="portal-content">
+      <!-- Leave Balance Counters -->
+      <div class="balance-grid">
+        <div class="balance-card cl">
+          <div class="title">Casual Leave (CL)</div>
+          <div class="nums" id="clBalance">0</div>
+          <div class="sub">Remaining out of <span id="clTotal">8</span> days</div>
+        </div>
+        <div class="balance-card el">
+          <div class="title">Earned Leave (EL)</div>
+          <div class="nums" id="elBalance">0</div>
+          <div class="sub">Remaining out of <span id="elTotal">10</span> days</div>
+        </div>
+        <div class="balance-card ml">
+          <div class="title">Medical Leave (ML)</div>
+          <div class="nums" id="mlBalance">0</div>
+          <div class="sub">Remaining out of <span id="mlTotal">10</span> days</div>
+        </div>
+      </div>
+
+      <!-- Apply For Leave Form -->
+      <div class="panel-card">
+        <h3>📝 Apply for Leave</h3>
+        <form id="applyLeaveForm" onsubmit="submitLeaveApplication(event)">
+          <div class="form-grid-3">
+            <div class="form-field">
+              <label>Leave Type *</label>
+              <select id="leaveType" required>
+                <option value="Casual Leave (CL)">Casual Leave (CL)</option>
+                <option value="Earned Leave (EL)">Earned Leave (EL)</option>
+                <option value="Medical Leave (ML)">Medical Leave (ML)</option>
+                <option value="Child Care Leave (CCL)">Child Care Leave (CCL)</option>
+                <option value="Duty Leave / OD">Duty Leave / Special OD</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Start Date *</label>
+              <input type="date" id="leaveStartDate" onchange="calculateDays()" required />
+            </div>
+            <div class="form-field">
+              <label>End Date *</label>
+              <input type="date" id="leaveEndDate" onchange="calculateDays()" required />
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-field">
+              <label>Total Duration (Days)</label>
+              <input type="number" id="leaveDays" min="1" value="1" required readonly style="background:#f8fafc;" />
+            </div>
+            <div class="form-field" style="justify-content: center;">
+              <label style="display:flex; align-items:center; gap:8px; cursor:pointer; text-transform:none; margin-top:14px; font-weight:700; color:#0b3c5d;">
+                <input type="checkbox" id="leaveStation" style="width:18px; height:18px;" />
+                Require Station Leave Permission (Leaving Subdega Campus)
+              </label>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label>Reason for Leave *</label>
+            <textarea id="leaveReason" rows="3" placeholder="Provide reason and temporary substitute/contact details..." required></textarea>
+          </div>
+
+          <button type="submit" id="submitLeaveBtn" class="btn-submit">Submit Application</button>
+          <span id="leaveSubmitStatus" style="margin-left: 14px; font-weight: 700; font-size: 0.9rem;"></span>
+        </form>
+      </div>
+
+      <!-- Past Applications History -->
+      <div class="panel-card">
+        <h3>📜 My Leave History & Approval Status</h3>
+        <div class="table-responsive">
+          <table class="styled-table">
+            <thead>
+              <tr>
+                <th>Applied On</th>
+                <th>Type</th>
+                <th>Period</th>
+                <th>Days</th>
+                <th>Station Leave</th>
+                <th>Reason</th>
+                <th>Status</th>
+                <th>Admin Remarks</th>
+              </tr>
+            </thead>
+            <tbody id="myLeaveHistoryBody">
+              <tr><td colspan="8" style="text-align:center; color:#64748b;">Loading history...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    var currentStaff = null;
+
+    function getClient() {
+      var targetUrl = window.SUPABASE_URL || "https://eukhcbxrxzhpwfizoqun.supabase.co";
+      var targetKey = window.SUPABASE_ANON_KEY;
+      return window.supabase.createClient(targetUrl, targetKey);
+    }
+
+    function formatDateDMY(dateStr) {
+      if (!dateStr || dateStr === '-') return '-';
+      var parts = dateStr.split('-');
+      if (parts.length === 3) return parts[2] + '-' + parts[1] + '-' + parts[0];
+      return dateStr;
+    }
+
+    function calculateDays() {
+      var s = document.getElementById('leaveStartDate').value;
+      var e = document.getElementById('leaveEndDate').value;
+      if (!s || !e) return;
+
+      var start = new Date(s);
+      var end = new Date(e);
+      if (end < start) {
+        alert("End Date cannot be earlier than Start Date.");
+        document.getElementById('leaveEndDate').value = s;
+        document.getElementById('leaveDays').value = 1;
+        return;
+      }
+      var diffTime = Math.abs(end - start);
+      var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+      document.getElementById('leaveDays').value = diffDays;
+    }
+
+    async function handleStaffLogin(e) {
+      e.preventDefault();
+      var empId = document.getElementById('loginEmpId').value.trim().toUpperCase();
+      var err = document.getElementById('loginError');
+      err.textContent = "Verifying employee ID...";
+
+      var sb = getClient();
+      var res = await sb.from('staff').select('*').eq('employee_id', empId).maybeSingle();
+
+      if (res.error || !res.data) {
+        err.textContent = "Employee ID not recognized in official directory.";
+        return;
+      }
+
+      currentStaff = res.data;
+      sessionStorage.setItem('emrs_staff_session', JSON.stringify(currentStaff));
+      showStaffDashboard();
+    }
+
+    function showStaffDashboard() {
+      document.getElementById('staffLoginView').style.display = 'none';
+      document.getElementById('staffDashboardView').style.display = 'flex';
+      document.getElementById('loggedStaffName').textContent = currentStaff.name;
+      document.getElementById('loggedStaffEmpId').textContent = currentStaff.employee_id;
+      loadStaffBalances();
+      loadStaffLeaveHistory();
+    }
+
+    function logoutStaff() {
+      sessionStorage.removeItem('emrs_staff_session');
+      currentStaff = null;
+      document.getElementById('staffLoginView').style.display = 'flex';
+      document.getElementById('staffDashboardView').style.display = 'none';
+      document.getElementById('loginEmpId').value = '';
+      document.getElementById('loginError').textContent = '';
+    }
+
+    async function loadStaffBalances() {
+      var sb = getClient();
+      var res = await sb.from('staff_leave_balances').select('*').eq('employee_id', currentStaff.employee_id).maybeSingle();
+
+      var bal = res.data;
+      if (!bal) {
+        // Initialize default balance
+        var ins = await sb.from('staff_leave_balances').insert([{
+          employee_id: currentStaff.employee_id,
+          staff_name: currentStaff.name,
+          cl_total: 8, cl_used: 0,
+          el_total: 10, el_used: 0,
+          ml_total: 10, ml_used: 0
+        }]).select().single();
+        bal = ins.data;
+      }
+
+      if (bal) {
+        document.getElementById('clBalance').textContent = (bal.cl_total - bal.cl_used);
+        document.getElementById('clTotal').textContent = bal.cl_total;
+
+        document.getElementById('elBalance').textContent = (bal.el_total - bal.el_used);
+        document.getElementById('elTotal').textContent = bal.el_total;
+
+        document.getElementById('mlBalance').textContent = (bal.ml_total - bal.ml_used);
+        document.getElementById('mlTotal').textContent = bal.ml_total;
+      }
+    }
+
+    async function submitLeaveApplication(e) {
+      e.preventDefault();
+      var status = document.getElementById('leaveSubmitStatus');
+      var btn = document.getElementById('submitLeaveBtn');
+      status.style.color = '#0284c7';
+      status.textContent = 'Submitting...';
+      btn.disabled = true;
+
+      var type = document.getElementById('leaveType').value;
+      var start = document.getElementById('leaveStartDate').value;
+      var end = document.getElementById('leaveEndDate').value;
+      var days = parseInt(document.getElementById('leaveDays').value, 10);
+      var station = document.getElementById('leaveStation').checked;
+      var reason = document.getElementById('leaveReason').value.trim();
+
+      var sb = getClient();
+      var ins = await sb.from('staff_leave_applications').insert([{
+        employee_id: currentStaff.employee_id,
+        staff_name: currentStaff.name,
+        leave_type: type,
+        start_date: start,
+        end_date: end,
+        total_days: days,
+        station_leave: station,
+        reason: reason,
+        status: 'PENDING'
+      }]);
+
+      if (ins.error) {
+        status.style.color = '#dc2626';
+        status.textContent = "Error: " + ins.error.message;
+      } else {
+        status.style.color = '#16a34a';
+        status.textContent = "Leave application submitted successfully!";
+        document.getElementById('applyLeaveForm').reset();
+        document.getElementById('leaveDays').value = 1;
+        loadStaffLeaveHistory();
+      }
+      btn.disabled = false;
+    }
+
+    async function loadStaffLeaveHistory() {
+      var tbody = document.getElementById('myLeaveHistoryBody');
+      var sb = getClient();
+      var res = await sb.from('staff_leave_applications').select('*')
+        .eq('employee_id', currentStaff.employee_id)
+        .order('created_at', { ascending: false });
+
+      if (res.data) {
+        if (res.data.length > 0) {
+          tbody.innerHTML = res.data.map(function(app) {
+            var appliedDate = app.created_at ? app.created_at.split('T')[0] : '-';
+            return '<tr>' +
+              '<td>' + formatDateDMY(appliedDate) + '</td>' +
+              '<td><strong>' + app.leave_type + '</strong></td>' +
+              '<td>' + formatDateDMY(app.start_date) + ' to ' + formatDateDMY(app.end_date) + '</td>' +
+              '<td>' + app.total_days + '</td>' +
+              '<td>' + (app.station_leave ? 'Yes (Out of Station)' : 'No') + '</td>' +
+              '<td style="text-align:left; max-width:220px;">' + app.reason + '</td>' +
+              '<td><span class="badge-status ' + app.status + '">' + app.status + '</span></td>' +
+              '<td style="text-align:left; color:#64748b;">' + (app.admin_remarks || '-') + '</td>' +
+            '</tr>';
+          }).join('');
+        } else {
+          tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#64748b;">No leave applications found.</td></tr>';
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      var saved = sessionStorage.getItem('emrs_staff_session');
+      if (saved) {
+        try {
+          currentStaff = JSON.parse(saved);
+          showStaffDashboard();
+        } catch(err) {}
+      }
+    });
+  </script>
+</body>
+</html>
