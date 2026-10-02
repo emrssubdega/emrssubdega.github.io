@@ -1,25 +1,23 @@
-// Supabase Client
 var client = null;
 if (window.supabase && window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
   client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
 }
 
-// 40 Official Designations
-var DESIGNATIONS = [
-  "PRINCIPAL", "PGT ENGLISH", "PGT HINDI", "PGT MATHS", "PGT CHEMISTRY", "PGT PHYSICS", "PGT BIOLOGY",
-  "PGT HISTORY", "PGT GEOGRAPHY", "PGT COMMERCE", "PGT ECONOMICS", "PGT COMPUTE SCIENCE", "PGT ODIA",
-  "TGT HINDI", "TGT ENGLISH", "TGT MATHS", "TGT ODIA", "TGT SOCIAL SCIENCE", "TGT SCIENCE", "TGT MUSIC",
-  "TGT ART", "PET FEMALE", "PET MALE", "LIBRARIAN", "ACCOUNTANT", "COUNSELLOR", "HOSTEL WARDEN FEMALE",
-  "HOSTEL WARDEN MALE", "STAFF NURSE", "CATERING ASSISTANT", "SENIOR SECRETARIAT ASSISTANT",
-  "JUNIOR SECRETARIAT ASSISTANT", "COOK", "ELECTRICIAN-cum-PLUMBER", "DRIVER", "LAB ATTENDANT",
-  "MESS HELPER", "SWEEPER", "CHOWKIDAR", "GARDENER"
+// CENTRAL GOVT (CCS LEAVE RULES, 1972 & DoPT HOLIDAY RULES) MASTER LIST
+var CCS_LEAVE_MASTER = [
+  { code: "CL", name: "Casual Leave (CL)", defaultDays: 8 },
+  { code: "RH", name: "Restricted Holiday (RH)", defaultDays: 2 },
+  { code: "SCL", name: "Special Casual Leave (SCL)", defaultDays: 15 },
+  { code: "EL", name: "Earned Leave (EL)", defaultDays: 30 },
+  { code: "HPL", name: "Half Pay Leave (HPL)", defaultDays: 20 },
+  { code: "COMMUTED", name: "Commuted Leave (Medical)", defaultDays: 20 },
+  { code: "MATERNITY", name: "Maternity Leave", defaultDays: 180 },
+  { code: "PATERNITY", name: "Paternity Leave", defaultDays: 15 },
+  { code: "CCL", name: "Child Care Leave (CCL)", defaultDays: 730 },
+  { code: "STUDY", name: "Study Leave", defaultDays: 730 },
+  { code: "DUTY", name: "Duty Leave / Special OD", defaultDays: 10 },
+  { code: "EOL", name: "Extraordinary Leave (EOL)", defaultDays: 90 }
 ];
-
-function populateDesignations() {
-  var sel = document.getElementById("staffDesignation");
-  if (!sel) return;
-  sel.innerHTML = DESIGNATIONS.map(function(d) { return '<option value="' + d + '">' + d + '</option>'; }).join("");
-}
 
 function formatDateDMY(dateStr) {
   if (!dateStr || dateStr === '-') return '-';
@@ -27,43 +25,6 @@ function formatDateDMY(dateStr) {
   if (parts.length === 3) return parts[2] + '-' + parts[1] + '-' + parts[0];
   return dateStr;
 }
-
-function convertDateToWords(dateStr) {
-  if (!dateStr) return '';
-  var parts = dateStr.split('-');
-  if (parts.length !== 3) return dateStr;
-  var y = parseInt(parts[0], 10);
-  var m = parseInt(parts[1], 10);
-  var d = parseInt(parts[2], 10);
-
-  var days = ["", "First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth", "Ninth", "Tenth",
-    "Eleventh", "Twelfth", "Thirteenth", "Fourteenth", "Fifteenth", "Sixteenth", "Seventeenth", "Eighteenth", "Nineteenth", "Twentieth",
-    "Twenty-First", "Twenty-Second", "Twenty-Third", "Twenty-Fourth", "Twenty-Fifth", "Twenty-Sixth", "Twenty-Seventh", "Twenty-Eighth", "Twenty-Ninth", "Thirtieth", "Thirty-First"];
-  var months = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  var ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
-  var tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
-
-  function numToWords(n) {
-    if (n < 20) return ones[n];
-    if (n < 100) return tens[Math.floor(n / 10)] + (n % 10 !== 0 ? " " + ones[n % 10] : "");
-    if (n < 1000) return ones[Math.floor(n / 100)] + " Hundred" + (n % 100 !== 0 ? " " + numToWords(n % 100) : "");
-    if (n < 1000000) return numToWords(Math.floor(n / 1000)) + " Thousand" + (n % 1000 !== 0 ? " " + numToWords(n % 1000) : "");
-    return String(n);
-  }
-
-  var dayWord = (d >= 1 && d <= 31) ? days[d] : String(d);
-  var monthWord = (m >= 1 && m <= 12) ? months[m] : String(m);
-  var yearWord = numToWords(y);
-
-  return (dayWord + " " + monthWord + " " + yearWord).toUpperCase();
-}
-
-window.autoFillDobWords = function(dateStr) {
-  var target = document.getElementById("srDobWords");
-  if (target && dateStr) {
-    target.value = convertDateToWords(dateStr);
-  }
-};
 
 window.switchAdminTab = function(tabId, btn, updateHash) {
   if (updateHash === undefined) updateHash = true;
@@ -80,9 +41,7 @@ window.switchAdminTab = function(tabId, btn, updateHash) {
   if (!btn) {
     btns.forEach(function(b) {
       var attr = b.getAttribute("onclick") || "";
-      if (attr.indexOf(tabId) !== -1) {
-        btn = b;
-      }
+      if (attr.indexOf(tabId) !== -1) btn = b;
     });
   }
   if (btn) btn.classList.add("active");
@@ -95,6 +54,7 @@ window.switchAdminTab = function(tabId, btn, updateHash) {
     history.pushState(null, null, "#" + key);
   }
 
+  if (tabId === 'tab-leaves') { loadAdminLeaves(); populateStaffSelectForAssign(); }
   if (tabId === 'tab-results-admin') loadAdminStudentResults();
   if (tabId === 'tab-docs') loadAdminDocs();
   if (tabId === 'tab-notices') loadAdminNotices();
@@ -102,7 +62,6 @@ window.switchAdminTab = function(tabId, btn, updateHash) {
   if (tabId === 'tab-staff') loadAdminStaff();
   if (tabId === 'tab-institution') loadInstitutionDetails();
   if (tabId === 'tab-enquiries') loadAdminEnquiries();
-  if (tabId === 'tab-leaves') loadAdminLeaves();
 };
 
 window.applyAdminHashRoute = function() {
@@ -110,21 +69,15 @@ window.applyAdminHashRoute = function() {
   var tabMap = {
     "dashboard": "tab-dashboard",
     "institution": "tab-institution",
-    "campus": "tab-institution",
     "leaves": "tab-leaves",
-    "leave-management": "tab-leaves",
     "enquiries": "tab-enquiries",
     "results": "tab-results-admin",
-    "student-results": "tab-results-admin",
     "staff": "tab-staff",
     "docs": "tab-docs",
-    "documents": "tab-docs",
     "notices": "tab-notices",
     "gallery": "tab-gallery"
   };
-
-  var targetTabId = tabMap[hash] || "tab-dashboard";
-  window.switchAdminTab(targetTabId, null, false);
+  window.switchAdminTab(tabMap[hash] || "tab-dashboard", null, false);
 };
 
 window.addEventListener("popstate", window.applyAdminHashRoute);
@@ -153,6 +106,7 @@ async function checkSession() {
 function loadAllAdminData() {
   loadInstitutionDetails();
   loadAdminLeaves();
+  populateStaffSelectForAssign();
   loadAdminEnquiries();
   loadAdminStudentResults();
   loadAdminStaff();
@@ -161,99 +115,118 @@ function loadAllAdminData() {
   loadAdminGallery();
 }
 
-// ---------------- 0. CAMPUS & INSTITUTIONAL DETAILS CRUD ----------------
-var institutionForm = document.getElementById("institutionForm");
-if (institutionForm) {
-  institutionForm.addEventListener("submit", async function(e) {
-    e.preventDefault();
-    var status = document.getElementById("instStatus");
-    status.style.color = "#0284c7";
-    status.textContent = "Saving details...";
+// ---------------- 1. LEAVE MANAGEMENT ENGINE ----------------
 
-    var name = document.getElementById("instName").value.trim();
-    var loc = document.getElementById("instLocation").value.trim();
-    var gov = document.getElementById("instGovBody").value.trim();
-    var curr = document.getElementById("instCurriculum").value.trim();
-    var email = document.getElementById("instEmail").value.trim();
-    var phone = document.getElementById("instOfficePhone").value.trim();
-    var cbseAff = document.getElementById("instCbseAff").value.trim();
-    var schCode = document.getElementById("instSchoolCode").value.trim();
-    var udise = document.getElementById("instUdise").value.trim();
-    var session = document.getElementById("instSession").value.trim();
-    var principal = document.getElementById("instPrincipal").value.trim();
+async function populateStaffSelectForAssign() {
+  var sel = document.getElementById("assignStaffSelect");
+  if (!sel || !client) return;
 
-    var res = await client.from("institution_details").upsert([{
-      id: "primary",
-      institution_name: name,
-      location: loc,
-      governing_body: gov,
-      curriculum: curr,
-      official_email: email,
-      office_phone: phone,
-      cbse_affiliation_no: cbseAff,
-      school_code: schCode,
-      udise_code: udise,
-      academic_session: session,
-      principal_name: principal,
-      updated_at: new Date().toISOString()
-    }]);
-
-    if (res.error) {
-      status.style.color = "#dc2626";
-      status.textContent = "Error: " + res.error.message;
-    } else {
-      status.style.color = "#16a34a";
-      status.textContent = "Institutional details updated successfully!";
-      loadInstitutionDetails();
-    }
-  });
-}
-
-async function loadInstitutionDetails() {
-  if (!client) return;
-  var res = await client.from("institution_details").select("*").eq("id", "primary").maybeSingle();
+  var res = await client.from("staff").select("id, name, employee_id, designation").order("name");
   if (res.data) {
-    var d = res.data;
-
-    function setDashVal(elId, val) {
-      var el = document.getElementById(elId);
-      if (!el) return;
-      if (val && String(val).trim()) {
-        el.textContent = val;
-        el.classList.remove("empty");
-      } else {
-        el.textContent = "(Not set - hidden on live site)";
-        el.classList.add("empty");
-      }
-    }
-
-    setDashVal("viewInstName", d.institution_name);
-    setDashVal("viewInstLoc", d.location);
-    setDashVal("viewInstGov", d.governing_body);
-    setDashVal("viewInstCurr", d.curriculum);
-    setDashVal("viewInstEmail", d.official_email);
-    setDashVal("viewInstPhone", d.office_phone);
-    setDashVal("viewInstCbseAff", d.cbse_affiliation_no);
-    setDashVal("viewInstSchCode", d.school_code);
-    setDashVal("viewInstUdise", d.udise_code);
-    setDashVal("viewInstPrincipal", d.principal_name);
-    setDashVal("viewInstSession", d.academic_session);
-
-    if (document.getElementById("instName")) document.getElementById("instName").value = d.institution_name || "";
-    if (document.getElementById("instLocation")) document.getElementById("instLocation").value = d.location || "";
-    if (document.getElementById("instGovBody")) document.getElementById("instGovBody").value = d.governing_body || "";
-    if (document.getElementById("instCurriculum")) document.getElementById("instCurriculum").value = d.curriculum || "";
-    if (document.getElementById("instEmail")) document.getElementById("instEmail").value = d.official_email || "";
-    if (document.getElementById("instOfficePhone")) document.getElementById("instOfficePhone").value = d.office_phone || "";
-    if (document.getElementById("instCbseAff")) document.getElementById("instCbseAff").value = d.cbse_affiliation_no || "";
-    if (document.getElementById("instSchoolCode")) document.getElementById("instSchoolCode").value = d.school_code || "";
-    if (document.getElementById("instUdise")) document.getElementById("instUdise").value = d.udise_code || "";
-    if (document.getElementById("instSession")) document.getElementById("instSession").value = d.academic_session || "";
-    if (document.getElementById("instPrincipal")) document.getElementById("instPrincipal").value = d.principal_name || "";
+    sel.innerHTML = '<option value="">-- Choose Staff Member --</option>' +
+      res.data.map(function(s) {
+        return '<option value="' + s.employee_id + '" data-name="' + s.name + '">' +
+          s.name + ' (' + s.employee_id + ') - ' + (s.designation || '') +
+        '</option>';
+      }).join('');
   }
+  renderCcsCheckboxes([]);
 }
 
-// ---------------- LEAVE MANAGEMENT ENGINE ----------------
+function renderCcsCheckboxes(assignedList) {
+  var cont = document.getElementById("ccsLeaveTypesContainer");
+  if (!cont) return;
+
+  var map = {};
+  (assignedList || []).forEach(function(item) { map[item.code] = item; });
+
+  cont.innerHTML = CCS_LEAVE_MASTER.map(function(master) {
+    var isChecked = map[master.code] ? 'checked' : '';
+    var totalVal = map[master.code] ? map[master.code].total : master.defaultDays;
+
+    return '<div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:10px;">' +
+      '<label style="display:flex; align-items:center; gap:8px; font-weight:700; color:#0b3c5d; cursor:pointer;">' +
+        '<input type="checkbox" class="ccs-check" value="' + master.code + '" data-name="' + master.name + '" ' + isChecked + ' />' +
+        master.name +
+      '</label>' +
+      '<div style="margin-top:6px; display:flex; align-items:center; gap:8px;">' +
+        '<span style="font-size:0.75rem; color:#64748b; font-weight:bold;">DAYS / YR:</span>' +
+        '<input type="number" class="ccs-days" data-code="' + master.code + '" value="' + totalVal + '" min="1" style="width:75px; padding:4px 6px; font-size:0.85rem; border:1px solid #cbd5e1; border-radius:4px;" />' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+window.loadEmployeeAssignedLeaves = async function(empId) {
+  if (!empId) { renderCcsCheckboxes([]); return; }
+  var res = await client.from("staff_leave_balances").select("*").eq("employee_id", empId).maybeSingle();
+  if (res.data && res.data.assigned_types) {
+    renderCcsCheckboxes(res.data.assigned_types);
+  } else {
+    // Default allocations include CL, RH (2 days), EL, HPL
+    renderCcsCheckboxes([
+      { code: "CL", name: "Casual Leave (CL)", total: 8, used: 0 },
+      { code: "RH", name: "Restricted Holiday (RH)", total: 2, used: 0 },
+      { code: "EL", name: "Earned Leave (EL)", total: 10, used: 0 },
+      { code: "HPL", name: "Half Pay Leave (HPL)", total: 20, used: 0 }
+    ]);
+  }
+};
+
+window.saveAssignedLeaves = async function(e) {
+  e.preventDefault();
+  var sel = document.getElementById("assignStaffSelect");
+  var empId = sel.value;
+  var staffName = sel.options[sel.selectedIndex].getAttribute("data-name") || "Staff Member";
+  var status = document.getElementById("assignStatusMsg");
+
+  var checks = document.querySelectorAll(".ccs-check:checked");
+  if (checks.length === 0) {
+    alert("Please select at least one leave entitlement for this employee.");
+    return;
+  }
+
+  status.style.color = "#0284c7";
+  status.textContent = "Saving...";
+
+  var existingRes = await client.from("staff_leave_balances").select("*").eq("employee_id", empId).maybeSingle();
+  var existingUsedMap = {};
+  if (existingRes.data && existingRes.data.assigned_types) {
+    existingRes.data.assigned_types.forEach(function(x) { existingUsedMap[x.code] = x.used || 0; });
+  }
+
+  var assignedArray = [];
+  checks.forEach(function(chk) {
+    var code = chk.value;
+    var name = chk.getAttribute("data-name");
+    var daysInput = document.querySelector('.ccs-days[data-code="' + code + '"]');
+    var totalDays = parseInt(daysInput ? daysInput.value : 10, 10);
+    var usedDays = existingUsedMap[code] || 0;
+
+    assignedArray.push({
+      code: code,
+      name: name,
+      total: totalDays,
+      used: usedDays
+    });
+  });
+
+  var res = await client.from("staff_leave_balances").upsert([{
+    employee_id: empId,
+    staff_name: staffName,
+    assigned_types: assignedArray,
+    updated_at: new Date().toISOString()
+  }]);
+
+  if (res.error) {
+    status.style.color = "#dc2626";
+    status.textContent = "Error: " + res.error.message;
+  } else {
+    status.style.color = "#16a34a";
+    status.textContent = "Leaves assigned successfully! Employee will only see these.";
+  }
+};
+
 async function loadAdminLeaves() {
   var tbody = document.getElementById("leaveQueueTableBody");
   var badge = document.getElementById("leavePendingBadge");
@@ -261,7 +234,7 @@ async function loadAdminLeaves() {
 
   var res = await client.from("staff_leave_applications").select("*").order("created_at", { ascending: false });
   if (res.data) {
-    var pendingCount = res.data.filter(function(l) { return l.status === 'PENDING'; }).length;
+    var pendingCount = res.data.filter(function(l) { return l.status === 'PENDING' || l.cancel_requested; }).length;
     if (badge) {
       if (pendingCount > 0) {
         badge.textContent = pendingCount;
@@ -274,59 +247,188 @@ async function loadAdminLeaves() {
     if (res.data.length > 0) {
       tbody.innerHTML = res.data.map(function(l) {
         var appliedDate = l.created_at ? l.created_at.split('T')[0] : '-';
-        var actionBtns = (l.status === 'PENDING')
-          ? '<button type="button" class="btn-approve" onclick="processLeave(\'' + l.id + '\', \'APPROVED\', \'' + l.employee_id + '\', \'' + l.leave_type + '\', ' + l.total_days + ')">Approve</button>' +
-            '<button type="button" class="btn-reject" onclick="processLeave(\'' + l.id + '\', \'REJECTED\')">Reject</button>'
-          : '<button type="button" class="btn-delete" onclick="deleteLeaveRecord(\'' + l.id + '\')">Delete</button>';
+        var daysCount = l.is_curtailed ? (l.actual_days_taken + 'd (Curtailed)') : (l.total_days + 'd');
+
+        var actionBtns = '';
+        if (l.status === 'PENDING') {
+          actionBtns = 
+            '<button type="button" class="btn-approve" onclick="approveLeave(\'' + l.id + '\', \'' + l.employee_id + '\', \'' + l.leave_type + '\', ' + l.total_days + ')">Approve</button>' +
+            '<button type="button" class="btn-reject" onclick="rejectLeave(\'' + l.id + '\')">Reject</button>';
+        } else if (l.status === 'APPROVED') {
+          actionBtns += '<button type="button" class="btn-order-slip" onclick="printSanctionOrderAdmin(\'' + encodeURIComponent(JSON.stringify(l)) + '\')">📄 Order</button>';
+
+          if (l.cancel_requested) {
+            actionBtns += '<button type="button" class="btn-cancel-app" onclick="confirmCancelAndReverse(\'' + l.id + '\', \'' + l.employee_id + '\', \'' + l.leave_type + '\', ' + (l.actual_days_taken || l.total_days) + ')">Confirm Cancel</button>';
+          } else if (!l.is_curtailed) {
+            actionBtns += '<button type="button" class="btn-curtail" onclick="curtailEarlyJoining(\'' + l.id + '\', \'' + l.employee_id + '\', \'' + l.leave_type + '\', ' + l.total_days + ', \'' + l.start_date + '\')">Early Join</button>';
+          }
+          actionBtns += '<button type="button" class="btn-delete" onclick="deleteLeaveRecord(\'' + l.id + '\')">Del</button>';
+        } else {
+          actionBtns = '<button type="button" class="btn-delete" onclick="deleteLeaveRecord(\'' + l.id + '\')">Del</button>';
+        }
+
+        var statusBadge = '<span class="badge-status ' + (l.is_curtailed ? 'CURTAILED' : l.status) + '">' + (l.is_curtailed ? 'CURTAILED' : l.status) + '</span>';
+        if (l.cancel_requested) {
+          statusBadge += '<br/><small style="color:#b45309; font-weight:bold;">Cancel Req: ' + (l.cancel_reason || '') + '</small>';
+        }
 
         return '<tr>' +
           '<td>' + formatDateDMY(appliedDate) + '</td>' +
           '<td><strong>' + l.staff_name + '</strong></td>' +
           '<td>' + l.employee_id + '</td>' +
           '<td>' + l.leave_type + '</td>' +
-          '<td>' + formatDateDMY(l.start_date) + ' to ' + formatDateDMY(l.end_date) + ' (' + l.total_days + 'd)</td>' +
+          '<td>' + formatDateDMY(l.start_date) + ' to ' + formatDateDMY(l.end_date) + '</td>' +
+          '<td>' + daysCount + '</td>' +
           '<td>' + (l.station_leave ? 'Yes' : 'No') + '</td>' +
-          '<td style="text-align:left; max-width:200px;">' + l.reason + '</td>' +
-          '<td><span class="badge-status ' + l.status + '">' + l.status + '</span></td>' +
+          '<td style="text-align:left; max-width:180px;">' + l.reason + '</td>' +
+          '<td>' + statusBadge + '</td>' +
           '<td>' + actionBtns + '</td>' +
         '</tr>';
       }).join("");
     } else {
-      tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #64748b;">No leave applications submitted.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; color: #64748b;">No leave applications found.</td></tr>';
     }
   }
 }
 
-window.processLeave = async function(id, action, empId, leaveType, days) {
-  var remarks = prompt("Enter remarks (Optional):", action === "APPROVED" ? "Approved" : "Rejected");
+window.approveLeave = async function(id, empId, leaveType, days) {
+  var remarks = prompt("Sanction Remarks (Optional):", "Sanctioned under Central Govt. Rules");
   if (remarks === null) return;
 
-  var upd = await client.from("staff_leave_applications")
-    .update({ status: action, admin_remarks: remarks, reviewed_at: new Date().toISOString() })
+  var orderNo = "EMRS/SUB/" + new Date().getFullYear() + "/LV-" + Math.floor(1000 + Math.random() * 9000);
+
+  await client.from("staff_leave_applications")
+    .update({ status: "APPROVED", admin_remarks: remarks, order_no: orderNo, reviewed_at: new Date().toISOString() })
     .eq("id", id);
 
-  if (upd.error) {
-    alert("Error updating leave: " + upd.error.message);
+  await adjustLeaveBalance(empId, leaveType, days, "DEDUCT");
+  loadAdminLeaves();
+};
+
+window.rejectLeave = async function(id) {
+  var remarks = prompt("Rejection Reason:", "Duty exigency / No substitute available");
+  if (remarks === null) return;
+
+  await client.from("staff_leave_applications")
+    .update({ status: "REJECTED", admin_remarks: remarks, reviewed_at: new Date().toISOString() })
+    .eq("id", id);
+
+  loadAdminLeaves();
+};
+
+window.confirmCancelAndReverse = async function(id, empId, leaveType, daysToRestore) {
+  if (!confirm("Confirm cancellation? All " + daysToRestore + " days will be credited back to employee's balance.")) return;
+
+  await client.from("staff_leave_applications")
+    .update({ status: "CANCELLED", cancel_requested: false, admin_remarks: "Sanction cancelled and restored to balance", reviewed_at: new Date().toISOString() })
+    .eq("id", id);
+
+  await adjustLeaveBalance(empId, leaveType, daysToRestore, "RESTORE");
+  loadAdminLeaves();
+};
+
+window.curtailEarlyJoining = async function(id, empId, leaveType, totalSanctionedDays, startDateStr) {
+  var actualConsumedStr = prompt(
+    "Employee applied for " + totalSanctionedDays + " days.\n" +
+    "How many days did the employee ACTUALLY take before resuming duty?",
+    Math.floor(totalSanctionedDays / 2)
+  );
+
+  if (!actualConsumedStr) return;
+  var actualConsumed = parseInt(actualConsumedStr, 10);
+  if (isNaN(actualConsumed) || actualConsumed < 0 || actualConsumed >= totalSanctionedDays) {
+    alert("Invalid days. Must be less than original " + totalSanctionedDays + " days.");
     return;
   }
 
-  // Deduct from balance if approved
-  if (action === "APPROVED" && empId && leaveType && days) {
-    var balRes = await client.from("staff_leave_balances").select("*").eq("employee_id", empId).maybeSingle();
-    if (balRes.data) {
-      var bal = balRes.data;
-      var patch = {};
-      if (leaveType.includes("Casual")) patch.cl_used = (bal.cl_used || 0) + days;
-      else if (leaveType.includes("Earned")) patch.el_used = (bal.el_used || 0) + days;
-      else if (leaveType.includes("Medical")) patch.ml_used = (bal.ml_used || 0) + days;
+  var earlyJoinDate = prompt("Date of early duty resumption (YYYY-MM-DD):", new Date().toISOString().split("T")[0]);
+  if (!earlyJoinDate) return;
 
-      if (Object.keys(patch).length > 0) {
-        await client.from("staff_leave_balances").update(patch).eq("employee_id", empId);
+  var unusedDaysToRefund = totalSanctionedDays - actualConsumed;
+
+  await client.from("staff_leave_applications")
+    .update({
+      is_curtailed: true,
+      actual_days_taken: actualConsumed,
+      early_joining_date: earlyJoinDate,
+      admin_remarks: "Curtailed: Resumed duty on " + earlyJoinDate + ". " + unusedDaysToRefund + " unused days credited back.",
+      reviewed_at: new Date().toISOString()
+    })
+    .eq("id", id);
+
+  await adjustLeaveBalance(empId, leaveType, unusedDaysToRefund, "RESTORE");
+  alert("Leave curtailed successfully! " + unusedDaysToRefund + " unused days refunded to employee balance.");
+  loadAdminLeaves();
+};
+
+async function adjustLeaveBalance(empId, leaveType, days, operation) {
+  var res = await client.from("staff_leave_balances").select("*").eq("employee_id", empId).maybeSingle();
+  if (res.data && res.data.assigned_types) {
+    var types = res.data.assigned_types;
+    var modified = false;
+
+    types.forEach(function(item) {
+      if (item.name === leaveType || leaveType.includes(item.code)) {
+        if (operation === "DEDUCT") {
+          item.used = (item.used || 0) + days;
+        } else if (operation === "RESTORE") {
+          item.used = Math.max(0, (item.used || 0) - days);
+        }
+        modified = true;
       }
+    });
+
+    if (modified) {
+      await client.from("staff_leave_balances").update({ assigned_types: types }).eq("employee_id", empId);
     }
   }
+}
 
-  loadAdminLeaves();
+window.printSanctionOrderAdmin = function(appJsonStr) {
+  var d = JSON.parse(decodeURIComponent(appJsonStr));
+  var orderNo = d.order_no || ('EMRS/SUB/' + new Date().getFullYear() + '/LV-' + d.id.substring(0, 5).toUpperCase());
+  var win = window.open('', '_blank');
+  win.document.write(
+    '<!DOCTYPE html><html><head><title>Sanction Order - ' + d.staff_name + '</title>' +
+    '<style>' +
+      'body { font-family: "Georgia", serif; padding: 40px; color: #1e293b; line-height: 1.6; }' +
+      '.box { border: 2px solid #0b3c5d; padding: 30px; max-width: 800px; margin: 0 auto; }' +
+      '.head { text-align: center; border-bottom: 2px solid #0b3c5d; padding-bottom: 15px; margin-bottom: 25px; }' +
+      'h2 { margin: 0; color: #0b3c5d; font-size: 1.35rem; }' +
+      'h3 { margin: 6px 0; color: #f97316; font-size: 1.1rem; }' +
+      '.memo { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 25px; font-size: 0.95rem; }' +
+      '.body-text { font-size: 1.05rem; text-align: justify; margin: 25px 0; line-height: 1.8; }' +
+      '.sign { margin-top: 60px; text-align: right; font-weight: bold; }' +
+    '</style></head><body>' +
+    '<div class="box">' +
+      '<div class="head">' +
+        '<h2>EKLAVYA MODEL RESIDENTIAL SCHOOL, SUBDEGA</h2>' +
+        '<h3>OFFICE OF THE PRINCIPAL / HEAD OF OFFICE</h3>' +
+        '<p style="margin:0; font-size:0.85rem;">Sundargarh, Odisha - 770014 | Under NESTS, Ministry of Tribal Affairs</p>' +
+      '</div>' +
+      '<div class="memo">' +
+        '<div>Office Order No: <u>' + orderNo + '</u></div>' +
+        '<div>Date: <u>' + formatDateDMY(d.reviewed_at ? d.reviewed_at.split("T")[0] : new Date().toISOString().split("T")[0]) + '</u></div>' +
+      '</div>' +
+      '<h3 style="text-align:center; text-decoration:underline;">SANCTION ORDER (LEAVE)</h3>' +
+      '<p class="body-text">' +
+        'In terms of Central Civil Services (Leave) Rules, 1972 & DoPT orders, sanction of the Principal, EMRS Subdega is hereby accorded to the grant of ' +
+        '<strong>' + d.leave_type + '</strong> for a period of <strong>' + (d.actual_days_taken || d.total_days) + ' days</strong> ' +
+        'from <strong>' + formatDateDMY(d.start_date) + '</strong> to <strong>' + formatDateDMY(d.end_date) + '</strong> ' +
+        'to <strong>' + d.staff_name.toUpperCase() + '</strong>, Employee ID: <strong>' + d.employee_id + '</strong>, ' +
+        'on the grounds of <em>"' + d.reason + '"</em>.' +
+        (d.station_leave ? '<br/><br/><strong>Station Leave Permission:</strong> Permission to leave station/headquarters during the leave period is hereby <strong>ACCORDED</strong>.' : '') +
+        (d.is_curtailed ? '<br/><br/><em>Note: The leave period stands curtailed due to early resumption of duty on ' + formatDateDMY(d.early_joining_date) + '.</em>' : '') +
+      '</p>' +
+      '<p style="font-size:0.95rem;">2. Certified that the incumbent will join the same post on expiry of leave.</p>' +
+      '<div class="sign">' +
+        'Principal / Sanctioning Authority<br/>EMRS Subdega, Sundargarh' +
+      '</div>' +
+    '</div>' +
+    '<script>window.onload = function() { window.print(); }<\/script>' +
+    '</body></html>'
+  );
+  win.document.close();
 };
 
 window.deleteLeaveRecord = async function(id) {
@@ -335,7 +437,33 @@ window.deleteLeaveRecord = async function(id) {
   loadAdminLeaves();
 };
 
-// ---------------- ENQUIRIES CRUD ----------------
+// ---------------- 2. OTHER ADMIN SECTIONS ----------------
+async function loadAdminStaff() {
+  var tbody = document.getElementById("staffTableBody");
+  if (!tbody || !client) return;
+  var res = await client.from("staff").select("*").order("created_at", { ascending: false });
+  if (res.data) {
+    tbody.innerHTML = res.data.map(function(s) {
+      return '<tr>' +
+        '<td><img src="' + (s.photo_url || '') + '" style="max-height:45px;" /></td>' +
+        '<td><strong>' + s.name + '</strong></td>' +
+        '<td>' + s.employee_id + '</td>' +
+        '<td>' + s.category + '</td>' +
+        '<td>' + s.designation + '</td>' +
+        '<td>' + formatDateDMY(s.doj_nests) + '</td>' +
+        '<td>' + formatDateDMY(s.doj_emrs) + '</td>' +
+        '<td><button type="button" class="btn-delete" onclick="deleteStaff(\'' + s.id + '\')">Delete</button></td>' +
+      '</tr>';
+    }).join("");
+  }
+}
+
+window.deleteStaff = async function(id) {
+  if (!confirm("Delete staff member?")) return;
+  await client.from("staff").delete().eq("id", id);
+  loadAdminStaff();
+};
+
 async function loadAdminEnquiries() {
   var tbody = document.getElementById("enquiryTableBody");
   var badge = document.getElementById("enquiryCountBadge");
@@ -351,7 +479,6 @@ async function loadAdminEnquiries() {
         badge.style.display = "none";
       }
     }
-
     if (res.data.length > 0) {
       tbody.innerHTML = res.data.map(function(enq) {
         var rawDate = enq.created_at ? enq.created_at.split('T')[0] : '-';
@@ -372,698 +499,107 @@ async function loadAdminEnquiries() {
 }
 
 window.deleteEnquiry = async function(id) {
-  if (!confirm("Are you sure you want to delete this enquiry?")) return;
+  if (!confirm("Delete enquiry?")) return;
   await client.from("enquiries").delete().eq("id", id);
   loadAdminEnquiries();
-};
-
-// ---------------- DYNAMIC CUSTOM SUBJECT EDITOR ----------------
-var DEFAULT_SUBJECTS = ["English", "Hindi", "Mathematics", "Science", "Social Science"];
-
-window.addNewSubjectRow = function(name, max, marks) {
-  var container = document.getElementById("dynamicSubjectsContainer");
-  if (!container) return;
-
-  var div = document.createElement("div");
-  div.className = "subject-row";
-  div.innerHTML = 
-    '<input type="text" class="sub-name" placeholder="Subject Name (e.g. Odia, Physics)" value="' + (name || '') + '" required />' +
-    '<input type="number" class="sub-max mark-input" placeholder="Max" value="' + (max != null ? max : 100) + '" required />' +
-    '<input type="number" class="sub-marks mark-input" placeholder="Marks" value="' + (marks != null ? marks : '') + '" required />' +
-    '<button type="button" onclick="this.parentElement.remove()" class="btn-remove-sub" title="Remove Subject">✕</button>';
-  container.appendChild(div);
-};
-
-function initDefaultSubjects() {
-  var container = document.getElementById("dynamicSubjectsContainer");
-  if (!container) return;
-  container.innerHTML = "";
-  DEFAULT_SUBJECTS.forEach(function(sub) {
-    addNewSubjectRow(sub, 100, 80);
-  });
-}
-
-// ---------------- 1. STUDENT RESULTS CRUD & EDIT ----------------
-var studentResultForm = document.getElementById("studentResultForm");
-if (studentResultForm) {
-  studentResultForm.addEventListener("submit", async function(e) {
-    e.preventDefault();
-    var status = document.getElementById("srStatusMsg");
-    status.style.color = "#0284c7";
-    status.textContent = "Calculating and saving result...";
-
-    var subRows = document.querySelectorAll("#dynamicSubjectsContainer .subject-row");
-    if (subRows.length === 0) {
-      status.style.color = "#dc2626";
-      status.textContent = "Please add at least one subject.";
-      return;
-    }
-
-    var subjectsArr = [];
-    var totalMarks = 0;
-    var maxTotal = 0;
-
-    subRows.forEach(function(row) {
-      var sName = row.querySelector(".sub-name").value.trim();
-      var sMax = parseFloat(row.querySelector(".sub-max").value) || 100;
-      var sMarks = parseFloat(row.querySelector(".sub-marks").value) || 0;
-      var sPercent = (sMarks / sMax) * 100;
-      var sGrade = sPercent >= 90 ? 'A1' : (sPercent >= 80 ? 'A2' : (sPercent >= 70 ? 'B1' : (sPercent >= 60 ? 'B2' : (sPercent >= 50 ? 'C' : 'D'))));
-
-      totalMarks += sMarks;
-      maxTotal += sMax;
-
-      subjectsArr.push({ name: sName, max: sMax, marks: sMarks, grade: sGrade });
-    });
-
-    var overallPercent = maxTotal > 0 ? (totalMarks / maxTotal) * 100 : 0;
-    var overallGrade = overallPercent >= 90 ? 'A1' : (overallPercent >= 80 ? 'A2' : (overallPercent >= 70 ? 'B1' : (overallPercent >= 60 ? 'B2' : (overallPercent >= 50 ? 'C' : 'D'))));
-
-    var dobVal = document.getElementById("srDob").value;
-    var dobWords = document.getElementById("srDobWords").value.trim() || convertDateToWords(dobVal);
-    var recordId = document.getElementById("editingRecordId").value.trim();
-
-    var record = {
-      roll_no: document.getElementById("srRoll").value.trim(),
-      student_name: document.getElementById("srName").value.trim(),
-      father_name: document.getElementById("srFatherName").value.trim(),
-      mother_name: document.getElementById("srMotherName").value.trim(),
-      dob: dobVal,
-      dob_in_words: dobWords,
-      academic_session: document.getElementById("srSession").value,
-      class_name: document.getElementById("srClass").value,
-      section: document.getElementById("srSection").value.trim() || 'A',
-      subjects: subjectsArr,
-      total_marks: totalMarks,
-      max_marks: maxTotal,
-      percentage: Math.round(overallPercent * 10) / 10,
-      grade: overallGrade,
-      result_status: document.getElementById("srStatus").value
-    };
-
-    var res;
-    if (recordId) {
-      res = await client.from("student_results").update(record).eq("id", recordId);
-    } else {
-      res = await client.from("student_results").insert([record]);
-    }
-
-    if (res.error) {
-      status.style.color = "#dc2626";
-      status.textContent = "Error saving result: " + res.error.message;
-    } else {
-      status.style.color = "#16a34a";
-      status.textContent = recordId ? "Student record updated successfully!" : "Student result recorded successfully!";
-      resetStudentResultForm();
-      loadAdminStudentResults();
-    }
-  });
-}
-
-window.editStudentResult = async function(id) {
-  var res = await client.from("student_results").select("*").eq("id", id).maybeSingle();
-  if (res.error || !res.data) {
-    alert("Could not load student record for editing.");
-    return;
-  }
-
-  var d = res.data;
-  document.getElementById("editingRecordId").value = d.id;
-  document.getElementById("srRoll").value = d.roll_no;
-  document.getElementById("srName").value = d.student_name;
-  document.getElementById("srFatherName").value = d.father_name || '';
-  document.getElementById("srMotherName").value = d.mother_name || '';
-  document.getElementById("srDob").value = d.dob;
-  document.getElementById("srDobWords").value = d.dob_in_words || convertDateToWords(d.dob);
-  document.getElementById("srSession").value = d.academic_session;
-  document.getElementById("srClass").value = d.class_name;
-  document.getElementById("srSection").value = d.section || 'A';
-  document.getElementById("srStatus").value = d.result_status || 'PASSED';
-
-  var container = document.getElementById("dynamicSubjectsContainer");
-  container.innerHTML = "";
-  var subs = d.subjects || [];
-  if (subs.length > 0) {
-    subs.forEach(function(s) { addNewSubjectRow(s.name, s.max, s.marks); });
-  } else {
-    initDefaultSubjects();
-  }
-
-  document.getElementById("formModeTitle").textContent = "✏️ Edit Student Result: " + d.student_name;
-  document.getElementById("srSubmitBtn").textContent = "Update Result";
-  document.getElementById("srCancelEditBtn").style.display = "inline-block";
-  document.getElementById("studentFormPanel").scrollIntoView({ behavior: 'smooth' });
-};
-
-window.resetStudentResultForm = function() {
-  document.getElementById("editingRecordId").value = "";
-  document.getElementById("studentResultForm").reset();
-  document.getElementById("formModeTitle").textContent = "Add Student Marksheet";
-  document.getElementById("srSubmitBtn").textContent = "Save Student Result";
-  document.getElementById("srCancelEditBtn").style.display = "none";
-  initDefaultSubjects();
 };
 
 async function loadAdminStudentResults() {
   var tbody = document.getElementById("studentResultsTableBody");
   if (!tbody || !client) return;
-
   var res = await client.from("student_results").select("*").order("created_at", { ascending: false });
   if (res.data) {
-    if (res.data.length > 0) {
-      tbody.innerHTML = res.data.map(function(s) {
-        return '<tr>' +
-          '<td><strong>' + s.roll_no + '</strong></td>' +
-          '<td>' + s.student_name + '</td>' +
-          '<td>' + (s.father_name || '-') + '</td>' +
-          '<td>' + s.class_name + '</td>' +
-          '<td>' + s.academic_session + '</td>' +
-          '<td>' + s.total_marks + '/' + s.max_marks + '</td>' +
-          '<td>' + s.percentage + '%</td>' +
-          '<td><span style="color:' + (s.result_status === 'PASSED' ? '#16a34a' : '#dc2626') + '; font-weight:700;">' + s.result_status + '</span></td>' +
-          '<td>' +
-            '<button type="button" class="btn-edit" onclick="editStudentResult(\'' + s.id + '\')">✏️ Edit</button>' +
-            '<button type="button" class="btn-delete" onclick="deleteStudentResult(\'' + s.id + '\')">Delete</button>' +
-          '</td>' +
-        '</tr>';
-      }).join("");
-    } else {
-      tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #64748b;">No student results uploaded yet.</td></tr>';
-    }
+    tbody.innerHTML = res.data.map(function(s) {
+      return '<tr>' +
+        '<td>' + s.roll_no + '</td><td>' + s.student_name + '</td><td>' + s.class_name + '</td><td>' + s.academic_session + '</td>' +
+        '<td>' + s.total_marks + '/' + s.max_marks + '</td><td>' + s.percentage + '%</td><td>' + s.result_status + '</td>' +
+        '<td><button type="button" class="btn-delete" onclick="deleteResult(\'' + s.id + '\')">Delete</button></td>' +
+      '</tr>';
+    }).join("");
   }
 }
 
-window.deleteStudentResult = async function(id) {
-  if (!confirm("Are you sure you want to delete this result entry?")) return;
+window.deleteResult = async function(id) {
+  if (!confirm("Delete result?")) return;
   await client.from("student_results").delete().eq("id", id);
   loadAdminStudentResults();
 };
 
-// ---------------- EXCEL / CSV EXPORT & IMPORT ----------------
-window.exportClassResultsCSV = async function() {
-  var targetClass = document.getElementById("bulkClassSelect").value;
-  var targetSession = document.getElementById("bulkSessionSelect").value;
-
-  var res = await client.from("student_results").select("*")
-    .eq("class_name", targetClass)
-    .eq("academic_session", targetSession);
-
-  var rows = res.data || [];
-  var csvContent = "data:text/csv;charset=utf-8,";
-  csvContent += "roll_no,student_name,father_name,mother_name,dob,academic_session,class_name,section,english,hindi,mathematics,science,social_science,result_status\n";
-
-  if (rows.length > 0) {
-    rows.forEach(function(r) {
-      var sMap = {};
-      (r.subjects || []).forEach(function(s) { sMap[s.name.toLowerCase()] = s.marks; });
-      var eng = sMap["english"] != null ? sMap["english"] : 80;
-      var hin = sMap["hindi"] != null ? sMap["hindi"] : 80;
-      var mat = sMap["mathematics"] != null ? sMap["mathematics"] : 80;
-      var sci = sMap["science"] != null ? sMap["science"] : 80;
-      var sst = sMap["social science"] != null ? sMap["social science"] : 80;
-
-      csvContent += [
-        '"' + r.roll_no + '"',
-        '"' + r.student_name + '"',
-        '"' + (r.father_name || '') + '"',
-        '"' + (r.mother_name || '') + '"',
-        r.dob,
-        r.academic_session,
-        r.class_name,
-        r.section || 'A',
-        eng, hin, mat, sci, sst,
-        r.result_status || 'PASSED'
-      ].join(",") + "\n";
-    });
-  } else {
-    csvContent += "01,Sample Student Name,Father Name,Mother Name,2013-05-15," + targetSession + "," + targetClass + ",A,85,78,92,88,81,PASSED\n";
-  }
-
-  var encodedUri = encodeURI(csvContent);
-  var link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
-  link.setAttribute("download", "EMRS_" + targetClass.replace(/\s+/g, '_') + "_" + targetSession + ".csv");
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
-
-window.importClassResultsCSV = function() {
-  var fileInput = document.getElementById("bulkCsvFileInput");
-  var status = document.getElementById("bulkStatusMsg");
-  var file = fileInput.files[0];
-
-  if (!file) {
-    alert("Please select a CSV file to upload.");
-    return;
-  }
-
-  status.style.color = "#0284c7";
-  status.textContent = "Processing CSV file...";
-
-  var reader = new FileReader();
-  reader.onload = async function(e) {
-    var text = e.target.result;
-    var lines = text.split(/\r\n|\n/).filter(function(line) { return line.trim() !== ""; });
-    if (lines.length <= 1) {
-      status.style.color = "#dc2626";
-      status.textContent = "CSV file is empty.";
-      return;
-    }
-
-    var records = [];
-    for (var i = 1; i < lines.length; i++) {
-      var cols = lines[i].split(",").map(function(c) { return c.replace(/^["']|["']$/g, "").trim(); });
-      if (cols.length >= 7) {
-        var roll = cols[0];
-        var name = cols[1];
-        var father = cols[2] || '';
-        var mother = cols[3] || '';
-        var dob = cols[4];
-        var session = cols[5];
-        var cls = cols[6];
-        var sec = cols[7] || 'A';
-        var eng = parseFloat(cols[8]) || 0;
-        var hin = parseFloat(cols[9]) || 0;
-        var mat = parseFloat(cols[10]) || 0;
-        var sci = parseFloat(cols[11]) || 0;
-        var sst = parseFloat(cols[12]) || 0;
-        var stat = cols[13] || 'PASSED';
-
-        var total = eng + hin + mat + sci + sst;
-        var percent = Math.round((total / 500) * 1000) / 10;
-        var grade = percent >= 90 ? 'A1' : (percent >= 80 ? 'A2' : (percent >= 70 ? 'B1' : (percent >= 60 ? 'B2' : (percent >= 50 ? 'C' : 'D'))));
-
-        records.push({
-          roll_no: roll,
-          student_name: name,
-          father_name: father,
-          mother_name: mother,
-          dob: dob,
-          dob_in_words: convertDateToWords(dob),
-          academic_session: session,
-          class_name: cls,
-          section: sec,
-          subjects: [
-            { name: "English", max: 100, marks: eng, grade: eng >= 80 ? 'A' : 'B' },
-            { name: "Hindi", max: 100, marks: hin, grade: hin >= 80 ? 'A' : 'B' },
-            { name: "Mathematics", max: 100, marks: mat, grade: mat >= 80 ? 'A' : 'B' },
-            { name: "Science", max: 100, marks: sci, grade: sci >= 80 ? 'A' : 'B' },
-            { name: "Social Science", max: 100, marks: sst, grade: sst >= 80 ? 'A' : 'B' }
-          ],
-          total_marks: total,
-          max_marks: 500,
-          percentage: percent,
-          grade: grade,
-          result_status: stat
-        });
-      }
-    }
-
-    if (records.length === 0) {
-      status.style.color = "#dc2626";
-      status.textContent = "No valid records parsed from CSV.";
-      return;
-    }
-
-    var upRes = await client.from("student_results").insert(records);
-    if (upRes.error) {
-      status.style.color = "#dc2626";
-      status.textContent = "Upload failed: " + upRes.error.message;
-    } else {
-      status.style.color = "#16a34a";
-      status.textContent = "Successfully uploaded " + records.length + " student results!";
-      fileInput.value = "";
-      loadAdminStudentResults();
-    }
-  };
-  reader.readAsText(file);
-};
-
-// ---------------- 2. BATCH PROMOTION ----------------
-window.executeBatchPromotion = async function() {
-  var fromSession = document.getElementById("promoFromSession").value;
-  var fromClass = document.getElementById("promoFromClass").value;
-  var toClass = document.getElementById("promoToClass").value;
-  var toSession = document.getElementById("promoToSession").value.trim();
-  var msg = document.getElementById("promoStatusMsg");
-
-  if (!toSession) { alert("Please enter the Target New Session."); return; }
-  if (!confirm("Promote all PASSED students from " + fromClass + " (" + fromSession + ") to " + toClass + " (" + toSession + ")?")) return;
-
-  msg.style.color = "#0284c7";
-  msg.textContent = "Processing batch promotion...";
-
-  var updateRes = await client.from("student_results")
-    .update({ promoted_to_class: toClass, promoted_session: toSession })
-    .eq("academic_session", fromSession)
-    .eq("class_name", fromClass)
-    .eq("result_status", "PASSED");
-
-  if (updateRes.error) {
-    msg.style.color = "#dc2626";
-    msg.textContent = "Error: " + updateRes.error.message;
-  } else {
-    msg.style.color = "#16a34a";
-    msg.textContent = "Batch promotion completed successfully!";
-    loadAdminStudentResults();
-  }
-};
-
-// ---------------- 3. DOCUMENTS CRUD & TABLE SYNC ----------------
-var docForm = document.getElementById("docForm");
-if (docForm) {
-  docForm.addEventListener("submit", async function(e) {
-    e.preventDefault();
-    var status = document.getElementById("docStatus");
-    status.style.color = "#0284c7";
-    status.textContent = "Uploading document...";
-
-    var circNo = document.getElementById("docCircularNo").value.trim();
-    var docDate = document.getElementById("docDate").value || null;
-    var category = document.getElementById("docCategory").value;
-    var title = document.getElementById("docTitle").value.trim();
-    var file = document.getElementById("docFile").files[0];
-
-    if (!file) return;
-
-    try {
-      var filePath = "docs_" + Date.now() + "_" + file.name.replace(/[^a-zA-Z0-9.]/g, "_");
-      var upRes = await client.storage.from("documents").upload(filePath, file);
-      if (upRes.error) throw upRes.error;
-
-      var pub = client.storage.from("documents").getPublicUrl(filePath);
-      var ins = await client.from("documents").insert([{
-        circular_no: circNo,
-        doc_date: docDate,
-        category: category,
-        title: title,
-        file_url: pub.data.publicUrl
-      }]);
-      if (ins.error) throw ins.error;
-
-      status.style.color = "#16a34a";
-      status.textContent = "Document uploaded successfully!";
-      docForm.reset();
-      loadAdminDocs();
-    } catch(err) {
-      status.style.color = "#dc2626";
-      status.textContent = "Error: " + err.message;
-    }
-  });
-}
-
 async function loadAdminDocs() {
   var tbody = document.getElementById("docTableBody");
   if (!tbody || !client) return;
-
   var res = await client.from("documents").select("*").order("created_at", { ascending: false });
   if (res.data) {
-    if (res.data.length > 0) {
-      tbody.innerHTML = res.data.map(function(d) {
-        return '<tr>' +
-          '<td>' + (d.circular_no || '-') + '</td>' +
-          '<td>' + formatDateDMY(d.doc_date) + '</td>' +
-          '<td>' + (d.category || '-') + '</td>' +
-          '<td>' + (d.title || '-') + '</td>' +
-          '<td><a href="' + d.file_url + '" target="_blank" style="color:#0284c7; font-weight:600;">Download</a></td>' +
-          '<td><button type="button" class="btn-delete" onclick="deleteDoc(\'' + d.id + '\')">Delete</button></td>' +
-        '</tr>';
-      }).join("");
-    } else {
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #64748b;">No documents uploaded.</td></tr>';
-    }
+    tbody.innerHTML = res.data.map(function(d) {
+      return '<tr>' +
+        '<td>' + (d.circular_no || '-') + '</td><td>' + formatDateDMY(d.doc_date) + '</td><td>' + (d.category || '-') + '</td>' +
+        '<td>' + d.title + '</td><td><a href="' + d.file_url + '" target="_blank">Download</a></td>' +
+        '<td><button type="button" class="btn-delete" onclick="deleteDoc(\'' + d.id + '\')">Delete</button></td>' +
+      '</tr>';
+    }).join("");
   }
 }
 
 window.deleteDoc = async function(id) {
-  if (!confirm("Delete this document?")) return;
+  if (!confirm("Delete document?")) return;
   await client.from("documents").delete().eq("id", id);
   loadAdminDocs();
 };
 
-// ---------------- 4. NOTICE BOARD CRUD & TABLE SYNC ----------------
-var noticeForm = document.getElementById("noticeForm");
-if (noticeForm) {
-  noticeForm.addEventListener("submit", async function(e) {
-    e.preventDefault();
-    var status = document.getElementById("noticeStatus");
-    status.style.color = "#0284c7";
-    status.textContent = "Publishing notice...";
-
-    var title = document.getElementById("noticeTitle").value.trim();
-    var date = document.getElementById("noticeDate").value;
-    var body = document.getElementById("noticeBody").value.trim();
-
-    var ins = await client.from("notices").insert([{ title: title, notice_date: date, body: body }]);
-    if (ins.error) {
-      status.style.color = "#dc2626";
-      status.textContent = "Error: " + ins.error.message;
-    } else {
-      status.style.color = "#16a34a";
-      status.textContent = "Notice published successfully!";
-      noticeForm.reset();
-      loadAdminNotices();
-    }
-  });
-}
-
 async function loadAdminNotices() {
   var tbody = document.getElementById("noticeTableBody");
   if (!tbody || !client) return;
-
   var res = await client.from("notices").select("*").order("notice_date", { ascending: false });
   if (res.data) {
-    if (res.data.length > 0) {
-      tbody.innerHTML = res.data.map(function(n) {
-        return '<tr>' +
-          '<td>' + formatDateDMY(n.notice_date) + '</td>' +
-          '<td><strong>' + (n.title || '') + '</strong></td>' +
-          '<td>' + (n.body || '') + '</td>' +
-          '<td><button type="button" class="btn-delete" onclick="deleteNotice(\'' + n.id + '\')">Delete</button></td>' +
-        '</tr>';
-      }).join("");
-    } else {
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748b;">No notices posted.</td></tr>';
-    }
+    tbody.innerHTML = res.data.map(function(n) {
+      return '<tr>' +
+        '<td>' + formatDateDMY(n.notice_date) + '</td><td>' + n.title + '</td><td>' + n.body + '</td>' +
+        '<td><button type="button" class="btn-delete" onclick="deleteNotice(\'' + n.id + '\')">Delete</button></td>' +
+      '</tr>';
+    }).join("");
   }
 }
 
 window.deleteNotice = async function(id) {
-  if (!confirm("Delete this notice?")) return;
+  if (!confirm("Delete notice?")) return;
   await client.from("notices").delete().eq("id", id);
   loadAdminNotices();
 };
 
-// ---------------- 5. PHOTO GALLERY & SLIDER CRUD ----------------
-var galleryForm = document.getElementById("galleryForm");
-if (galleryForm) {
-  galleryForm.addEventListener("submit", async function(e) {
-    e.preventDefault();
-    var status = document.getElementById("photoStatus");
-    status.style.color = "#0284c7";
-    status.textContent = "Uploading image...";
-
-    var title = document.getElementById("photoTitle").value.trim();
-    var file = document.getElementById("photoFile").files[0];
-    var isSlider = document.getElementById("photoIsSlider").checked;
-
-    if (!file) return;
-
-    try {
-      var filePath = "gallery_" + Date.now() + "_" + file.name.replace(/[^a-zA-Z0-9.]/g, "_");
-      var upRes = await client.storage.from("gallery").upload(filePath, file);
-      if (upRes.error) throw upRes.error;
-
-      var pub = client.storage.from("gallery").getPublicUrl(filePath);
-      var ins = await client.from("gallery").insert([{
-        title: title,
-        image_url: pub.data.publicUrl,
-        is_slider: isSlider
-      }]);
-      if (ins.error) throw ins.error;
-
-      status.style.color = "#16a34a";
-      status.textContent = "Photo uploaded successfully!";
-      galleryForm.reset();
-      loadAdminGallery();
-    } catch(err) {
-      status.style.color = "#dc2626";
-      status.textContent = "Error: " + err.message;
-    }
-  });
-}
-
 async function loadAdminGallery() {
   var tbody = document.getElementById("galleryTableBody");
   if (!tbody || !client) return;
-
   var res = await client.from("gallery").select("*").order("created_at", { ascending: false });
   if (res.data) {
-    if (res.data.length > 0) {
-      tbody.innerHTML = res.data.map(function(g) {
-        return '<tr>' +
-          '<td><img src="' + g.image_url + '" style="width:65px; height:48px; object-fit:cover; border-radius:4px; border:1px solid #cbd5e1;" /></td>' +
-          '<td>' + (g.title || '-') + '</td>' +
-          '<td>' + (g.is_slider ? '<span style="color:#16a34a; font-weight:700;">★ In Slider</span>' : 'Gallery Only') + '</td>' +
-          '<td><button type="button" class="btn-delete" onclick="deleteGallery(\'' + g.id + '\')">Delete</button></td>' +
-        '</tr>';
-      }).join("");
-    } else {
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748b;">No photos uploaded yet.</td></tr>';
-    }
+    tbody.innerHTML = res.data.map(function(g) {
+      return '<tr>' +
+        '<td><img src="' + g.image_url + '" style="height:40px;" /></td><td>' + (g.title || '-') + '</td>' +
+        '<td>' + (g.is_slider ? 'In Slider' : 'Gallery') + '</td>' +
+        '<td><button type="button" class="btn-delete" onclick="deleteGallery(\'' + g.id + '\')">Delete</button></td>' +
+      '</tr>';
+    }).join("");
   }
 }
 
 window.deleteGallery = async function(id) {
-  if (!confirm("Delete this photo?")) return;
+  if (!confirm("Delete photo?")) return;
   await client.from("gallery").delete().eq("id", id);
   loadAdminGallery();
 };
 
-// ---------------- 6. STAFF CRUD ----------------
-var staffForm = document.getElementById("staffForm");
-if (staffForm) {
-  staffForm.addEventListener("submit", async function(e) {
-    e.preventDefault();
-    var status = document.getElementById("staffStatus");
-    status.style.color = "#0284c7";
-    status.textContent = "Saving staff record...";
-
-    var editingId = document.getElementById("editingStaffId").value.trim();
-    var existingPhoto = document.getElementById("existingStaffPhotoUrl").value.trim();
-    var photoFile = document.getElementById("staffPhoto").files[0];
-
-    if (!editingId && !photoFile) {
-      status.style.color = "#dc2626";
-      status.textContent = "Please select a staff photo (max 50 KB).";
-      return;
-    }
-
-    if (photoFile && photoFile.size > 51200) {
-      status.style.color = "#dc2626";
-      status.textContent = "File too large (" + Math.round(photoFile.size / 1024) + " KB). Photo must be under 50 KB!";
-      return;
-    }
-
-    try {
-      var photoUrl = existingPhoto;
-
-      if (photoFile) {
-        var filePath = "staff_" + Date.now() + ".jpg";
-        var upRes = await client.storage.from("staff-photos").upload(filePath, photoFile, { upsert: true });
-        if (upRes.error) throw upRes.error;
-        var pub = client.storage.from("staff-photos").getPublicUrl(filePath);
-        photoUrl = pub.data.publicUrl;
-      }
-
-      var record = {
-        name: document.getElementById("staffName").value.trim().toUpperCase(),
-        employee_id: document.getElementById("staffEmpId").value.trim().toUpperCase(),
-        category: document.getElementById("staffCategory").value.toUpperCase(),
-        designation: document.getElementById("staffDesignation").value.toUpperCase(),
-        doj_nests: document.getElementById("staffDojNests").value || null,
-        doj_emrs: document.getElementById("staffDojEmrs").value || null,
-        photo_url: photoUrl
-      };
-
-      var res;
-      if (editingId) {
-        res = await client.from("staff").update(record).eq("id", editingId);
-      } else {
-        res = await client.from("staff").insert([record]);
-      }
-
-      if (res.error) throw res.error;
-
-      status.style.color = "#16a34a";
-      status.textContent = editingId ? "Staff member updated successfully!" : "Staff member added successfully!";
-      resetStaffForm();
-      loadAdminStaff();
-    } catch(err) {
-      status.style.color = "#dc2626";
-      status.textContent = "Error: " + err.message;
-    }
-  });
-}
-
-window.editStaff = async function(id) {
-  var res = await client.from("staff").select("*").eq("id", id).maybeSingle();
-  if (res.error || !res.data) {
-    alert("Could not load staff record for editing.");
-    return;
-  }
-
-  var s = res.data;
-  document.getElementById("editingStaffId").value = s.id;
-  document.getElementById("existingStaffPhotoUrl").value = s.photo_url || '';
-  document.getElementById("staffName").value = s.name || '';
-  document.getElementById("staffEmpId").value = s.employee_id || '';
-  document.getElementById("staffCategory").value = s.category || 'PRINCIPAL';
-  document.getElementById("staffDesignation").value = s.designation || '';
-  document.getElementById("staffDojNests").value = s.doj_nests || '';
-  document.getElementById("staffDojEmrs").value = s.doj_emrs || '';
-
-  document.getElementById("staffPhoto").required = false;
-  document.getElementById("staffPhotoLabel").textContent = "Update Staff Photo (Optional, leave blank to keep current)";
-  document.getElementById("staffPhotoHelp").textContent = "Leave blank to keep existing photo. If uploading new, max size 50 KB.";
-
-  document.getElementById("staffFormModeTitle").textContent = "✏️ Edit Staff Member: " + s.name;
-  document.getElementById("saveStaffBtn").textContent = "Update Staff Member";
-  document.getElementById("cancelStaffEditBtn").style.display = "inline-block";
-  document.getElementById("staffFormPanel").scrollIntoView({ behavior: 'smooth' });
-};
-
-window.resetStaffForm = function() {
-  document.getElementById("editingStaffId").value = "";
-  document.getElementById("existingStaffPhotoUrl").value = "";
-  document.getElementById("staffForm").reset();
-  document.getElementById("staffPhoto").required = true;
-  document.getElementById("staffPhotoLabel").textContent = "Staff Photo (Max 50 KB, .jpg / .png) *";
-  document.getElementById("staffPhotoHelp").textContent = "Maximum file size allowed is 50 KB.";
-  document.getElementById("staffFormModeTitle").textContent = "Add New Staff Member";
-  document.getElementById("saveStaffBtn").textContent = "Add Staff Member";
-  document.getElementById("cancelStaffEditBtn").style.display = "none";
-};
-
-async function loadAdminStaff() {
-  var tbody = document.getElementById("staffTableBody");
-  if (!tbody || !client) return;
-
-  var res = await client.from("staff").select("*").order("created_at", { ascending: false });
+async function loadInstitutionDetails() {
+  if (!client) return;
+  var res = await client.from("institution_details").select("*").eq("id", "primary").maybeSingle();
   if (res.data) {
-    if (res.data.length > 0) {
-      tbody.innerHTML = res.data.map(function(s) {
-        return '<tr>' +
-          '<td><img src="' + (s.photo_url || '') + '" style="max-height:48px; max-width:48px; object-fit:contain; border-radius:4px; border:1px solid #cbd5e1;" /></td>' +
-          '<td><strong>' + s.name + '</strong></td>' +
-          '<td>' + s.employee_id + '</td>' +
-          '<td><span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-weight:700; font-size:0.8rem;">' + s.category + '</span></td>' +
-          '<td>' + s.designation + '</td>' +
-          '<td>' + formatDateDMY(s.doj_nests) + '</td>' +
-          '<td>' + formatDateDMY(s.doj_emrs) + '</td>' +
-          '<td>' +
-            '<button type="button" class="btn-edit" onclick="editStaff(\'' + s.id + '\')">✏️ Edit</button>' +
-            '<button type="button" class="btn-delete" onclick="deleteStaff(\'' + s.id + '\')">Delete</button>' +
-          '</td>' +
-        '</tr>';
-      }).join("");
-    } else {
-      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#64748b;">No staff records yet.</td></tr>';
-    }
+    var d = res.data;
+    if (document.getElementById("viewInstName")) document.getElementById("viewInstName").textContent = d.institution_name;
+    if (document.getElementById("viewInstLoc")) document.getElementById("viewInstLoc").textContent = d.location;
+    if (document.getElementById("viewInstGov")) document.getElementById("viewInstGov").textContent = d.governing_body;
+    if (document.getElementById("viewInstEmail")) document.getElementById("viewInstEmail").textContent = d.official_email;
   }
 }
-
-window.deleteStaff = async function(id) {
-  if (!confirm("Delete this staff member?")) return;
-  await client.from("staff").delete().eq("id", id);
-  loadAdminStaff();
-};
 
 document.addEventListener("DOMContentLoaded", function() {
-  populateDesignations();
-  initDefaultSubjects();
-
   var loginBtn = document.getElementById("loginBtn");
   if (loginBtn) {
     loginBtn.addEventListener("click", async function() {
