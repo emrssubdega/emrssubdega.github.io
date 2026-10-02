@@ -363,12 +363,13 @@ window.saveAssignedLeaves = async function(e) {
     });
   });
 
+  // Explicitly match on employee_id to prevent duplicate key constraint violations
   var res = await client.from("staff_leave_balances").upsert([{
     employee_id: empId,
     staff_name: staffName,
     assigned_types: assignedArray,
     updated_at: new Date().toISOString()
-  }]);
+  }], { onConflict: 'employee_id' });
 
   if (res.error) {
     status.style.color = "#dc2626";
@@ -1026,7 +1027,7 @@ window.editStaff = async function(id) {
   document.getElementById("staffPhotoLabel").textContent = "Update Staff Photo (Optional, leave blank to keep current)";
   document.getElementById("staffPhotoHelp").textContent = "Leave blank to keep existing photo. If uploading new, max size 50 KB.";
 
-  document.getElementById("staffFormModeTitle").textContent = "✏️ Edit Staff Member: " + s.name;
+  document.getElementById("staffFormModeTitle").textContent = "✏️️ Edit Staff Member: " + s.name;
   document.getElementById("saveStaffBtn").textContent = "Update Staff Member";
   document.getElementById("cancelStaffEditBtn").style.display = "inline-block";
   document.getElementById("staffFormPanel").scrollIntoView({ behavior: 'smooth' });
@@ -1061,7 +1062,7 @@ async function loadAdminStaff() {
           '<td>' + formatDateDMY(s.doj_nests) + '</td>' +
           '<td>' + formatDateDMY(s.doj_emrs) + '</td>' +
           '<td>' +
-            '<button type="button" class="btn-edit" onclick="editStaff(\'' + s.id + '\')">✏️ Edit</button>' +
+            '<button type="button" class="btn-edit" onclick="editStaff(\'' + s.id + '\')">✏️️ Edit</button>' +
             '<button type="button" class="btn-delete" onclick="deleteStaff(\'' + s.id + '\')">Delete</button>' +
           '</td>' +
         '</tr>';
