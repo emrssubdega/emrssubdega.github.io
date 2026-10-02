@@ -45,6 +45,7 @@
     .live-website-btn {
       display: inline-flex; align-items: center; gap: 6px; background: #0b3c5d; color: #ffffff;
       padding: 8px 14px; border-radius: 6px; font-size: 0.86rem; font-weight: 700; text-decoration: none;
+      transition: background 0.2s;
     }
     .live-website-btn:hover { background: #072a42; }
     
@@ -74,6 +75,7 @@
     .profile-info-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; }
     .profile-info-item span.label { color: #475569; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; }
     .profile-info-item span.val { color: #0b3c5d; font-weight: 700; font-size: 1rem; }
+    .profile-info-item span.val.empty { color: #94a3b8; font-weight: 500; font-style: italic; }
 
     .form-grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
     .form-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
@@ -89,7 +91,14 @@
     .btn-curtail { background: #8b5cf6; color: #ffffff; border: none; padding: 5px 9px; border-radius: 4px; font-size: 0.78rem; cursor: pointer; font-weight: 700; margin-right: 4px; }
     .btn-cancel-app { background: #ea580c; color: #ffffff; border: none; padding: 5px 9px; border-radius: 4px; font-size: 0.78rem; cursor: pointer; font-weight: 700; margin-right: 4px; }
     .btn-order-slip { background: #0284c7; color: #ffffff; border: none; padding: 5px 9px; border-radius: 4px; font-size: 0.78rem; cursor: pointer; font-weight: 700; margin-right: 4px; }
+    .btn-edit { background: #0284c7; color: #ffffff; border: none; padding: 5px 11px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; margin-right: 6px; font-weight: 600; }
     .btn-delete { background: #ef4444; color: #ffffff; border: none; padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; }
+
+    .subject-row { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
+    .subject-row input { flex: 2; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 0.9rem; }
+    .subject-row input.mark-input { flex: 1; text-align: center; }
+    .btn-remove-sub { background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+    .btn-add-sub { background: #e0f2fe; color: #0284c7; border: 1px dashed #38bdf8; padding: 8px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; display: inline-block; margin-top: 6px; }
 
     .table-responsive { overflow-x: auto; margin-top: 15px; }
     .styled-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
@@ -186,12 +195,24 @@
             <div class="hero-badge-pill">🏛️ NESTS • MINISTRY OF TRIBAL AFFAIRS</div>
           </div>
           <div class="panel-card">
-            <h3><span>🏫 Campus & Institutional Details</span></h3>
+            <h3>
+              <span>🏫 Campus & Institutional Details</span>
+              <button type="button" class="btn-submit" style="padding: 6px 14px; font-size: 0.85rem;" onclick="switchAdminTab('tab-institution', document.querySelectorAll('.sidebar-btn')[1])">
+                ✏️ Edit Details
+              </button>
+            </h3>
             <div class="profile-info-list">
               <div class="profile-info-item"><span class="label">Institution Name</span><span class="val" id="viewInstName">EMRS Subdega</span></div>
               <div class="profile-info-item"><span class="label">Location</span><span class="val" id="viewInstLoc">Subdega, Sundargarh, Odisha - 770014</span></div>
               <div class="profile-info-item"><span class="label">Governing Body</span><span class="val" id="viewInstGov">NESTS, New Delhi</span></div>
+              <div class="profile-info-item"><span class="label">Curriculum / Board</span><span class="val" id="viewInstCurr">CBSE Residential</span></div>
               <div class="profile-info-item"><span class="label">Official Email</span><span class="val" id="viewInstEmail">emrssubdega@gmail.com</span></div>
+              <div class="profile-info-item"><span class="label">Office Phone / Helpline</span><span class="val" id="viewInstPhone">-</span></div>
+              <div class="profile-info-item"><span class="label">CBSE Affiliation No.</span><span class="val" id="viewInstCbseAff">-</span></div>
+              <div class="profile-info-item"><span class="label">School Code</span><span class="val" id="viewInstSchCode">-</span></div>
+              <div class="profile-info-item"><span class="label">UDISE+ Code</span><span class="val" id="viewInstUdise">-</span></div>
+              <div class="profile-info-item"><span class="label">Principal Name</span><span class="val" id="viewInstPrincipal">-</span></div>
+              <div class="profile-info-item"><span class="label">Academic Session</span><span class="val" id="viewInstSession">-</span></div>
             </div>
           </div>
         </div>
@@ -202,25 +223,39 @@
             <h3>Edit Campus & Institution Details</h3>
             <form id="institutionForm">
               <div class="form-field"><label>Institution Name</label><input type="text" id="instName" placeholder="e.g. EMRS Subdega" /></div>
-              <div class="form-field"><label>Location / Address</label><input type="text" id="instLocation" placeholder="Subdega, Sundargarh, Odisha - 770014" /></div>
+              <div class="form-field"><label>Location / Address</label><input type="text" id="instLocation" placeholder="e.g. Subdega, Sundargarh, Odisha - 770014" /></div>
+              
               <div class="form-grid-2">
-                <div class="form-field"><label>Governing Body</label><input type="text" id="instGovBody" placeholder="NESTS, New Delhi" /></div>
-                <div class="form-field"><label>Curriculum / Board</label><input type="text" id="instCurriculum" placeholder="CBSE Residential" /></div>
+                <div class="form-field"><label>Governing Body</label><input type="text" id="instGovBody" placeholder="e.g. NESTS, New Delhi" /></div>
+                <div class="form-field"><label>Curriculum / Board</label><input type="text" id="instCurriculum" placeholder="e.g. CBSE Residential" /></div>
               </div>
+
               <div class="form-grid-2">
-                <div class="form-field"><label>Official Email Address</label><input type="email" id="instEmail" placeholder="emrssubdega@gmail.com" /></div>
-                <div class="form-field"><label>Office Phone / Helpline</label><input type="text" id="instOfficePhone" /></div>
+                <div class="form-field"><label>Official Email Address</label><input type="email" id="instEmail" placeholder="e.g. emrssubdega@gmail.com" /></div>
+                <div class="form-field"><label>Office Phone / Helpline (Optional)</label><input type="text" id="instOfficePhone" placeholder="e.g. +91 94370 XXXXX" /></div>
               </div>
-              <button type="submit" id="saveInstBtn" class="btn-submit">Save Institutional Details</button>
+
+              <div class="form-grid-2">
+                <div class="form-field"><label>CBSE Affiliation No. (Optional)</label><input type="text" id="instCbseAff" placeholder="e.g. 15200XX" /></div>
+                <div class="form-field"><label>School Code (Optional)</label><input type="text" id="instSchoolCode" placeholder="e.g. 171XX" /></div>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-field"><label>UDISE+ Code (Optional)</label><input type="text" id="instUdise" placeholder="e.g. 2105150XXXX" /></div>
+                <div class="form-field"><label>Academic Session (Optional)</label><input type="text" id="instSession" placeholder="e.g. 2026-2027" /></div>
+              </div>
+
+              <div class="form-field"><label>Principal Name (Optional)</label><input type="text" id="instPrincipal" placeholder="e.g. Dr. / Shri ..." /></div>
+
+              <button type="submit" id="saveInstBtn" class="btn-submit" style="margin-top: 10px;">Save Institutional Details</button>
               <p id="instStatus" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
             </form>
           </div>
         </div>
 
-        <!-- TAB 2: LEAVE MANAGEMENT & APPROVAL / REVERSAL QUEUE -->
+        <!-- TAB 2: LEAVE MANAGEMENT -->
         <div id="tab-leaves" class="admin-tab-pane">
           
-          <!-- ASSIGN LEAVE TOOL (TAILORED LEAVE TYPES INCLUDING RH PER EMPLOYEE) -->
           <div class="panel-card" style="border-top: 4px solid #0284c7; background: #f0f9ff;">
             <h3>
               <span>⚙️ Assign Leave Types & Annual Quotas (CCS Rules & RH)</span>
@@ -240,12 +275,9 @@
                 </div>
               </div>
 
-              <!-- Checkbox selection of Central Govt leave rules -->
               <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; padding:16px; margin: 12px 0;">
                 <h4 style="color:#0b3c5d; font-size:0.95rem; margin-bottom:12px;">Permitted Leave Entitlements & Day Limits:</h4>
-                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:12px;" id="ccsLeaveTypesContainer">
-                  <!-- Checkboxes auto-injected by JS -->
-                </div>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:12px;" id="ccsLeaveTypesContainer"></div>
               </div>
 
               <button type="submit" class="btn-submit" style="background:#0284c7;">Save Assigned Quotas</button>
@@ -253,7 +285,6 @@
             </form>
           </div>
 
-          <!-- LEAVE REQUESTS & REVERSAL QUEUE -->
           <div class="panel-card" style="border-top: 4px solid #0b3c5d;">
             <h3>
               <span>📋 Applications, Cancellations & Early Joining Queue</span>
@@ -286,79 +317,359 @@
 
         </div>
 
-        <!-- TAB: ENQUIRIES -->
+        <!-- TAB 3: ENQUIRIES -->
         <div id="tab-enquiries" class="admin-tab-pane">
           <div class="panel-card">
-            <h3><span>📬 Admission & Public Enquiries</span></h3>
+            <h3>
+              <span>📬 Admission & Public Enquiries</span>
+              <button type="button" class="btn-submit" style="padding: 6px 14px; font-size: 0.85rem;" onclick="loadAdminEnquiries()">
+                🔄 Refresh
+              </button>
+            </h3>
             <div class="table-responsive">
               <table class="styled-table">
-                <thead><tr><th>Date</th><th>Name</th><th>Phone</th><th>Email</th><th>Type</th><th>Message</th><th>Action</th></tr></thead>
-                <tbody id="enquiryTableBody"><tr><td colspan="7" style="text-align:center;">Loading...</td></tr></tbody>
+                <thead>
+                  <tr><th>Date</th><th>Name</th><th>Phone</th><th>Email</th><th>Type</th><th>Message</th><th>Action</th></tr>
+                </thead>
+                <tbody id="enquiryTableBody">
+                  <tr><td colspan="7" style="text-align: center; color: #64748b;">Loading enquiries...</td></tr>
+                </tbody>
               </table>
             </div>
           </div>
         </div>
 
-        <!-- TAB: STUDENT RESULTS -->
+        <!-- TAB 4: STUDENT RESULTS (FULL CRUD + DYNAMIC SUBJECT BUILDER + CSV + PROMOTION) -->
         <div id="tab-results-admin" class="admin-tab-pane">
+          
+          <div class="panel-card" style="border-top: 4px solid #0284c7; background: #f0f9ff;">
+            <h3>
+              <span>📊 Bulk Student Results Excel / CSV Tool</span>
+              <span style="font-size:0.8rem; background:#bae6fd; color:#0369a1; padding:3px 8px; border-radius:4px;">Classwise Bulk Upload</span>
+            </h3>
+            <p style="color: #475569; font-size: 0.9rem; margin-bottom: 16px;">
+              Export class results to Excel/CSV, fill in student marks and parent names in bulk, and import them directly back into the database.
+            </p>
+
+            <div style="display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end;">
+              <div class="form-field" style="min-width: 180px; margin-bottom:0;">
+                <label>Select Class</label>
+                <select id="bulkClassSelect">
+                  <option value="Class VI">Class VI</option>
+                  <option value="Class VII">Class VII</option>
+                  <option value="Class VIII">Class VIII</option>
+                  <option value="Class IX">Class IX</option>
+                  <option value="Class X">Class X</option>
+                  <option value="Class XI">Class XI</option>
+                  <option value="Class XII">Class XII</option>
+                </select>
+              </div>
+              <div class="form-field" style="min-width: 180px; margin-bottom:0;">
+                <label>Session</label>
+                <select id="bulkSessionSelect">
+                  <option value="2025-2026">2025-2026</option>
+                  <option value="2026-2027">2026-2027</option>
+                </select>
+              </div>
+              <button type="button" onclick="exportClassResultsCSV()" class="btn-submit" style="background:#0284c7; display:inline-flex; align-items:center; gap:6px;">
+                📥 Export / Download Template
+              </button>
+            </div>
+
+            <div style="margin-top: 20px; padding-top: 16px; border-top: 1px dashed #cbd5e1; display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+              <label style="font-weight:700; font-size:0.85rem; color:#0b3c5d;">UPLOAD FILLED CSV FILE:</label>
+              <input type="file" id="bulkCsvFileInput" accept=".csv" style="padding:6px; font-size:0.85rem;" />
+              <button type="button" onclick="importClassResultsCSV()" class="btn-submit" style="background:#16a34a;">
+                📤 Upload & Process Bulk Results
+              </button>
+              <span id="bulkStatusMsg" style="font-weight:600; font-size:0.9rem;"></span>
+            </div>
+          </div>
+
+          <div class="panel-card" style="border-top: 4px solid #f97316; background: #fffaf5;">
+            <h3>
+              <span>⚡ Batch Promotion Tool</span>
+              <span style="font-size:0.8rem; background:#fed7aa; color:#9a3412; padding:3px 8px; border-radius:4px;">Safe Session Rollover</span>
+            </h3>
+            <div class="form-grid-3">
+              <div class="form-field">
+                <label>Current Session</label>
+                <select id="promoFromSession"><option value="2025-2026">2025–2026</option></select>
+              </div>
+              <div class="form-field">
+                <label>Current Class</label>
+                <select id="promoFromClass">
+                  <option value="Class VI">Class VI</option>
+                  <option value="Class VII">Class VII</option>
+                  <option value="Class VIII">Class VIII</option>
+                  <option value="Class IX">Class IX</option>
+                  <option value="Class X">Class X</option>
+                  <option value="Class XI">Class XI</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Promote To Class</label>
+                <select id="promoToClass">
+                  <option value="Class VII">Class VII</option>
+                  <option value="Class VIII">Class VIII</option>
+                  <option value="Class IX">Class IX</option>
+                  <option value="Class X">Class X</option>
+                  <option value="Class XI">Class XI</option>
+                  <option value="Class XII">Class XII</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-field" style="max-width: 320px;">
+              <label>Target New Session</label>
+              <input type="text" id="promoToSession" value="2026-2027" />
+            </div>
+            <button type="button" onclick="executeBatchPromotion()" class="btn-submit" style="background:#ea580c;">🚀 Promote Passed Students Batch</button>
+            <p id="promoStatusMsg" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
+          </div>
+
+          <div class="panel-card" id="studentFormPanel">
+            <h3 id="formModeTitle">Add Student Marksheet</h3>
+            <form id="studentResultForm">
+              <input type="hidden" id="editingRecordId" value="" />
+
+              <div class="form-grid-3">
+                <div class="form-field"><label>Roll Number *</label><input type="text" id="srRoll" required /></div>
+                <div class="form-field"><label>Student Name *</label><input type="text" id="srName" placeholder="Full Name" required /></div>
+                <div class="form-field"><label>Date of Birth *</label><input type="date" id="srDob" onchange="autoFillDobWords(this.value)" required /></div>
+              </div>
+
+              <div class="form-grid-3">
+                <div class="form-field"><label>Father's Name</label><input type="text" id="srFatherName" placeholder="Father's Full Name" /></div>
+                <div class="form-field"><label>Mother's Name</label><input type="text" id="srMotherName" placeholder="Mother's Full Name" /></div>
+                <div class="form-field"><label>DOB in Words</label><input type="text" id="srDobWords" placeholder="Auto-generated or custom" /></div>
+              </div>
+
+              <div class="form-grid-3">
+                <div class="form-field">
+                  <label>Academic Session *</label>
+                  <select id="srSession" required>
+                    <option value="2025-2026">2025–2026</option>
+                    <option value="2026-2027">2026–2027</option>
+                    <option value="2024-2025">2024–2025</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label>Class *</label>
+                  <select id="srClass" required>
+                    <option value="Class VI">Class VI</option>
+                    <option value="Class VII">Class VII</option>
+                    <option value="Class VIII">Class VIII</option>
+                    <option value="Class IX">Class IX</option>
+                    <option value="Class X">Class X</option>
+                    <option value="Class XI">Class XI</option>
+                    <option value="Class XII">Class XII</option>
+                  </select>
+                </div>
+                <div class="form-field"><label>Section</label><input type="text" id="srSection" value="A" /></div>
+              </div>
+
+              <div style="margin: 20px 0 10px; padding: 16px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+                  <h4 style="color:#0b3c5d; font-size:1rem; margin:0;">Editable Subjects & Marks Breakdown</h4>
+                  <button type="button" onclick="addNewSubjectRow('', 100, 0)" class="btn-add-sub">+ Add Custom Subject</button>
+                </div>
+                <p style="color:#64748b; font-size:0.85rem; margin-bottom:12px;">Customize, add or delete subjects as required for this student/class.</p>
+                <div id="dynamicSubjectsContainer"></div>
+              </div>
+
+              <div class="form-field" style="max-width: 250px;">
+                <label>Final Result Status</label>
+                <select id="srStatus">
+                  <option value="PASSED">PASSED</option>
+                  <option value="FAILED">FAILED</option>
+                </select>
+              </div>
+
+              <div style="display:flex; gap:10px; align-items:center;">
+                <button type="submit" id="srSubmitBtn" class="btn-submit">Save Student Result</button>
+                <button type="button" id="srCancelEditBtn" onclick="resetStudentResultForm()" class="btn-submit" style="background:#64748b; display:none;">Cancel Edit</button>
+              </div>
+              <p id="srStatusMsg" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
+            </form>
+          </div>
+
           <div class="panel-card">
             <h3>Uploaded Results Archive</h3>
             <div class="table-responsive">
               <table class="styled-table">
-                <thead><tr><th>Roll No</th><th>Name</th><th>Class</th><th>Session</th><th>Total</th><th>%</th><th>Status</th><th>Action</th></tr></thead>
-                <tbody id="studentResultsTableBody"><tr><td colspan="8" style="text-align:center;">Loading...</td></tr></tbody>
+                <thead>
+                  <tr>
+                    <th>Roll No</th>
+                    <th>Name</th>
+                    <th>Father Name</th>
+                    <th>Class</th>
+                    <th>Session</th>
+                    <th>Total</th>
+                    <th>%</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="studentResultsTableBody">
+                  <tr><td colspan="9" style="text-align: center; color: #64748b;">Loading results...</td></tr>
+                </tbody>
               </table>
             </div>
           </div>
+
         </div>
 
-        <!-- TAB: STAFF -->
+        <!-- TAB 5: STAFF MANAGEMENT (UPLOAD, PHOTO, CATEGORY, 40 DESIGNATIONS, EDIT, DELETE) -->
         <div id="tab-staff" class="admin-tab-pane">
+          <div class="panel-card" id="staffFormPanel">
+            <h3 id="staffFormModeTitle">Add New Staff Member</h3>
+            <form id="staffForm">
+              <input type="hidden" id="editingStaffId" value="" />
+              <input type="hidden" id="existingStaffPhotoUrl" value="" />
+
+              <div class="form-grid-2">
+                <div class="form-field"><label>Full Name *</label><input type="text" id="staffName" placeholder="Full Name" required /></div>
+                <div class="form-field"><label>Employee ID *</label><input type="text" id="staffEmpId" placeholder="Employee ID" required /></div>
+                <div class="form-field">
+                  <label>Category *</label>
+                  <select id="staffCategory" required>
+                    <option value="PRINCIPAL">1. PRINCIPAL</option>
+                    <option value="PGT">2. PGT</option>
+                    <option value="TGT">3. TGT</option>
+                    <option value="NON-TEACHING">4. NON-TEACHING</option>
+                  </select>
+                </div>
+                <div class="form-field"><label>Designation *</label><select id="staffDesignation" required></select></div>
+                <div class="form-field"><label>Date of Joining in NESTS</label><input type="date" id="staffDojNests" /></div>
+                <div class="form-field"><label>Date of Joining in EMRS Subdega</label><input type="date" id="staffDojEmrs" /></div>
+              </div>
+              
+              <div class="form-field">
+                <label id="staffPhotoLabel">Staff Photo (Max 50 KB, .jpg / .png) *</label>
+                <input type="file" id="staffPhoto" accept="image/*" />
+                <small id="staffPhotoHelp" style="color: #64748b;">Maximum file size allowed is 50 KB.</small>
+              </div>
+
+              <div style="display:flex; gap:10px; align-items:center;">
+                <button type="submit" id="saveStaffBtn" class="btn-submit">Add Staff Member</button>
+                <button type="button" id="cancelStaffEditBtn" onclick="resetStaffForm()" class="btn-submit" style="background:#64748b; display:none;">Cancel Edit</button>
+              </div>
+              <p id="staffStatus" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
+            </form>
+          </div>
+
           <div class="panel-card">
             <h3>Current Staff Directory</h3>
             <div class="table-responsive">
               <table class="styled-table">
-                <thead><tr><th>Photo</th><th>Name</th><th>Emp ID</th><th>Category</th><th>Designation</th><th>DOJ NESTS</th><th>DOJ EMRS</th><th>Action</th></tr></thead>
-                <tbody id="staffTableBody"><tr><td colspan="8" style="text-align:center;">Loading...</td></tr></tbody>
+                <thead>
+                  <tr>
+                    <th>Photo</th>
+                    <th>Name</th>
+                    <th>Emp ID</th>
+                    <th>Category</th>
+                    <th>Designation</th>
+                    <th>DOJ NESTS</th>
+                    <th>DOJ EMRS</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="staffTableBody"><tr><td colspan="8" style="text-align:center;">Loading staff records...</td></tr></tbody>
               </table>
             </div>
           </div>
         </div>
 
-        <!-- TAB: DOCUMENTS -->
+        <!-- TAB 6: DOCUMENTS MANAGEMENT (PDF STORAGE UPLOAD, CATEGORIES, DELETE) -->
         <div id="tab-docs" class="admin-tab-pane">
+          <div class="panel-card">
+            <h3>Upload Official Document</h3>
+            <form id="docForm">
+              <div class="form-grid-2">
+                <div class="form-field"><label>Document / Ref Number</label><input type="text" id="docCircularNo" /></div>
+                <div class="form-field"><label>Document Date</label><input type="date" id="docDate" /></div>
+                <div class="form-field" style="grid-column: 1 / -1;">
+                  <label>Category (Matches Public Website)</label>
+                  <select id="docCategory">
+                    <option value="Mandatory Disclosure">Mandatory Disclosure</option>
+                    <option value="General Notice">General Notice</option>
+                    <option value="Exam Notice">Exam Notice</option>
+                    <option value="Rules & Regulations">Rules & Regulations</option>
+                    <option value="Committees">Committees</option>
+                    <option value="Result Analysis">Result Analysis</option>
+                    <option value="Transfer Certificate">Transfer Certificate</option>
+                    <option value="Admission Notice">Admission Notice</option>
+                    <option value="Tenders">Tenders</option>
+                    <option value="Career">Career</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-field"><label>Document Title *</label><input type="text" id="docTitle" required /></div>
+              <div class="form-field"><label>Select PDF File *</label><input type="file" id="docFile" accept="application/pdf" required /></div>
+              <button type="submit" id="saveDocBtn" class="btn-submit">Upload Document</button>
+              <p id="docStatus" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
+            </form>
+          </div>
+
           <div class="panel-card">
             <h3>Uploaded Documents List</h3>
             <div class="table-responsive">
               <table class="styled-table">
                 <thead><tr><th>Ref No</th><th>Date</th><th>Category</th><th>Title</th><th>File</th><th>Action</th></tr></thead>
-                <tbody id="docTableBody"><tr><td colspan="6" style="text-align:center;">Loading...</td></tr></tbody>
+                <tbody id="docTableBody"><tr><td colspan="6" style="text-align:center;">Loading documents...</td></tr></tbody>
               </table>
             </div>
           </div>
         </div>
 
-        <!-- TAB: NOTICE BOARD -->
+        <!-- TAB 7: NOTICE BOARD (PUBLISH NOTICES, DELETE) -->
         <div id="tab-notices" class="admin-tab-pane">
+          <div class="panel-card">
+            <h3>Publish Notice</h3>
+            <form id="noticeForm">
+              <div class="form-grid-2">
+                <div class="form-field"><label>Notice Title *</label><input type="text" id="noticeTitle" required /></div>
+                <div class="form-field"><label>Notice Date *</label><input type="date" id="noticeDate" required /></div>
+              </div>
+              <div class="form-field"><label>Notice Description *</label><textarea id="noticeBody" rows="4" required></textarea></div>
+              <button type="submit" id="saveNoticeBtn" class="btn-submit">Publish Notice</button>
+              <p id="noticeStatus" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
+            </form>
+          </div>
+
           <div class="panel-card">
             <h3>Active Notice Board</h3>
             <div class="table-responsive">
               <table class="styled-table">
                 <thead><tr><th>Date</th><th>Title</th><th>Description</th><th>Action</th></tr></thead>
-                <tbody id="noticeTableBody"><tr><td colspan="4" style="text-align:center;">Loading...</td></tr></tbody>
+                <tbody id="noticeTableBody"><tr><td colspan="4" style="text-align:center;">Loading notices...</td></tr></tbody>
               </table>
             </div>
           </div>
         </div>
 
-        <!-- TAB: PHOTO GALLERY -->
+        <!-- TAB 8: PHOTO GALLERY & CAMPUS SLIDER -->
         <div id="tab-gallery" class="admin-tab-pane">
+          <div class="panel-card">
+            <h3>Add Photo to Gallery</h3>
+            <form id="galleryForm">
+              <div class="form-field"><label>Photo Caption / Title</label><input type="text" id="photoTitle" /></div>
+              <div class="form-field"><label>Image File *</label><input type="file" id="photoFile" accept="image/*" required /></div>
+              <div class="form-field" style="flex-direction:row; align-items:center; gap:8px;">
+                <input type="checkbox" id="photoIsSlider" />
+                <label for="photoIsSlider" style="cursor:pointer; text-transform:none; font-weight:bold; color:#0b3c5d;">Feature in Homepage Slider</label>
+              </div>
+              <button type="submit" id="savePhotoBtn" class="btn-submit">Upload Photo</button>
+              <p id="photoStatus" style="margin-top: 10px; font-weight: 600; font-size: 0.9rem;"></p>
+            </form>
+          </div>
+
           <div class="panel-card">
             <h3>Uploaded Photos & Campus Slider</h3>
             <div class="table-responsive">
               <table class="styled-table">
                 <thead><tr><th>Preview</th><th>Caption</th><th>Slider Status</th><th>Action</th></tr></thead>
-                <tbody id="galleryTableBody"><tr><td colspan="4" style="text-align:center;">Loading...</td></tr></tbody>
+                <tbody id="galleryTableBody"><tr><td colspan="4" style="text-align:center;">Loading gallery...</td></tr></tbody>
               </table>
             </div>
           </div>
@@ -368,6 +679,6 @@
     </main>
   </div>
 
-  <script src="app.js?v=2.6"></script>
+  <script src="app.js?v=2.7"></script>
 </body>
 </html>
