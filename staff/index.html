@@ -16,13 +16,11 @@
       background: #f1f5f9; color: #1e293b;
     }
 
-    /* Login Box */
     .login-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; background: #f8fafc; }
     .login-card { background: #ffffff; padding: 35px 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); width: 100%; max-width: 440px; border-top: 4px solid #0b3c5d; }
     .login-card h2 { color: #0b3c5d; font-size: 1.45rem; margin-bottom: 6px; text-align: center; font-weight: 800; }
     .login-card p { color: #64748b; font-size: 0.88rem; text-align: center; margin-bottom: 22px; }
 
-    /* Main Dashboard Layout */
     .portal-wrapper { display: flex; flex-direction: column; min-height: 100vh; }
     .portal-nav {
       background: #0b3c5d; color: #ffffff; padding: 14px 30px;
@@ -35,17 +33,13 @@
 
     .portal-content { max-width: 1150px; margin: 30px auto; padding: 0 20px; width: 100%; }
 
-    /* Balance Cards */
-    .balance-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-bottom: 25px; }
-    .balance-card { background: #ffffff; border-radius: 10px; padding: 20px; border: 1px solid #e2e8f0; border-left: 5px solid #0284c7; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-    .balance-card.cl { border-left-color: #0284c7; }
-    .balance-card.el { border-left-color: #10b981; }
-    .balance-card.ml { border-left-color: #f59e0b; }
-    .balance-card .title { font-size: 0.82rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
-    .balance-card .nums { font-size: 1.7rem; font-weight: 900; color: #0b3c5d; margin: 6px 0 2px; }
+    /* Dynamic Balance Cards */
+    .balance-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 25px; }
+    .balance-card { background: #ffffff; border-radius: 10px; padding: 18px; border: 1px solid #e2e8f0; border-left: 5px solid #0284c7; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+    .balance-card .title { font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
+    .balance-card .nums { font-size: 1.6rem; font-weight: 900; color: #0b3c5d; margin: 6px 0 2px; }
     .balance-card .sub { font-size: 0.8rem; color: #475569; }
 
-    /* Card Panels */
     .panel-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 26px; margin-bottom: 25px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04); }
     .panel-card h3 { color: #0b3c5d; font-size: 1.2rem; margin-bottom: 18px; padding-bottom: 8px; border-bottom: 1px solid #f1f5f9; font-weight: 700; }
 
@@ -58,26 +52,31 @@
     .btn-submit { background: #0b3c5d; color: #ffffff; border: none; padding: 11px 24px; font-size: 0.95rem; font-weight: 700; border-radius: 6px; cursor: pointer; }
     .btn-submit:hover { background: #072a42; }
 
-    /* Tables */
     .table-responsive { overflow-x: auto; margin-top: 15px; }
-    .styled-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    .styled-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
     .styled-table th { background: #f1f5f9; color: #334155; font-weight: 700; padding: 12px 14px; border: 1px solid #e2e8f0; text-align: center; }
     .styled-table td { padding: 12px 14px; border: 1px solid #e2e8f0; color: #1e293b; text-align: center; }
     .styled-table tr:nth-child(even) { background: #f8fafc; }
 
-    .badge-status { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; }
+    .badge-status { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.76rem; font-weight: 800; text-transform: uppercase; }
     .badge-status.PENDING { background: #fef3c7; color: #b45309; }
     .badge-status.APPROVED { background: #dcfce7; color: #15803d; }
     .badge-status.REJECTED { background: #fee2e2; color: #b91c1c; }
+    .badge-status.CANCELLED { background: #e2e8f0; color: #475569; }
+    .badge-status.CURTAILED { background: #ede9fe; color: #6d28d9; }
+
+    .btn-req-cancel { background: #f97316; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; font-size: 0.78rem; font-weight: 700; cursor: pointer; }
+    .btn-req-cancel:hover { background: #ea580c; }
+    .btn-order-slip { background: #0284c7; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; font-size: 0.78rem; font-weight: 700; cursor: pointer; margin-right: 4px; }
   </style>
 </head>
 <body>
 
-  <!-- 1. STAFF LOGIN VIEW -->
+  <!-- 1. LOGIN -->
   <div id="staffLoginView" class="login-container">
     <div class="login-card">
-      <h2>Staff Portal Login</h2>
-      <p>EMRS Subdega Employee Leave System</p>
+      <h2>Staff Leave Portal</h2>
+      <p>Central Civil Services (Leave) Rules System</p>
 
       <form onsubmit="handleStaffLogin(event)">
         <div class="form-field">
@@ -90,12 +89,12 @@
     </div>
   </div>
 
-  <!-- 2. STAFF DASHBOARD & LEAVE MANAGER -->
+  <!-- 2. DASHBOARD -->
   <div id="staffDashboardView" class="portal-wrapper" style="display: none;">
     <header class="portal-nav">
       <div>
-        <h1>EMRS Subdega - Staff Portal</h1>
-        <small style="color: #93c5fd;">Logged in as: <strong id="loggedStaffName">-</strong> (<span id="loggedStaffEmpId">-</span>)</small>
+        <h1>EMRS Subdega - Staff Leave Portal</h1>
+        <small style="color: #93c5fd;">Logged in: <strong id="loggedStaffName">-</strong> (<span id="loggedStaffEmpId">-</span>)</small>
       </div>
       <div class="nav-actions">
         <button type="button" onclick="logoutStaff()" class="btn-logout">🚪 Exit</button>
@@ -103,38 +102,19 @@
     </header>
 
     <main class="portal-content">
-      <!-- Leave Balance Counters -->
-      <div class="balance-grid">
-        <div class="balance-card cl">
-          <div class="title">Casual Leave (CL)</div>
-          <div class="nums" id="clBalance">0</div>
-          <div class="sub">Remaining out of <span id="clTotal">8</span> days</div>
-        </div>
-        <div class="balance-card el">
-          <div class="title">Earned Leave (EL)</div>
-          <div class="nums" id="elBalance">0</div>
-          <div class="sub">Remaining out of <span id="elTotal">10</span> days</div>
-        </div>
-        <div class="balance-card ml">
-          <div class="title">Medical Leave (ML)</div>
-          <div class="nums" id="mlBalance">0</div>
-          <div class="sub">Remaining out of <span id="mlTotal">10</span> days</div>
-        </div>
-      </div>
+      <!-- DYNAMIC ASSIGNED LEAVE BALANCES (ONLY SHOWS WHAT IS ASSIGNED TO THIS STAFF) -->
+      <div id="dynamicBalanceGrid" class="balance-grid"></div>
 
-      <!-- Apply For Leave Form -->
+      <!-- APPLY FOR LEAVE -->
       <div class="panel-card">
-        <h3>📝 Apply for Leave</h3>
+        <h3>📝 Apply for Leave (CCS Leave Rules)</h3>
         <form id="applyLeaveForm" onsubmit="submitLeaveApplication(event)">
           <div class="form-grid-3">
             <div class="form-field">
-              <label>Leave Type *</label>
+              <label>Select Assigned Leave Type *</label>
+              <!-- DROPDOWN ONLY DISPLAYS LEAVES ASSIGNED TO THIS EMPLOYEE -->
               <select id="leaveType" required>
-                <option value="Casual Leave (CL)">Casual Leave (CL)</option>
-                <option value="Earned Leave (EL)">Earned Leave (EL)</option>
-                <option value="Medical Leave (ML)">Medical Leave (ML)</option>
-                <option value="Child Care Leave (CCL)">Child Care Leave (CCL)</option>
-                <option value="Duty Leave / OD">Duty Leave / Special OD</option>
+                <option value="">Loading your assigned leaves...</option>
               </select>
             </div>
             <div class="form-field">
@@ -149,30 +129,30 @@
 
           <div class="form-grid-2">
             <div class="form-field">
-              <label>Total Duration (Days)</label>
+              <label>Duration (Total Working Days)</label>
               <input type="number" id="leaveDays" min="1" value="1" required readonly style="background:#f8fafc;" />
             </div>
             <div class="form-field" style="justify-content: center;">
               <label style="display:flex; align-items:center; gap:8px; cursor:pointer; text-transform:none; margin-top:14px; font-weight:700; color:#0b3c5d;">
                 <input type="checkbox" id="leaveStation" style="width:18px; height:18px;" />
-                Require Station Leave Permission (Leaving Subdega Campus)
+                Station Leave Permission Required (Leaving Campus / District)
               </label>
             </div>
           </div>
 
           <div class="form-field">
-            <label>Reason for Leave *</label>
-            <textarea id="leaveReason" rows="3" placeholder="Provide reason and temporary substitute/contact details..." required></textarea>
+            <label>Detailed Ground / Reason *</label>
+            <textarea id="leaveReason" rows="3" placeholder="State reason, contact address during leave, and work arrangement..." required></textarea>
           </div>
 
-          <button type="submit" id="submitLeaveBtn" class="btn-submit">Submit Application</button>
+          <button type="submit" id="submitLeaveBtn" class="btn-submit">Submit Application to Principal</button>
           <span id="leaveSubmitStatus" style="margin-left: 14px; font-weight: 700; font-size: 0.9rem;"></span>
         </form>
       </div>
 
-      <!-- Past Applications History -->
+      <!-- MY LEAVE APPLICATIONS -->
       <div class="panel-card">
-        <h3>📜 My Leave History & Approval Status</h3>
+        <h3>📜 Leave Status, Sanctions & Reversals</h3>
         <div class="table-responsive">
           <table class="styled-table">
             <thead>
@@ -180,11 +160,11 @@
                 <th>Applied On</th>
                 <th>Type</th>
                 <th>Period</th>
-                <th>Days</th>
+                <th>Days Consumed</th>
                 <th>Station Leave</th>
-                <th>Reason</th>
                 <th>Status</th>
-                <th>Admin Remarks</th>
+                <th>Remarks / Early Joining</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody id="myLeaveHistoryBody">
@@ -198,6 +178,7 @@
 
   <script>
     var currentStaff = null;
+    var assignedLeavesList = [];
 
     function getClient() {
       var targetUrl = window.SUPABASE_URL || "https://eukhcbxrxzhpwfizoqun.supabase.co";
@@ -240,7 +221,7 @@
       var res = await sb.from('staff').select('*').eq('employee_id', empId).maybeSingle();
 
       if (res.error || !res.data) {
-        err.textContent = "Employee ID not recognized in official directory.";
+        err.textContent = "Employee ID not found in staff directory.";
         return;
       }
 
@@ -254,7 +235,7 @@
       document.getElementById('staffDashboardView').style.display = 'flex';
       document.getElementById('loggedStaffName').textContent = currentStaff.name;
       document.getElementById('loggedStaffEmpId').textContent = currentStaff.employee_id;
-      loadStaffBalances();
+      loadStaffBalancesAndTypes();
       loadStaffLeaveHistory();
     }
 
@@ -267,47 +248,78 @@
       document.getElementById('loginError').textContent = '';
     }
 
-    async function loadStaffBalances() {
+    // ONLY LOADS LEAVE TYPES ALLOCATED TO THIS EMPLOYEE
+    async function loadStaffBalancesAndTypes() {
       var sb = getClient();
       var res = await sb.from('staff_leave_balances').select('*').eq('employee_id', currentStaff.employee_id).maybeSingle();
 
-      var bal = res.data;
-      if (!bal) {
-        // Initialize default balance
-        var ins = await sb.from('staff_leave_balances').insert([{
+      var record = res.data;
+      if (!record || !record.assigned_types || record.assigned_types.length === 0) {
+        // Standard initial allocation with RH included
+        var defaultAssigned = [
+          { code: "CL", name: "Casual Leave (CL)", total: 8, used: 0 },
+          { code: "RH", name: "Restricted Holiday (RH)", total: 2, used: 0 },
+          { code: "EL", name: "Earned Leave (EL)", total: 10, used: 0 },
+          { code: "HPL", name: "Half Pay Leave (HPL)", total: 20, used: 0 }
+        ];
+        var ins = await sb.from('staff_leave_balances').upsert([{
           employee_id: currentStaff.employee_id,
           staff_name: currentStaff.name,
-          cl_total: 8, cl_used: 0,
-          el_total: 10, el_used: 0,
-          ml_total: 10, ml_used: 0
+          assigned_types: defaultAssigned
         }]).select().single();
-        bal = ins.data;
+        record = ins.data;
       }
 
-      if (bal) {
-        document.getElementById('clBalance').textContent = (bal.cl_total - bal.cl_used);
-        document.getElementById('clTotal').textContent = bal.cl_total;
+      assignedLeavesList = record.assigned_types || [];
 
-        document.getElementById('elBalance').textContent = (bal.el_total - bal.el_used);
-        document.getElementById('elTotal').textContent = bal.el_total;
+      // Render Balance cards
+      var cardCont = document.getElementById('dynamicBalanceGrid');
+      cardCont.innerHTML = assignedLeavesList.map(function(item) {
+        var rem = Math.max(0, item.total - (item.used || 0));
+        return '<div class="balance-card">' +
+          '<div class="title">' + item.name + '</div>' +
+          '<div class="nums">' + rem + '</div>' +
+          '<div class="sub">Remaining out of ' + item.total + ' days</div>' +
+        '</div>';
+      }).join('');
 
-        document.getElementById('mlBalance').textContent = (bal.ml_total - bal.ml_used);
-        document.getElementById('mlTotal').textContent = bal.ml_total;
-      }
+      // Render Dropdown options (ONLY assigned leave types)
+      var select = document.getElementById('leaveType');
+      select.innerHTML = '<option value="">-- Choose Leave --</option>' +
+        assignedLeavesList.map(function(item) {
+          var rem = Math.max(0, item.total - (item.used || 0));
+          return '<option value="' + item.name + '">' + item.name + ' (' + rem + ' days available)</option>';
+        }).join('');
     }
 
     async function submitLeaveApplication(e) {
       e.preventDefault();
       var status = document.getElementById('leaveSubmitStatus');
       var btn = document.getElementById('submitLeaveBtn');
+      var lType = document.getElementById('leaveType').value;
+
+      if (!lType) {
+        alert("Please select a leave type.");
+        return;
+      }
+
+      var days = parseInt(document.getElementById('leaveDays').value, 10);
+      var match = assignedLeavesList.find(function(x) { return x.name === lType; });
+      if (match) {
+        var rem = Math.max(0, match.total - (match.used || 0));
+        if (days > rem) {
+          if (!confirm("You have only " + rem + " days remaining for " + match.name + ". Do you still wish to submit?")) {
+            return;
+          }
+        }
+      }
+
       status.style.color = '#0284c7';
       status.textContent = 'Submitting...';
       btn.disabled = true;
 
-      var type = document.getElementById('leaveType').value;
       var start = document.getElementById('leaveStartDate').value;
       var end = document.getElementById('leaveEndDate').value;
-      var days = parseInt(document.getElementById('leaveDays').value, 10);
       var station = document.getElementById('leaveStation').checked;
       var reason = document.getElementById('leaveReason').value.trim();
 
@@ -315,10 +327,11 @@
       var ins = await sb.from('staff_leave_applications').insert([{
         employee_id: currentStaff.employee_id,
         staff_name: currentStaff.name,
-        leave_type: type,
+        leave_type: lType,
         start_date: start,
         end_date: end,
         total_days: days,
+        actual_days_taken: days,
         station_leave: station,
         reason: reason,
         status: 'PENDING'
@@ -329,13 +342,75 @@
         status.textContent = "Error: " + ins.error.message;
       } else {
         status.style.color = '#16a34a';
-        status.textContent = "Leave application submitted successfully!";
+        status.textContent = "Application submitted to Principal!";
         document.getElementById('applyLeaveForm').reset();
         document.getElementById('leaveDays').value = 1;
         loadStaffLeaveHistory();
       }
       btn.disabled = false;
     }
+
+    // REQUEST CANCELLATION FOR APPROVED LEAVE
+    window.requestCancelLeave = async function(id) {
+      var r = prompt("Reason for requesting cancellation of this leave:");
+      if (!r) return;
+
+      var sb = getClient();
+      await sb.from('staff_leave_applications')
+        .update({ cancel_requested: true, cancel_reason: r })
+        .eq('id', id);
+
+      alert("Cancellation request submitted to Principal.");
+      loadStaffLeaveHistory();
+    };
+
+    // GENERATE PRINTABLE SANCTION ORDER
+    window.printSanctionOrder = function(appJsonStr) {
+      var d = JSON.parse(decodeURIComponent(appJsonStr));
+      var orderNo = d.order_no || ('EMRS/SUB/' + new Date().getFullYear() + '/LV-' + d.id.substring(0, 5).toUpperCase());
+      var win = window.open('', '_blank');
+      win.document.write(
+        '<!DOCTYPE html><html><head><title>Sanction Order - ' + d.staff_name + '</title>' +
+        '<style>' +
+          'body { font-family: "Georgia", serif; padding: 40px; color: #1e293b; line-height: 1.6; }' +
+          '.box { border: 2px solid #0b3c5d; padding: 30px; max-width: 800px; margin: 0 auto; }' +
+          '.head { text-align: center; border-bottom: 2px solid #0b3c5d; padding-bottom: 15px; margin-bottom: 25px; }' +
+          'h2 { margin: 0; color: #0b3c5d; font-size: 1.35rem; }' +
+          'h3 { margin: 6px 0; color: #f97316; font-size: 1.1rem; }' +
+          '.memo { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 25px; font-size: 0.95rem; }' +
+          '.body-text { font-size: 1.05rem; text-align: justify; margin: 25px 0; line-height: 1.8; }' +
+          '.sign { margin-top: 60px; text-align: right; font-weight: bold; }' +
+        '</style></head><body>' +
+        '<div class="box">' +
+          '<div class="head">' +
+            '<h2>EKLAVYA MODEL RESIDENTIAL SCHOOL, SUBDEGA</h2>' +
+            '<h3>OFFICE OF THE PRINCIPAL / HEAD OF OFFICE</h3>' +
+            '<p style="margin:0; font-size:0.85rem;">Sundargarh, Odisha - 770014 | Under NESTS, Ministry of Tribal Affairs</p>' +
+          '</div>' +
+          '<div class="memo">' +
+            '<div>Office Order No: <u>' + orderNo + '</u></div>' +
+            '<div>Date: <u>' + formatDateDMY(d.reviewed_at ? d.reviewed_at.split("T")[0] : new Date().toISOString().split("T")[0]) + '</u></div>' +
+          '</div>' +
+          '<h3 style="text-align:center; text-decoration:underline;">SANCTION ORDER (LEAVE)</h3>' +
+          '<p class="body-text">' +
+            'In terms of Central Civil Services (Leave) Rules, 1972 & DoPT orders, sanction of the Principal, EMRS Subdega is hereby accorded to the grant of ' +
+            '<strong>' + d.leave_type + '</strong> for a period of <strong>' + (d.actual_days_taken || d.total_days) + ' days</strong> ' +
+            'from <strong>' + formatDateDMY(d.start_date) + '</strong> to <strong>' + formatDateDMY(d.end_date) + '</strong> ' +
+            'to <strong>' + d.staff_name.toUpperCase() + '</strong>, Employee ID: <strong>' + d.employee_id + '</strong>, ' +
+            'on the grounds of <em>"' + d.reason + '"</em>.' +
+            (d.station_leave ? '<br/><br/><strong>Station Leave Permission:</strong> Permission to leave station/headquarters during the leave period is hereby <strong>ACCORDED</strong>.' : '') +
+            (d.is_curtailed ? '<br/><br/><em>Note: The leave period stands curtailed due to early resumption of duty on ' + formatDateDMY(d.early_joining_date) + '.</em>' : '') +
+          '</p>' +
+          '<p style="font-size:0.95rem;">2. Certified that the incumbent will join the same post on expiry of leave.</p>' +
+          '<div class="sign">' +
+            'Principal / Sanctioning Authority<br/>EMRS Subdega, Sundargarh' +
+          '</div>' +
+        '</div>' +
+        '<script>window.onload = function() { window.print(); }<\/script>' +
+        '</body></html>'
+      );
+      win.document.close();
+    };
 
     async function loadStaffLeaveHistory() {
       var tbody = document.getElementById('myLeaveHistoryBody');
@@ -348,15 +423,32 @@
         if (res.data.length > 0) {
           tbody.innerHTML = res.data.map(function(app) {
             var appliedDate = app.created_at ? app.created_at.split('T')[0] : '-';
+            var daysShown = app.is_curtailed ? (app.actual_days_taken + ' (Curtailed)') : app.total_days;
+
+            var actionBtn = '';
+            if (app.status === 'APPROVED') {
+              actionBtn += '<button type="button" class="btn-order-slip" onclick="printSanctionOrder(\'' + encodeURIComponent(JSON.stringify(app)) + '\')">📄 Sanction Order</button>';
+              if (!app.cancel_requested && !app.is_curtailed) {
+                actionBtn += '<button type="button" class="btn-req-cancel" onclick="requestCancelLeave(\'' + app.id + '\')">Cancel Leave</button>';
+              } else if (app.cancel_requested) {
+                actionBtn += '<small style="color:#b45309; font-weight:bold;">Cancel Pending</small>';
+              }
+            }
+
+            var remarksDisplay = app.admin_remarks || '-';
+            if (app.is_curtailed) {
+              remarksDisplay += '<br/><small style="color:#6d28d9; font-weight:bold;">Resumed duty on ' + formatDateDMY(app.early_joining_date) + '</small>';
+            }
+
             return '<tr>' +
               '<td>' + formatDateDMY(appliedDate) + '</td>' +
               '<td><strong>' + app.leave_type + '</strong></td>' +
               '<td>' + formatDateDMY(app.start_date) + ' to ' + formatDateDMY(app.end_date) + '</td>' +
-              '<td>' + app.total_days + '</td>' +
-              '<td>' + (app.station_leave ? 'Yes (Out of Station)' : 'No') + '</td>' +
-              '<td style="text-align:left; max-width:220px;">' + app.reason + '</td>' +
-              '<td><span class="badge-status ' + app.status + '">' + app.status + '</span></td>' +
-              '<td style="text-align:left; color:#64748b;">' + (app.admin_remarks || '-') + '</td>' +
+              '<td>' + daysShown + '</td>' +
+              '<td>' + (app.station_leave ? 'Yes' : 'No') + '</td>' +
+              '<td><span class="badge-status ' + (app.is_curtailed ? 'CURTAILED' : app.status) + '">' + (app.is_curtailed ? 'CURTAILED' : app.status) + '</span></td>' +
+              '<td>' + remarksDisplay + '</td>' +
+              '<td>' + actionBtn + '</td>' +
             '</tr>';
           }).join('');
         } else {
