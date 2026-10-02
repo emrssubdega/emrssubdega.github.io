@@ -102,6 +102,7 @@ window.switchAdminTab = function(tabId, btn, updateHash) {
   if (tabId === 'tab-staff') loadAdminStaff();
   if (tabId === 'tab-institution') loadInstitutionDetails();
   if (tabId === 'tab-enquiries') loadAdminEnquiries();
+  if (tabId === 'tab-leaves') loadAdminLeaves();
 };
 
 window.applyAdminHashRoute = function() {
@@ -110,6 +111,8 @@ window.applyAdminHashRoute = function() {
     "dashboard": "tab-dashboard",
     "institution": "tab-institution",
     "campus": "tab-institution",
+    "leaves": "tab-leaves",
+    "leave-management": "tab-leaves",
     "enquiries": "tab-enquiries",
     "results": "tab-results-admin",
     "student-results": "tab-results-admin",
@@ -149,6 +152,7 @@ async function checkSession() {
 
 function loadAllAdminData() {
   loadInstitutionDetails();
+  loadAdminLeaves();
   loadAdminEnquiries();
   loadAdminStudentResults();
   loadAdminStaff();
@@ -249,7 +253,89 @@ async function loadInstitutionDetails() {
   }
 }
 
-// ---------------- RESTORED: ENQUIRIES CRUD ----------------
+// ---------------- LEAVE MANAGEMENT ENGINE ----------------
+async function loadAdminLeaves() {
+  var tbody = document.getElementById("leaveQueueTableBody");
+  var badge = document.getElementById("leavePendingBadge");
+  if (!tbody || !client) return;
+
+  var res = await client.from("staff_leave_applications").select("*").order("created_at", { ascending: false });
+  if (res.data) {
+    var pendingCount = res.data.filter(function(l) { return l.status === 'PENDING'; }).length;
+    if (badge) {
+      if (pendingCount > 0) {
+        badge.textContent = pendingCount;
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+    }
+
+    if (res.data.length > 0) {
+      tbody.innerHTML = res.data.map(function(l) {
+        var appliedDate = l.created_at ? l.created_at.split('T')[0] : '-';
+        var actionBtns = (l.status === 'PENDING')
+          ? '<button type="button" class="btn-approve" onclick="processLeave(\'' + l.id + '\', \'APPROVED\', \'' + l.employee_id + '\', \'' + l.leave_type + '\', ' + l.total_days + ')">Approve</button>' +
+            '<button type="button" class="btn-reject" onclick="processLeave(\'' + l.id + '\', \'REJECTED\')">Reject</button>'
+          : '<button type="button" class="btn-delete" onclick="deleteLeaveRecord(\'' + l.id + '\')">Delete</button>';
+
+        return '<tr>' +
+          '<td>' + formatDateDMY(appliedDate) + '</td>' +
+          '<td><strong>' + l.staff_name + '</strong></td>' +
+          '<td>' + l.employee_id + '</td>' +
+          '<td>' + l.leave_type + '</td>' +
+          '<td>' + formatDateDMY(l.start_date) + ' to ' + formatDateDMY(l.end_date) + ' (' + l.total_days + 'd)</td>' +
+          '<td>' + (l.station_leave ? 'Yes' : 'No') + '</td>' +
+          '<td style="text-align:left; max-width:200px;">' + l.reason + '</td>' +
+          '<td><span class="badge-status ' + l.status + '">' + l.status + '</span></td>' +
+          '<td>' + actionBtns + '</td>' +
+        '</tr>';
+      }).join("");
+    } else {
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #64748b;">No leave applications submitted.</td></tr>';
+    }
+  }
+}
+
+window.processLeave = async function(id, action, empId, leaveType, days) {
+  var remarks = prompt("Enter remarks (Optional):", action === "APPROVED" ? "Approved" : "Rejected");
+  if (remarks === null) return;
+
+  var upd = await client.from("staff_leave_applications")
+    .update({ status: action, admin_remarks: remarks, reviewed_at: new Date().toISOString() })
+    .eq("id", id);
+
+  if (upd.error) {
+    alert("Error updating leave: " + upd.error.message);
+    return;
+  }
+
+  // Deduct from balance if approved
+  if (action === "APPROVED" && empId && leaveType && days) {
+    var balRes = await client.from("staff_leave_balances").select("*").eq("employee_id", empId).maybeSingle();
+    if (balRes.data) {
+      var bal = balRes.data;
+      var patch = {};
+      if (leaveType.includes("Casual")) patch.cl_used = (bal.cl_used || 0) + days;
+      else if (leaveType.includes("Earned")) patch.el_used = (bal.el_used || 0) + days;
+      else if (leaveType.includes("Medical")) patch.ml_used = (bal.ml_used || 0) + days;
+
+      if (Object.keys(patch).length > 0) {
+        await client.from("staff_leave_balances").update(patch).eq("employee_id", empId);
+      }
+    }
+  }
+
+  loadAdminLeaves();
+};
+
+window.deleteLeaveRecord = async function(id) {
+  if (!confirm("Delete this leave record?")) return;
+  await client.from("staff_leave_applications").delete().eq("id", id);
+  loadAdminLeaves();
+};
+
+// ---------------- ENQUIRIES CRUD ----------------
 async function loadAdminEnquiries() {
   var tbody = document.getElementById("enquiryTableBody");
   var badge = document.getElementById("enquiryCountBadge");
@@ -269,9 +355,8 @@ async function loadAdminEnquiries() {
     if (res.data.length > 0) {
       tbody.innerHTML = res.data.map(function(enq) {
         var rawDate = enq.created_at ? enq.created_at.split('T')[0] : '-';
-        var dmyDate = formatDateDMY(rawDate);
         return '<tr>' +
-          '<td>' + dmyDate + '</td>' +
+          '<td>' + formatDateDMY(rawDate) + '</td>' +
           '<td><strong>' + (enq.name || '') + '</strong></td>' +
           '<td><a href="tel:' + (enq.phone || '') + '" style="color:#0284c7; text-decoration:none; font-weight:600;">' + (enq.phone || '') + '</a></td>' +
           '<td>' + (enq.email ? '<a href="mailto:' + enq.email + '" style="color:#0284c7;">' + enq.email + '</a>' : '-') + '</td>' +
