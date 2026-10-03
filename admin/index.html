@@ -161,7 +161,7 @@
           <div class="sidebar-btn-content"><span>📢</span> Notice Board</div>
         </button>
         <button type="button" class="sidebar-btn" onclick="switchAdminTab('tab-gallery', this)">
-          <div class="sidebar-btn-content"><span>🖼️</span> Photo Gallery</div>
+          <div class="sidebar-btn-content"><span>🖼️️</span> Photo Gallery</div>
         </button>
       </nav>
     </aside>
@@ -256,6 +256,66 @@
         <!-- TAB 2: LEAVE MANAGEMENT -->
         <div id="tab-leaves" class="admin-tab-pane">
           
+          <!-- 1. ANNUAL ROLLOVER & LEAVE BALANCE ADJUSTER (CCS RULES 11, 26 & 28) -->
+          <div class="panel-card" style="border-top: 4px solid #10b981; background: #f0fdf4;">
+            <h3>
+              <span>🔄 Annual Leave Rollover & Credit Editor (Year-End Carry Forward)</span>
+              <span style="font-size:0.8rem; background:#bbf7d0; color:#166534; padding:3px 8px; border-radius:4px;">CCS Rules Compliant</span>
+            </h3>
+            <p style="color: #475569; font-size: 0.88rem; margin-bottom: 14px;">
+              <strong>Rule 11:</strong> Unused CL & RH lapse on 31 Dec (reset to fresh quota). 
+              <strong>Rule 26 & 28:</strong> Unused EL (max 300 days) and HPL carry forward and add to the new year credit. You can review and manually adjust balances before confirming.
+            </p>
+
+            <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:16px;">
+              <div class="form-field" style="margin-bottom:0; min-width:220px;">
+                <label>Select Staff Member</label>
+                <select id="rolloverStaffSelect" onchange="loadEmployeeForRollover(this.value)">
+                  <option value="">-- Choose Employee to Adjust --</option>
+                </select>
+              </div>
+              <div class="form-field" style="margin-bottom:0; width:130px;">
+                <label>Target Year</label>
+                <input type="number" id="rolloverYearInput" value="2027" />
+              </div>
+            </div>
+
+            <!-- Individual Employee Balance Review & Edit Grid -->
+            <div id="rolloverEditorContainer" style="display:none; background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; padding:16px; margin-bottom:16px;">
+              <h4 style="color:#0b3c5d; margin-bottom:12px; font-size:0.95rem;">Review & Edit Balances for <span id="rolloverStaffNameBadge" style="text-decoration:underline;">-</span></h4>
+              <div class="table-responsive">
+                <table class="styled-table" style="font-size:0.85rem;">
+                  <thead>
+                    <tr>
+                      <th>Leave Type</th>
+                      <th>Rule Behavior</th>
+                      <th>Current Used</th>
+                      <th>Unused Balance</th>
+                      <th>Carried Forward</th>
+                      <th>New Credit</th>
+                      <th>Total New Balance</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rolloverTableBody"></tbody>
+                </table>
+              </div>
+              <div style="margin-top:14px; display:flex; gap:10px; align-items:center;">
+                <button type="button" onclick="saveIndividualRollover()" class="btn-submit" style="background:#16a34a;">
+                  💾 Apply & Save Rollover for Employee
+                </button>
+                <span id="rolloverStatusMsg" style="font-weight:700; font-size:0.88rem;"></span>
+              </div>
+            </div>
+
+            <div style="padding-top:12px; border-top:1px dashed #cbd5e1; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+              <small style="color:#64748b;">Want to rollover all employees at once using standard CCS formula?</small>
+              <button type="button" onclick="runBatchRolloverForAll()" class="btn-submit" style="background:#0f766e; padding:8px 16px; font-size:0.85rem;">
+                ⚡ Run Batch Rollover for All Staff
+              </button>
+            </div>
+          </div>
+
+          <!-- 2. ASSIGN LEAVE TOOL (TAILORED QUOTAS & ENTITLEMENTS) -->
           <div class="panel-card" style="border-top: 4px solid #0284c7; background: #f0f9ff;">
             <h3>
               <span>⚙️ Assign Leave Types & Annual Quotas (CCS Rules & RH)</span>
@@ -285,6 +345,7 @@
             </form>
           </div>
 
+          <!-- 3. LEAVE APPLICATIONS & REVERSAL QUEUE -->
           <div class="panel-card" style="border-top: 4px solid #0b3c5d;">
             <h3>
               <span>📋 Applications, Cancellations & Early Joining Queue</span>
@@ -339,7 +400,7 @@
           </div>
         </div>
 
-        <!-- TAB 4: STUDENT RESULTS (FULL CRUD + DYNAMIC SUBJECT BUILDER + CSV + PROMOTION) -->
+        <!-- TAB 4: STUDENT RESULTS -->
         <div id="tab-results-admin" class="admin-tab-pane">
           
           <div class="panel-card" style="border-top: 4px solid #0284c7; background: #f0f9ff;">
@@ -519,7 +580,7 @@
 
         </div>
 
-        <!-- TAB 5: STAFF MANAGEMENT (UPLOAD, PHOTO, CATEGORY, 40 DESIGNATIONS, EDIT, DELETE) -->
+        <!-- TAB 5: STAFF MANAGEMENT -->
         <div id="tab-staff" class="admin-tab-pane">
           <div class="panel-card" id="staffFormPanel">
             <h3 id="staffFormModeTitle">Add New Staff Member</h3>
@@ -580,7 +641,7 @@
           </div>
         </div>
 
-        <!-- TAB 6: DOCUMENTS MANAGEMENT (PDF STORAGE UPLOAD, CATEGORIES, DELETE) -->
+        <!-- TAB 6: DOCUMENTS MANAGEMENT -->
         <div id="tab-docs" class="admin-tab-pane">
           <div class="panel-card">
             <h3>Upload Official Document</h3>
@@ -622,7 +683,7 @@
           </div>
         </div>
 
-        <!-- TAB 7: NOTICE BOARD (PUBLISH NOTICES, DELETE) -->
+        <!-- TAB 7: NOTICE BOARD -->
         <div id="tab-notices" class="admin-tab-pane">
           <div class="panel-card">
             <h3>Publish Notice</h3>
@@ -679,6 +740,6 @@
     </main>
   </div>
 
-  <script src="app.js?v=2.8"></script>
+  <script src="app.js?v=3.0"></script>
 </body>
 </html>
