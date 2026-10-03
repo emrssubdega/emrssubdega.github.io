@@ -41,7 +41,7 @@
     .balance-card .sub { font-size: 0.8rem; color: #475569; }
 
     .panel-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 26px; margin-bottom: 25px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04); }
-    .panel-card h3 { color: #0b3c5d; font-size: 1.2rem; margin-bottom: 18px; padding-bottom: 8px; border-bottom: 1px solid #f1f5f9; font-weight: 700; }
+    .panel-card h3 { color: #0b3c5d; font-size: 1.2rem; margin-bottom: 18px; padding-bottom: 8px; border-bottom: 1px solid #f1f5f9; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
 
     .form-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
     .form-grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
@@ -51,6 +51,15 @@
     .form-field input:focus, .form-field select:focus, .form-field textarea:focus { border-color: #0b3c5d; }
     .btn-submit { background: #0b3c5d; color: #ffffff; border: none; padding: 11px 24px; font-size: 0.95rem; font-weight: 700; border-radius: 6px; cursor: pointer; }
     .btn-submit:hover { background: #072a42; }
+
+    /* Segment Card Styling */
+    .leave-segment-row {
+      background: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid #0284c7;
+      border-radius: 8px; padding: 14px 16px; margin-bottom: 12px;
+      display: grid; grid-template-columns: 2fr 1.5fr 1.5fr 1.2fr auto; gap: 12px; align-items: flex-end;
+    }
+    .btn-remove-seg { background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    .btn-add-seg { background: #e0f2fe; color: #0284c7; border: 1px dashed #0284c7; padding: 8px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 15px; }
 
     .table-responsive { overflow-x: auto; margin-top: 15px; }
     .styled-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
@@ -68,6 +77,7 @@
     .btn-req-cancel { background: #f97316; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; font-size: 0.78rem; font-weight: 700; cursor: pointer; }
     .btn-req-cancel:hover { background: #ea580c; }
     .btn-order-slip { background: #0284c7; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; font-size: 0.78rem; font-weight: 700; cursor: pointer; margin-right: 4px; }
+    .rule-note { background: #fffbeb; border: 1px solid #fef3c7; color: #92400e; padding: 10px 14px; border-radius: 6px; font-size: 0.84rem; margin-bottom: 16px; }
   </style>
 </head>
 <body>
@@ -76,7 +86,7 @@
   <div id="staffLoginView" class="login-container">
     <div class="login-card">
       <h2>Staff Leave Portal</h2>
-      <p>Central Civil Services (Leave) Rules System</p>
+      <p>CCS (Leave) Rules, 1972 Compliant System</p>
 
       <form onsubmit="handleStaffLogin(event)">
         <div class="form-field">
@@ -102,68 +112,97 @@
     </header>
 
     <main class="portal-content">
-      <!-- DYNAMIC ASSIGNED LEAVE BALANCES (ONLY SHOWS WHAT IS ASSIGNED TO THIS STAFF) -->
+      <!-- Dynamic Balances Grid -->
       <div id="dynamicBalanceGrid" class="balance-grid"></div>
 
       <!-- APPLY FOR LEAVE -->
       <div class="panel-card">
-        <h3>📝 Apply for Leave (CCS Leave Rules)</h3>
+        <h3>
+          <span>📝 Apply for Leave (Combination & Half-Day Support)</span>
+          <span style="font-size: 0.8rem; background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 4px;">CCS Rules Compliant</span>
+        </h3>
+
+        <div class="rule-note">
+          ⚖️ <strong>CCS Leave Rules Summary:</strong><br/>
+          • <strong>CL Combination Rule (Rule 11):</strong> Casual Leave (CL) can ONLY be combined with <em>Restricted Holiday (RH)</em> or <em>Special Casual Leave (SCL)</em>. CL cannot be combined with EL, HPL, Commuted, or Maternity leave.<br/>
+          • <strong>Regular Leaves (Rule 22):</strong> EL, HPL, Commuted Leave, and Maternity/Paternity/CCL may be combined together.<br/>
+          • <strong>Holidays in CL:</strong> Sundays & official closed holidays falling within a period of CL are not counted as leave.
+        </div>
+
         <form id="applyLeaveForm" onsubmit="submitLeaveApplication(event)">
-          <div class="form-grid-3">
-            <div class="form-field">
-              <label>Select Assigned Leave Type *</label>
-              <!-- DROPDOWN ONLY DISPLAYS LEAVES ASSIGNED TO THIS EMPLOYEE -->
-              <select id="leaveType" required>
-                <option value="">Loading your assigned leaves...</option>
-              </select>
-            </div>
-            <div class="form-field">
-              <label>Start Date *</label>
-              <input type="date" id="leaveStartDate" onchange="calculateDays()" required />
-            </div>
-            <div class="form-field">
-              <label>End Date *</label>
-              <input type="date" id="leaveEndDate" onchange="calculateDays()" required />
+          
+          <label style="font-weight: 800; color: #0b3c5d; font-size: 0.88rem; text-transform: uppercase; margin-bottom: 6px; display: block;">
+            Leave Date Segments (Apply Single or Combinations like CL + RH, EL + HPL):
+          </label>
+          
+          <div id="segmentsContainer"></div>
+
+          <button type="button" onclick="addLeaveSegment()" class="btn-add-seg">
+            ➕ Add Combined Leave Segment
+          </button>
+
+          <!-- Intervening Holiday & Half Day Settings for CL -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+            <div class="form-grid-2">
+              <div class="form-field" style="margin-bottom:0;">
+                <label>Intervening Sundays / Closed Holidays to Exclude (for CL only)</label>
+                <input type="number" id="interveningHolidaysInput" min="0" value="0" onchange="recalculateTotalDays()" placeholder="Count of Sundays/Gazetted holidays during period" />
+                <small style="color:#64748b;">(Sundays & Holidays falling in CL period are NOT counted as leave)</small>
+              </div>
+              <div class="form-field" style="margin-bottom:0;">
+                <label>Calculated Net Working Days Consumed</label>
+                <input type="text" id="calculatedTotalDays" value="1.0" readonly style="font-weight:900; background:#fff; color:#0b3c5d; font-size:1.1rem;" />
+              </div>
             </div>
           </div>
 
-          <div class="form-grid-2">
-            <div class="form-field">
-              <label>Duration (Total Working Days)</label>
-              <input type="number" id="leaveDays" min="1" value="1" required readonly style="background:#f8fafc;" />
+          <!-- Prefix & Suffix Options (Rule 12) -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+            <h4 style="font-size:0.9rem; color:#0b3c5d; margin-bottom:10px;">Optional Prefix & Suffix of Holidays (Rule 12):</h4>
+            <div class="form-grid-2">
+              <div class="form-field">
+                <label>Prefix Holidays (Holidays immediately preceding leave)</label>
+                <input type="text" id="prefixDetails" placeholder="e.g. Sunday, 15-Oct-2026" />
+              </div>
+              <div class="form-field">
+                <label>Suffix Holidays (Holidays immediately succeeding leave)</label>
+                <input type="text" id="suffixDetails" placeholder="e.g. Dussehra & Sunday, 24 to 25-Oct-2026" />
+              </div>
             </div>
-            <div class="form-field" style="justify-content: center;">
-              <label style="display:flex; align-items:center; gap:8px; cursor:pointer; text-transform:none; margin-top:14px; font-weight:700; color:#0b3c5d;">
-                <input type="checkbox" id="leaveStation" style="width:18px; height:18px;" />
-                Station Leave Permission Required (Leaving Campus / District)
-              </label>
-            </div>
+          </div>
+
+          <!-- Station Leave & Reason -->
+          <div class="form-field">
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; text-transform:none; font-weight:700; color:#0b3c5d;">
+              <input type="checkbox" id="leaveStation" style="width:18px; height:18px;" />
+              Permission to Leave Headquarters / Station Required (Leaving Subdega Campus)
+            </label>
           </div>
 
           <div class="form-field">
-            <label>Detailed Ground / Reason *</label>
-            <textarea id="leaveReason" rows="3" placeholder="State reason, contact address during leave, and work arrangement..." required></textarea>
+            <label>Detailed Grounds / Reason *</label>
+            <textarea id="leaveReason" rows="3" placeholder="Provide ground of leave, address during leave, and substitute arrangement..." required></textarea>
           </div>
 
-          <button type="submit" id="submitLeaveBtn" class="btn-submit">Submit Application to Principal</button>
+          <button type="submit" id="submitLeaveBtn" class="btn-submit">Submit Application</button>
           <span id="leaveSubmitStatus" style="margin-left: 14px; font-weight: 700; font-size: 0.9rem;"></span>
         </form>
       </div>
 
       <!-- MY LEAVE APPLICATIONS -->
       <div class="panel-card">
-        <h3>📜 Leave Status, Sanctions & Reversals</h3>
+        <h3>📜 Leave Applications, Combinations & Sanctions</h3>
         <div class="table-responsive">
           <table class="styled-table">
             <thead>
               <tr>
                 <th>Applied On</th>
-                <th>Type</th>
+                <th>Leave / Combination</th>
                 <th>Period</th>
-                <th>Days Consumed</th>
+                <th>Net Days</th>
+                <th>Prefix / Suffix</th>
                 <th>Station Leave</th>
                 <th>Status</th>
-                <th>Remarks / Early Joining</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -179,6 +218,7 @@
   <script>
     var currentStaff = null;
     var assignedLeavesList = [];
+    var leaveSegments = [];
 
     function getClient() {
       var targetUrl = window.SUPABASE_URL || "https://eukhcbxrxzhpwfizoqun.supabase.co";
@@ -191,24 +231,6 @@
       var parts = dateStr.split('-');
       if (parts.length === 3) return parts[2] + '-' + parts[1] + '-' + parts[0];
       return dateStr;
-    }
-
-    function calculateDays() {
-      var s = document.getElementById('leaveStartDate').value;
-      var e = document.getElementById('leaveEndDate').value;
-      if (!s || !e) return;
-
-      var start = new Date(s);
-      var end = new Date(e);
-      if (end < start) {
-        alert("End Date cannot be earlier than Start Date.");
-        document.getElementById('leaveEndDate').value = s;
-        document.getElementById('leaveDays').value = 1;
-        return;
-      }
-      var diffTime = Math.abs(end - start);
-      var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-      document.getElementById('leaveDays').value = diffDays;
     }
 
     async function handleStaffLogin(e) {
@@ -248,14 +270,12 @@
       document.getElementById('loginError').textContent = '';
     }
 
-    // ONLY LOADS LEAVE TYPES ALLOCATED TO THIS EMPLOYEE
     async function loadStaffBalancesAndTypes() {
       var sb = getClient();
       var res = await sb.from('staff_leave_balances').select('*').eq('employee_id', currentStaff.employee_id).maybeSingle();
 
       var record = res.data;
       if (!record || !record.assigned_types || record.assigned_types.length === 0) {
-        // Standard initial allocation with RH included
         var defaultAssigned = [
           { code: "CL", name: "Casual Leave (CL)", total: 8, used: 0 },
           { code: "RH", name: "Restricted Holiday (RH)", total: 2, used: 0 },
@@ -266,7 +286,7 @@
           employee_id: currentStaff.employee_id,
           staff_name: currentStaff.name,
           assigned_types: defaultAssigned
-        }]).select().single();
+        }], { onConflict: 'employee_id' }).select().single();
         record = ins.data;
       }
 
@@ -275,7 +295,7 @@
       // Render Balance cards
       var cardCont = document.getElementById('dynamicBalanceGrid');
       cardCont.innerHTML = assignedLeavesList.map(function(item) {
-        var rem = Math.max(0, item.total - (item.used || 0));
+        var rem = Math.max(0, (item.total || 0) - (item.used || 0));
         return '<div class="balance-card">' +
           '<div class="title">' + item.name + '</div>' +
           '<div class="nums">' + rem + '</div>' +
@@ -283,55 +303,237 @@
         '</div>';
       }).join('');
 
-      // Render Dropdown options (ONLY assigned leave types)
-      var select = document.getElementById('leaveType');
-      select.innerHTML = '<option value="">-- Choose Leave --</option>' +
-        assignedLeavesList.map(function(item) {
-          var rem = Math.max(0, item.total - (item.used || 0));
-          return '<option value="' + item.name + '">' + item.name + ' (' + rem + ' days available)</option>';
+      // Initialize with 1 default segment row
+      initSegments();
+    }
+
+    // ---------------- MULTI-SEGMENT & CCS VALIDATION ENGINE ----------------
+    function initSegments() {
+      var container = document.getElementById('segmentsContainer');
+      container.innerHTML = '';
+      leaveSegments = [];
+      addLeaveSegment();
+    }
+
+    window.addLeaveSegment = function() {
+      var idx = leaveSegments.length;
+      var today = new Date().toISOString().split('T')[0];
+
+      var segObj = {
+        id: idx,
+        leaveType: (assignedLeavesList[0] ? assignedLeavesList[0].name : "Casual Leave (CL)"),
+        startDate: today,
+        endDate: today,
+        isHalfDay: false,
+        halfDaySession: 'FN',
+        days: 1.0
+      };
+      leaveSegments.push(segObj);
+      renderSegmentsDOM();
+      recalculateTotalDays();
+    };
+
+    window.removeSegment = function(idx) {
+      if (leaveSegments.length <= 1) {
+        alert("At least one leave segment is required.");
+        return;
+      }
+      leaveSegments.splice(idx, 1);
+      renderSegmentsDOM();
+      recalculateTotalDays();
+    };
+
+    function renderSegmentsDOM() {
+      var container = document.getElementById('segmentsContainer');
+      container.innerHTML = leaveSegments.map(function(seg, i) {
+        var optionsHtml = assignedLeavesList.map(function(item) {
+          var sel = (item.name === seg.leaveType) ? 'selected' : '';
+          return '<option value="' + item.name + '" ' + sel + '>' + item.name + '</option>';
         }).join('');
+
+        var isCL = seg.leaveType.indexOf('Casual Leave') !== -1;
+
+        return '<div class="leave-segment-row" id="seg-row-' + i + '">' +
+          '<div>' +
+            '<label style="font-size:0.75rem; font-weight:700; color:#64748b;">TYPE</label>' +
+            '<select onchange="updateSegmentType(' + i + ', this.value)" style="width:100%; padding:8px; border-radius:5px; border:1px solid #cbd5e1;">' +
+              optionsHtml +
+            '</select>' +
+          '</div>' +
+          '<div>' +
+            '<label style="font-size:0.75rem; font-weight:700; color:#64748b;">START DATE</label>' +
+            '<input type="date" value="' + seg.startDate + '" onchange="updateSegmentDates(' + i + ', \'start\', this.value)" style="width:100%; padding:8px; border-radius:5px; border:1px solid #cbd5e1;" required />' +
+          '</div>' +
+          '<div>' +
+            '<label style="font-size:0.75rem; font-weight:700; color:#64748b;">END DATE</label>' +
+            '<input type="date" value="' + seg.endDate + '" onchange="updateSegmentDates(' + i + ', \'end\', this.value)" style="width:100%; padding:8px; border-radius:5px; border:1px solid #cbd5e1;" required />' +
+          '</div>' +
+          '<div>' +
+            '<label style="font-size:0.75rem; font-weight:700; color:#64748b;">HALF-DAY (CL)</label>' +
+            '<select onchange="updateSegmentHalfDay(' + i + ', this.value)" ' + (isCL ? '' : 'disabled') + ' style="width:100%; padding:8px; border-radius:5px; border:1px solid #cbd5e1;">' +
+              '<option value="FULL" ' + (!seg.isHalfDay ? 'selected' : '') + '>Full Day</option>' +
+              '<option value="FN" ' + (seg.isHalfDay && seg.halfDaySession === 'FN' ? 'selected' : '') + '>0.5 Day (First Half - FN)</option>' +
+              '<option value="AN" ' + (seg.isHalfDay && seg.halfDaySession === 'AN' ? 'selected' : '') + '>0.5 Day (Second Half - AN)</option>' +
+            '</select>' +
+          '</div>' +
+          '<div>' +
+            '<button type="button" onclick="removeSegment(' + i + ')" class="btn-remove-sub" title="Remove Segment">✕</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    window.updateSegmentType = function(i, val) {
+      leaveSegments[i].leaveType = val;
+      if (val.indexOf('Casual Leave') === -1) {
+        leaveSegments[i].isHalfDay = false;
+      }
+      renderSegmentsDOM();
+      recalculateTotalDays();
+    };
+
+    window.updateSegmentDates = function(i, which, val) {
+      if (which === 'start') leaveSegments[i].startDate = val;
+      if (which === 'end') leaveSegments[i].endDate = val;
+
+      if (new Date(leaveSegments[i].endDate) < new Date(leaveSegments[i].startDate)) {
+        alert("End Date cannot be earlier than Start Date.");
+        leaveSegments[i].endDate = leaveSegments[i].startDate;
+      }
+      renderSegmentsDOM();
+      recalculateTotalDays();
+    };
+
+    window.updateSegmentHalfDay = function(i, val) {
+      if (val === 'FULL') {
+        leaveSegments[i].isHalfDay = false;
+      } else {
+        leaveSegments[i].isHalfDay = true;
+        leaveSegments[i].halfDaySession = val;
+        // For half day, end date must match start date
+        leaveSegments[i].endDate = leaveSegments[i].startDate;
+      }
+      renderSegmentsDOM();
+      recalculateTotalDays();
+    };
+
+    window.recalculateTotalDays = function() {
+      var total = 0;
+      var clDaysCount = 0;
+
+      leaveSegments.forEach(function(s) {
+        if (s.isHalfDay) {
+          s.days = 0.5;
+          clDaysCount += 0.5;
+          total += 0.5;
+        } else {
+          var d1 = new Date(s.startDate);
+          var d2 = new Date(s.endDate);
+          var diff = Math.max(0, Math.ceil((d2 - d1) / (1000 * 60 * 60 * 24))) + 1;
+          s.days = diff;
+          total += diff;
+          if (s.leaveType.indexOf('Casual Leave') !== -1) {
+            clDaysCount += diff;
+          }
+        }
+      });
+
+      // Deduct intervening Sundays & holidays only from Casual Leave (Rule 11)
+      var intervening = parseInt(document.getElementById('interveningHolidaysInput').value || 0, 10);
+      if (intervening > 0) {
+        if (clDaysCount >= intervening) {
+          total = total - intervening;
+        } else {
+          alert("Intervening holidays cannot exceed the duration of Casual Leave.");
+          document.getElementById('interveningHolidaysInput').value = 0;
+        }
+      }
+
+      document.getElementById('calculatedTotalDays').value = total.toFixed(1) + " Day(s)";
+    };
+
+    // ---------------- STRICT CCS COMBINATION VALIDATOR ----------------
+    function validateCCSCombination(segments) {
+      var types = segments.map(function(s) { return s.leaveType; });
+      var hasCL = types.some(function(t) { return t.indexOf('Casual Leave') !== -1; });
+      var hasRH = types.some(function(t) { return t.indexOf('Restricted') !== -1; });
+      var hasSCL = types.some(function(t) { return t.indexOf('Special Casual') !== -1; });
+      var hasRegular = types.some(function(t) {
+        return t.indexOf('Earned') !== -1 || t.indexOf('Half Pay') !== -1 ||
+               t.indexOf('Commuted') !== -1 || t.indexOf('Maternity') !== -1 ||
+               t.indexOf('Paternity') !== -1 || t.indexOf('Child Care') !== -1 ||
+               t.indexOf('Study') !== -1 || t.indexOf('Extraordinary') !== -1;
+      });
+
+      // Rule 11: CL cannot be combined with EL, HPL, Commuted, etc.
+      if (hasCL && hasRegular) {
+        return {
+          valid: false,
+          msg: "CCS Leave Rule 11 Violation: Casual Leave (CL) CANNOT be combined with any regular leave (Earned Leave, Half Pay Leave, Medical, or Child Care Leave). CL may only be combined with Restricted Holiday (RH) or Special Casual Leave (SCL)."
+        };
+      }
+
+      // RH cannot be combined with regular leaves
+      if (hasRH && hasRegular) {
+        return {
+          valid: false,
+          msg: "DoPT Rule Violation: Restricted Holiday (RH) can only be prefixed, suffixed, or combined with Casual Leave (CL). It cannot be combined with regular leaves like EL or HPL."
+        };
+      }
+
+      return { valid: true };
     }
 
     async function submitLeaveApplication(e) {
       e.preventDefault();
       var status = document.getElementById('leaveSubmitStatus');
       var btn = document.getElementById('submitLeaveBtn');
-      var lType = document.getElementById('leaveType').value;
 
-      if (!lType) {
-        alert("Please select a leave type.");
+      if (leaveSegments.length === 0) {
+        alert("Please specify at least one leave segment.");
         return;
       }
 
-      var days = parseInt(document.getElementById('leaveDays').value, 10);
-      var match = assignedLeavesList.find(function(x) { return x.name === lType; });
-      if (match) {
-        var rem = Math.max(0, match.total - (match.used || 0));
-        if (days > rem) {
-          if (!confirm("You have only " + rem + " days remaining for " + match.name + ". Do you still wish to submit?")) {
-            return;
-          }
-        }
+      // Check CCS Combination Rules
+      var validation = validateCCSCombination(leaveSegments);
+      if (!validation.valid) {
+        alert(validation.msg);
+        return;
       }
 
-      status.style.color = '#0284c7';
-      status.textContent = 'Submitting...';
-      btn.disabled = true;
-
-      var start = document.getElementById('leaveStartDate').value;
-      var end = document.getElementById('leaveEndDate').value;
+      // Recalculate total
+      recalculateTotalDays();
+      var totalDays = parseFloat(document.getElementById('calculatedTotalDays').value);
+      var intervening = parseInt(document.getElementById('interveningHolidaysInput').value || 0, 10);
+      var prefix = document.getElementById('prefixDetails').value.trim();
+      var suffix = document.getElementById('suffixDetails').value.trim();
       var station = document.getElementById('leaveStation').checked;
       var reason = document.getElementById('leaveReason').value.trim();
+
+      // Consolidated type label (e.g. "Casual Leave (CL) + Restricted Holiday (RH)")
+      var typeLabels = Array.from(new Set(leaveSegments.map(function(s) { return s.leaveType; }))).join(" + ");
+      var overallStart = leaveSegments[0].startDate;
+      var overallEnd = leaveSegments[leaveSegments.length - 1].endDate;
+
+      status.style.color = '#0284c7';
+      status.textContent = 'Submitting to Principal...';
+      btn.disabled = true;
 
       var sb = getClient();
       var ins = await sb.from('staff_leave_applications').insert([{
         employee_id: currentStaff.employee_id,
         staff_name: currentStaff.name,
-        leave_type: lType,
-        start_date: start,
-        end_date: end,
-        total_days: days,
-        actual_days_taken: days,
+        leave_type: typeLabels,
+        start_date: overallStart,
+        end_date: overallEnd,
+        total_days: totalDays,
+        actual_days_taken: totalDays,
+        segments: leaveSegments,
+        is_half_day: (leaveSegments.length === 1 && leaveSegments[0].isHalfDay),
+        half_day_session: (leaveSegments.length === 1 && leaveSegments[0].isHalfDay ? leaveSegments[0].halfDaySession : ''),
+        prefix_details: prefix,
+        suffix_details: suffix,
+        intervening_holidays: intervening,
         station_leave: station,
         reason: reason,
         status: 'PENDING'
@@ -342,32 +544,34 @@
         status.textContent = "Error: " + ins.error.message;
       } else {
         status.style.color = '#16a34a';
-        status.textContent = "Application submitted to Principal!";
+        status.textContent = "Leave application submitted successfully!";
         document.getElementById('applyLeaveForm').reset();
-        document.getElementById('leaveDays').value = 1;
+        document.getElementById('prefixDetails').value = '';
+        document.getElementById('suffixDetails').value = '';
+        document.getElementById('interveningHolidaysInput').value = 0;
+        initSegments();
         loadStaffLeaveHistory();
       }
       btn.disabled = false;
     }
 
-    // REQUEST CANCELLATION FOR APPROVED LEAVE
-    window.requestCancelLeave = async function(id) {
-      var r = prompt("Reason for requesting cancellation of this leave:");
-      if (!r) return;
-
-      var sb = getClient();
-      await sb.from('staff_leave_applications')
-        .update({ cancel_requested: true, cancel_reason: r })
-        .eq('id', id);
-
-      alert("Cancellation request submitted to Principal.");
-      loadStaffLeaveHistory();
-    };
-
-    // GENERATE PRINTABLE SANCTION ORDER
+    // PRINT SANCTION ORDER (Includes Segment Breakdown & Prefix/Suffix)
     window.printSanctionOrder = function(appJsonStr) {
       var d = JSON.parse(decodeURIComponent(appJsonStr));
       var orderNo = d.order_no || ('EMRS/SUB/' + new Date().getFullYear() + '/LV-' + d.id.substring(0, 5).toUpperCase());
+
+      var segLines = (d.segments && d.segments.length > 0)
+        ? d.segments.map(function(s) {
+            var h = s.isHalfDay ? ' (Half Day - ' + s.halfDaySession + ')' : '';
+            return '<li><strong>' + s.leaveType + '</strong>: ' + formatDateDMY(s.startDate) + ' to ' + formatDateDMY(s.endDate) + ' (' + s.days + ' day' + (s.days > 1 ? 's' : '') + h + ')</li>';
+          }).join('')
+        : '<li><strong>' + d.leave_type + '</strong>: ' + formatDateDMY(d.start_date) + ' to ' + formatDateDMY(d.end_date) + ' (' + d.total_days + ' days)</li>';
+
+      var prefixSuffixHtml = '';
+      if (d.prefix_details) prefixSuffixHtml += '<br/><strong>Prefix Holidays permitted:</strong> ' + d.prefix_details;
+      if (d.suffix_details) prefixSuffixHtml += '<br/><strong>Suffix Holidays permitted:</strong> ' + d.suffix_details;
+      if (d.intervening_holidays > 0) prefixSuffixHtml += '<br/><strong>Intervening Sundays/Holidays excluded from CL:</strong> ' + d.intervening_holidays + ' day(s)';
+
       var win = window.open('', '_blank');
       win.document.write(
         '<!DOCTYPE html><html><head><title>Sanction Order - ' + d.staff_name + '</title>' +
@@ -393,13 +597,14 @@
           '</div>' +
           '<h3 style="text-align:center; text-decoration:underline;">SANCTION ORDER (LEAVE)</h3>' +
           '<p class="body-text">' +
-            'In terms of Central Civil Services (Leave) Rules, 1972 & DoPT orders, sanction of the Principal, EMRS Subdega is hereby accorded to the grant of ' +
-            '<strong>' + d.leave_type + '</strong> for a period of <strong>' + (d.actual_days_taken || d.total_days) + ' days</strong> ' +
-            'from <strong>' + formatDateDMY(d.start_date) + '</strong> to <strong>' + formatDateDMY(d.end_date) + '</strong> ' +
-            'to <strong>' + d.staff_name.toUpperCase() + '</strong>, Employee ID: <strong>' + d.employee_id + '</strong>, ' +
+            'In terms of Central Civil Services (Leave) Rules, 1972 and relevant instructions of DoPT, sanction of the Principal, EMRS Subdega is hereby accorded to the grant of ' +
+            '<strong>' + d.leave_type + '</strong> for a net working duration of <strong>' + (d.actual_days_taken || d.total_days) + ' days</strong> ' +
+            'to <strong>' + d.staff_name.toUpperCase() + '</strong>, Employee ID: <strong>' + d.employee_id + '</strong>, as per the following approved schedule:' +
+            '<ul style="margin: 10px 0 15px 25px;">' + segLines + '</ul>' +
             'on the grounds of <em>"' + d.reason + '"</em>.' +
+            prefixSuffixHtml +
             (d.station_leave ? '<br/><br/><strong>Station Leave Permission:</strong> Permission to leave station/headquarters during the leave period is hereby <strong>ACCORDED</strong>.' : '') +
-            (d.is_curtailed ? '<br/><br/><em>Note: The leave period stands curtailed due to early resumption of duty on ' + formatDateDMY(d.early_joining_date) + '.</em>' : '') +
+            (d.is_curtailed ? '<br/><br/><em>Note: The leave stands curtailed due to early resumption of duty on ' + formatDateDMY(d.early_joining_date) + '.</em>' : '') +
           '</p>' +
           '<p style="font-size:0.95rem;">2. Certified that the incumbent will join the same post on expiry of leave.</p>' +
           '<div class="sign">' +
@@ -410,6 +615,19 @@
         '</body></html>'
       );
       win.document.close();
+    };
+
+    window.requestCancelLeave = async function(id) {
+      var r = prompt("Reason for requesting cancellation of this leave:");
+      if (!r) return;
+
+      var sb = getClient();
+      await sb.from('staff_leave_applications')
+        .update({ cancel_requested: true, cancel_reason: r })
+        .eq('id', id);
+
+      alert("Cancellation request submitted to Principal.");
+      loadStaffLeaveHistory();
     };
 
     async function loadStaffLeaveHistory() {
@@ -423,7 +641,13 @@
         if (res.data.length > 0) {
           tbody.innerHTML = res.data.map(function(app) {
             var appliedDate = app.created_at ? app.created_at.split('T')[0] : '-';
-            var daysShown = app.is_curtailed ? (app.actual_days_taken + ' (Curtailed)') : app.total_days;
+            var daysShown = app.is_curtailed ? (app.actual_days_taken + 'd (Curtailed)') : (app.total_days + 'd');
+
+            var prefixSuffixStr = '-';
+            if (app.prefix_details || app.suffix_details) {
+              prefixSuffixStr = (app.prefix_details ? 'Pre: ' + app.prefix_details : '') + 
+                                (app.suffix_details ? '<br/>Suf: ' + app.suffix_details : '');
+            }
 
             var actionBtn = '';
             if (app.status === 'APPROVED') {
@@ -435,19 +659,14 @@
               }
             }
 
-            var remarksDisplay = app.admin_remarks || '-';
-            if (app.is_curtailed) {
-              remarksDisplay += '<br/><small style="color:#6d28d9; font-weight:bold;">Resumed duty on ' + formatDateDMY(app.early_joining_date) + '</small>';
-            }
-
             return '<tr>' +
               '<td>' + formatDateDMY(appliedDate) + '</td>' +
-              '<td><strong>' + app.leave_type + '</strong></td>' +
+              '<td style="text-align:left; font-weight:700;">' + app.leave_type + '</td>' +
               '<td>' + formatDateDMY(app.start_date) + ' to ' + formatDateDMY(app.end_date) + '</td>' +
-              '<td>' + daysShown + '</td>' +
+              '<td><strong>' + daysShown + '</strong></td>' +
+              '<td style="font-size:0.78rem; text-align:left;">' + prefixSuffixStr + '</td>' +
               '<td>' + (app.station_leave ? 'Yes' : 'No') + '</td>' +
               '<td><span class="badge-status ' + (app.is_curtailed ? 'CURTAILED' : app.status) + '">' + (app.is_curtailed ? 'CURTAILED' : app.status) + '</span></td>' +
-              '<td>' + remarksDisplay + '</td>' +
               '<td>' + actionBtn + '</td>' +
             '</tr>';
           }).join('');
