@@ -304,7 +304,7 @@ function renderCcsCheckboxes(assignedList) {
       '</label>' +
       '<div style="margin-top:6px; display:flex; align-items:center; gap:8px;">' +
         '<span style="font-size:0.75rem; color:#64748b; font-weight:bold;">DAYS / YR:</span>' +
-        '<input type="number" class="ccs-days" data-code="' + master.code + '" value="' + totalVal + '" min="1" style="width:75px; padding:4px 6px; font-size:0.85rem; border:1px solid #cbd5e1; border-radius:4px;" />' +
+        '<input type="number" class="ccs-days" data-code="' + master.code + '" value="' + totalVal + '" min="1" step="0.5" style="width:75px; padding:4px 6px; font-size:0.85rem; border:1px solid #cbd5e1; border-radius:4px;" />' +
       '</div>' +
     '</div>';
   }).join('');
@@ -352,7 +352,7 @@ window.saveAssignedLeaves = async function(e) {
     var code = chk.value;
     var name = chk.getAttribute("data-name");
     var daysInput = document.querySelector('.ccs-days[data-code="' + code + '"]');
-    var totalDays = parseInt(daysInput ? daysInput.value : 10, 10);
+    var totalDays = parseFloat(daysInput ? daysInput.value : 10);
     var usedDays = existingUsedMap[code] || 0;
 
     assignedArray.push({
@@ -363,7 +363,7 @@ window.saveAssignedLeaves = async function(e) {
     });
   });
 
-  // Explicitly match on employee_id to prevent duplicate key constraint violations
+  // Explicitly match on employee_id to avoid constraint error
   var res = await client.from("staff_leave_balances").upsert([{
     employee_id: empId,
     staff_name: staffName,
@@ -405,15 +405,15 @@ async function loadAdminLeaves() {
         var actionBtns = '';
         if (l.status === 'PENDING') {
           actionBtns = 
-            '<button type="button" class="btn-approve" onclick="approveLeave(\'' + l.id + '\', \'' + l.employee_id + '\', \'' + l.leave_type + '\', ' + l.total_days + ')">Approve</button>' +
+            '<button type="button" class="btn-approve" onclick="approveLeave(\'' + l.id + '\', \'' + l.employee_id + '\', \'' + encodeURIComponent(JSON.stringify(l)) + '\')">Approve</button>' +
             '<button type="button" class="btn-reject" onclick="rejectLeave(\'' + l.id + '\')">Reject</button>';
         } else if (l.status === 'APPROVED') {
           actionBtns += '<button type="button" class="btn-order-slip" onclick="printSanctionOrderAdmin(\'' + encodeURIComponent(JSON.stringify(l)) + '\')">📄 Order</button>';
 
           if (l.cancel_requested) {
-            actionBtns += '<button type="button" class="btn-cancel-app" onclick="confirmCancelAndReverse(\'' + l.id + '\', \'' + l.employee_id + '\', \'' + l.leave_type + '\', ' + (l.actual_days_taken || l.total_days) + ')">Confirm Cancel</button>';
+            actionBtns += '<button type="button" class="btn-cancel-app" onclick="confirmCancelAndReverse(\'' + l.id + '\', \'' + l.employee_id + '\', \'' + encodeURIComponent(JSON.stringify(l)) + '\')">Confirm Cancel</button>';
           } else if (!l.is_curtailed) {
-            actionBtns += '<button type="button" class="btn-curtail" onclick="curtailEarlyJoining(\'' + l.id + '\', \'' + l.employee_id + '\', \'' + l.leave_type + '\', ' + l.total_days + ', \'' + l.start_date + '\')">Early Join</button>';
+            actionBtns += '<button type="button" class="btn-curtail" onclick="curtailEarlyJoining(\'' + l.id + '\', \'' + l.employee_id + '\', \'' + encodeURIComponent(JSON.stringify(l)) + '\')">Early Join</button>';
           }
           actionBtns += '<button type="button" class="btn-delete" onclick="deleteLeaveRecord(\'' + l.id + '\')">Del</button>';
         } else {
@@ -425,13 +425,18 @@ async function loadAdminLeaves() {
           statusBadge += '<br/><small style="color:#b45309; font-weight:bold;">Cancel Req: ' + (l.cancel_reason || '') + '</small>';
         }
 
+        var holidayNotes = '';
+        if (l.intervening_holidays > 0) holidayNotes += '<br/><small style="color:#0284c7;">Excl. Holidays: ' + l.intervening_holidays + 'd</small>';
+        if (l.prefix_details) holidayNotes += '<br/><small style="color:#64748b;">Pre: ' + l.prefix_details + '</small>';
+        if (l.suffix_details) holidayNotes += '<br/><small style="color:#64748b;">Suf: ' + l.suffix_details + '</small>';
+
         return '<tr>' +
           '<td>' + formatDateDMY(appliedDate) + '</td>' +
           '<td><strong>' + l.staff_name + '</strong></td>' +
           '<td>' + l.employee_id + '</td>' +
-          '<td>' + l.leave_type + '</td>' +
+          '<td style="text-align:left; font-weight:600;">' + l.leave_type + '</td>' +
           '<td>' + formatDateDMY(l.start_date) + ' to ' + formatDateDMY(l.end_date) + '</td>' +
-          '<td>' + daysCount + '</td>' +
+          '<td><strong>' + daysCount + '</strong>' + holidayNotes + '</td>' +
           '<td>' + (l.station_leave ? 'Yes' : 'No') + '</td>' +
           '<td style="text-align:left; max-width:180px;">' + l.reason + '</td>' +
           '<td>' + statusBadge + '</td>' +
@@ -444,8 +449,9 @@ async function loadAdminLeaves() {
   }
 }
 
-window.approveLeave = async function(id, empId, leaveType, days) {
-  var remarks = prompt("Sanction Remarks (Optional):", "Sanctioned under Central Govt. Rules");
+window.approveLeave = async function(id, empId, appJsonStr) {
+  var d = JSON.parse(decodeURIComponent(appJsonStr));
+  var remarks = prompt("Sanction Remarks (Optional):", "Sanctioned under CCS Leave Rules");
   if (remarks === null) return;
 
   var orderNo = "EMRS/SUB/" + new Date().getFullYear() + "/LV-" + Math.floor(1000 + Math.random() * 9000);
@@ -454,7 +460,7 @@ window.approveLeave = async function(id, empId, leaveType, days) {
     .update({ status: "APPROVED", admin_remarks: remarks, order_no: orderNo, reviewed_at: new Date().toISOString() })
     .eq("id", id);
 
-  await adjustLeaveBalance(empId, leaveType, days, "DEDUCT");
+  await adjustLeaveBalanceByRecord(empId, d, "DEDUCT");
   loadAdminLeaves();
 };
 
@@ -469,35 +475,40 @@ window.rejectLeave = async function(id) {
   loadAdminLeaves();
 };
 
-window.confirmCancelAndReverse = async function(id, empId, leaveType, daysToRestore) {
+window.confirmCancelAndReverse = async function(id, empId, appJsonStr) {
+  var d = JSON.parse(decodeURIComponent(appJsonStr));
+  var daysToRestore = d.actual_days_taken || d.total_days;
   if (!confirm("Confirm cancellation? All " + daysToRestore + " days will be credited back to employee's balance.")) return;
 
   await client.from("staff_leave_applications")
     .update({ status: "CANCELLED", cancel_requested: false, admin_remarks: "Sanction cancelled and restored to balance", reviewed_at: new Date().toISOString() })
     .eq("id", id);
 
-  await adjustLeaveBalance(empId, leaveType, daysToRestore, "RESTORE");
+  await adjustLeaveBalanceByRecord(empId, d, "RESTORE");
   loadAdminLeaves();
 };
 
-window.curtailEarlyJoining = async function(id, empId, leaveType, totalSanctionedDays, startDateStr) {
+window.curtailEarlyJoining = async function(id, empId, appJsonStr) {
+  var d = JSON.parse(decodeURIComponent(appJsonStr));
+  var totalDays = parseFloat(d.total_days);
+
   var actualConsumedStr = prompt(
-    "Employee applied for " + totalSanctionedDays + " days.\n" +
-    "How many days did the employee ACTUALLY take before resuming duty?",
-    Math.floor(totalSanctionedDays / 2)
+    "Employee was sanctioned for " + totalDays + " days.\n" +
+    "How many working days did the employee ACTUALLY take before resuming duty?",
+    Math.floor(totalDays / 2)
   );
 
   if (!actualConsumedStr) return;
-  var actualConsumed = parseInt(actualConsumedStr, 10);
-  if (isNaN(actualConsumed) || actualConsumed < 0 || actualConsumed >= totalSanctionedDays) {
-    alert("Invalid days. Must be less than original " + totalSanctionedDays + " days.");
+  var actualConsumed = parseFloat(actualConsumedStr);
+  if (isNaN(actualConsumed) || actualConsumed < 0 || actualConsumed >= totalDays) {
+    alert("Invalid days. Must be less than original " + totalDays + " days.");
     return;
   }
 
   var earlyJoinDate = prompt("Date of early duty resumption (YYYY-MM-DD):", new Date().toISOString().split("T")[0]);
   if (!earlyJoinDate) return;
 
-  var unusedDaysToRefund = totalSanctionedDays - actualConsumed;
+  var unusedDaysToRefund = totalDays - actualConsumed;
 
   await client.from("staff_leave_applications")
     .update({
@@ -509,10 +520,21 @@ window.curtailEarlyJoining = async function(id, empId, leaveType, totalSanctione
     })
     .eq("id", id);
 
-  await adjustLeaveBalance(empId, leaveType, unusedDaysToRefund, "RESTORE");
-  alert("Leave curtailed successfully! " + unusedDaysToRefund + " unused days refunded to employee balance.");
+  await adjustLeaveBalance(empId, d.leave_type, unusedDaysToRefund, "RESTORE");
+  alert("Leave curtailed! " + unusedDaysToRefund + " unused day(s) credited back to employee balance.");
   loadAdminLeaves();
 };
+
+async function adjustLeaveBalanceByRecord(empId, d, operation) {
+  if (d.segments && d.segments.length > 0) {
+    for (var i = 0; i < d.segments.length; i++) {
+      var seg = d.segments[i];
+      await adjustLeaveBalance(empId, seg.leaveType, parseFloat(seg.days), operation);
+    }
+  } else {
+    await adjustLeaveBalance(empId, d.leave_type, parseFloat(d.total_days), operation);
+  }
+}
 
 async function adjustLeaveBalance(empId, leaveType, days, operation) {
   var res = await client.from("staff_leave_balances").select("*").eq("employee_id", empId).maybeSingle();
@@ -521,11 +543,11 @@ async function adjustLeaveBalance(empId, leaveType, days, operation) {
     var modified = false;
 
     types.forEach(function(item) {
-      if (item.name === leaveType || leaveType.includes(item.code)) {
+      if (item.name === leaveType || leaveType.indexOf(item.name) !== -1 || leaveType.indexOf(item.code) !== -1) {
         if (operation === "DEDUCT") {
-          item.used = (item.used || 0) + days;
+          item.used = parseFloat(((item.used || 0) + days).toFixed(1));
         } else if (operation === "RESTORE") {
-          item.used = Math.max(0, (item.used || 0) - days);
+          item.used = Math.max(0, parseFloat(((item.used || 0) - days).toFixed(1)));
         }
         modified = true;
       }
@@ -540,6 +562,19 @@ async function adjustLeaveBalance(empId, leaveType, days, operation) {
 window.printSanctionOrderAdmin = function(appJsonStr) {
   var d = JSON.parse(decodeURIComponent(appJsonStr));
   var orderNo = d.order_no || ('EMRS/SUB/' + new Date().getFullYear() + '/LV-' + d.id.substring(0, 5).toUpperCase());
+
+  var segLines = (d.segments && d.segments.length > 0)
+    ? d.segments.map(function(s) {
+        var h = s.isHalfDay ? ' (Half Day - ' + s.halfDaySession + ')' : '';
+        return '<li><strong>' + s.leaveType + '</strong>: ' + formatDateDMY(s.startDate) + ' to ' + formatDateDMY(s.endDate) + ' (' + s.days + ' day' + (s.days > 1 ? 's' : '') + h + ')</li>';
+      }).join('')
+    : '<li><strong>' + d.leave_type + '</strong>: ' + formatDateDMY(d.start_date) + ' to ' + formatDateDMY(d.end_date) + ' (' + d.total_days + ' days)</li>';
+
+  var prefixSuffixHtml = '';
+  if (d.prefix_details) prefixSuffixHtml += '<br/><strong>Prefix Holidays permitted:</strong> ' + d.prefix_details;
+  if (d.suffix_details) prefixSuffixHtml += '<br/><strong>Suffix Holidays permitted:</strong> ' + d.suffix_details;
+  if (d.intervening_holidays > 0) prefixSuffixHtml += '<br/><strong>Intervening Sundays/Holidays excluded from CL:</strong> ' + d.intervening_holidays + ' day(s)';
+
   var win = window.open('', '_blank');
   win.document.write(
     '<!DOCTYPE html><html><head><title>Sanction Order - ' + d.staff_name + '</title>' +
@@ -565,11 +600,12 @@ window.printSanctionOrderAdmin = function(appJsonStr) {
       '</div>' +
       '<h3 style="text-align:center; text-decoration:underline;">SANCTION ORDER (LEAVE)</h3>' +
       '<p class="body-text">' +
-        'In terms of Central Civil Services (Leave) Rules, 1972 & DoPT orders, sanction of the Principal, EMRS Subdega is hereby accorded to the grant of ' +
-        '<strong>' + d.leave_type + '</strong> for a period of <strong>' + (d.actual_days_taken || d.total_days) + ' days</strong> ' +
-        'from <strong>' + formatDateDMY(d.start_date) + '</strong> to <strong>' + formatDateDMY(d.end_date) + '</strong> ' +
-        'to <strong>' + d.staff_name.toUpperCase() + '</strong>, Employee ID: <strong>' + d.employee_id + '</strong>, ' +
+        'In terms of Central Civil Services (Leave) Rules, 1972 and relevant orders of DoPT, sanction of the Principal, EMRS Subdega is hereby accorded to the grant of ' +
+        '<strong>' + d.leave_type + '</strong> for a net working duration of <strong>' + (d.actual_days_taken || d.total_days) + ' days</strong> ' +
+        'to <strong>' + d.staff_name.toUpperCase() + '</strong>, Employee ID: <strong>' + d.employee_id + '</strong>, as per the following approved schedule:' +
+        '<ul style="margin: 10px 0 15px 25px;">' + segLines + '</ul>' +
         'on the grounds of <em>"' + d.reason + '"</em>.' +
+        prefixSuffixHtml +
         (d.station_leave ? '<br/><br/><strong>Station Leave Permission:</strong> Permission to leave station/headquarters during the leave period is hereby <strong>ACCORDED</strong>.' : '') +
         (d.is_curtailed ? '<br/><br/><em>Note: The leave period stands curtailed due to early resumption of duty on ' + formatDateDMY(d.early_joining_date) + '.</em>' : '') +
       '</p>' +
@@ -1027,7 +1063,7 @@ window.editStaff = async function(id) {
   document.getElementById("staffPhotoLabel").textContent = "Update Staff Photo (Optional, leave blank to keep current)";
   document.getElementById("staffPhotoHelp").textContent = "Leave blank to keep existing photo. If uploading new, max size 50 KB.";
 
-  document.getElementById("staffFormModeTitle").textContent = "✏️️ Edit Staff Member: " + s.name;
+  document.getElementById("staffFormModeTitle").textContent = "✏️ Edit Staff Member: " + s.name;
   document.getElementById("saveStaffBtn").textContent = "Update Staff Member";
   document.getElementById("cancelStaffEditBtn").style.display = "inline-block";
   document.getElementById("staffFormPanel").scrollIntoView({ behavior: 'smooth' });
@@ -1062,7 +1098,7 @@ async function loadAdminStaff() {
           '<td>' + formatDateDMY(s.doj_nests) + '</td>' +
           '<td>' + formatDateDMY(s.doj_emrs) + '</td>' +
           '<td>' +
-            '<button type="button" class="btn-edit" onclick="editStaff(\'' + s.id + '\')">✏️️ Edit</button>' +
+            '<button type="button" class="btn-edit" onclick="editStaff(\'' + s.id + '\')">✏️ Edit</button>' +
             '<button type="button" class="btn-delete" onclick="deleteStaff(\'' + s.id + '\')">Delete</button>' +
           '</td>' +
         '</tr>';
