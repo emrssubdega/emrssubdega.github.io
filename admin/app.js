@@ -270,18 +270,24 @@ async function loadInstitutionDetails() {
 }
 
 // ---------------- 1. LEAVE MANAGEMENT ENGINE (CCS RULES & RH) ----------------
+var currentRolloverData = null;
+
 async function populateStaffSelectForAssign() {
   var sel = document.getElementById("assignStaffSelect");
-  if (!sel || !client) return;
+  var rollSel = document.getElementById("rolloverStaffSelect");
+  if (!client) return;
 
   var res = await client.from("staff").select("id, name, employee_id, designation").order("name");
   if (res.data) {
-    sel.innerHTML = '<option value="">-- Choose Staff Member --</option>' +
+    var optionsHtml = '<option value="">-- Choose Staff Member --</option>' +
       res.data.map(function(s) {
         return '<option value="' + s.employee_id + '" data-name="' + s.name + '">' +
           s.name + ' (' + s.employee_id + ') - ' + (s.designation || '') +
         '</option>';
       }).join('');
+
+    if (sel) sel.innerHTML = optionsHtml;
+    if (rollSel) rollSel.innerHTML = optionsHtml;
   }
   renderCcsCheckboxes([]);
 }
@@ -363,7 +369,6 @@ window.saveAssignedLeaves = async function(e) {
     });
   });
 
-  // Explicitly match on employee_id to avoid constraint error
   var res = await client.from("staff_leave_balances").upsert([{
     employee_id: empId,
     staff_name: staffName,
@@ -380,6 +385,218 @@ window.saveAssignedLeaves = async function(e) {
   }
 };
 
+// ---------------- ANNUAL ROLLOVER & LEAVE BALANCE ADJUSTER ----------------
+window.loadEmployeeForRollover = async function(empId) {
+  var cont = document.getElementById("rolloverEditorContainer");
+  var tbody = document.getElementById("rolloverTableBody");
+  var nameBadge = document.getElementById("rolloverStaffNameBadge");
+  if (!empId) { cont.style.display = "none"; return; }
+
+  var sel = document.getElementById("rolloverStaffSelect");
+  var staffName = sel.options[sel.selectedIndex].getAttribute("data-name") || "Staff Member";
+  nameBadge.textContent = staffName + " (" + empId + ")";
+
+  var res = await client.from("staff_leave_balances").select("*").eq("employee_id", empId).maybeSingle();
+  if (!res.data || !res.data.assigned_types) {
+    alert("This employee has no leave types assigned yet. Please assign leaves first.");
+    cont.style.display = "none";
+    return;
+  }
+
+  currentRolloverData = {
+    employee_id: empId,
+    staff_name: staffName,
+    types: JSON.parse(JSON.stringify(res.data.assigned_types))
+  };
+
+  tbody.innerHTML = currentRolloverData.types.map(function(item, idx) {
+    var total = parseFloat(item.total || 0);
+    var used = parseFloat(item.used || 0);
+    var unused = Math.max(0, parseFloat((total - used).toFixed(1)));
+
+    var isLapsing = (item.code === "CL" || item.code === "RH");
+    var defaultCarry = isLapsing ? 0 : unused;
+    var defaultCredit = isLapsing ? total : (item.code === "EL" ? 30 : (item.code === "HPL" ? 20 : 0));
+    var ruleText = isLapsing ? '<span style="color:#dc2626; font-weight:bold;">Lapses (Reset 0)</span>' : '<span style="color:#16a34a; font-weight:bold;">Carries Forward</span>';
+
+    return '<tr>' +
+      '<td><strong>' + item.name + '</strong></td>' +
+      '<td>' + ruleText + '</td>' +
+      '<td>' + used + '</td>' +
+      '<td>' + unused + '</td>' +
+      '<td>' +
+        '<input type="number" step="0.5" id="roll-carry-' + idx + '" value="' + defaultCarry + '" ' + (isLapsing ? 'readonly style="background:#f1f5f9; width:75px;"' : 'style="width:75px;"') + ' onchange="updateRowTotal(' + idx + ')" />' +
+      '</td>' +
+      '<td>' +
+        '<input type="number" step="0.5" id="roll-credit-' + idx + '" value="' + defaultCredit + '" style="width:75px;" onchange="updateRowTotal(' + idx + ')" />' +
+      '</td>' +
+      '<td>' +
+        '<strong id="roll-total-' + idx + '" style="color:#0b3c5d;">' + (defaultCarry + defaultCredit) + '</strong>' +
+        (item.code === "EL" ? ' <small style="color:#64748b;">(Max 300)</small>' : '') +
+      '</td>' +
+    '</tr>';
+  }).join('');
+
+  cont.style.display = "block";
+};
+
+window.updateRowTotal = function(idx) {
+  var carryInput = document.getElementById("roll-carry-" + idx);
+  var creditInput = document.getElementById("roll-credit-" + idx);
+  var totalBadge = document.getElementById("roll-total-" + idx);
+
+  var carry = parseFloat(carryInput.value) || 0;
+  var credit = parseFloat(creditInput.value) || 0;
+  var sum = carry + credit;
+
+  var item = currentRolloverData.types[idx];
+  if (item.code === "EL" && sum > 300) {
+    alert("Under CCS Leave Rule 26, Earned Leave (EL) cannot exceed 300 days. Capping at 300.");
+    sum = 300;
+  }
+
+  totalBadge.textContent = sum.toFixed(1);
+};
+
+window.saveIndividualRollover = async function() {
+  if (!currentRolloverData) return;
+  var status = document.getElementById("rolloverStatusMsg");
+  var year = parseInt(document.getElementById("rolloverYearInput").value || 2027, 10);
+  status.style.color = "#0284c7";
+  status.textContent = "Processing rollover...";
+
+  var updatedAssigned = [];
+  var logDetails = [];
+
+  for (var i = 0; i < currentRolloverData.types.length; i++) {
+    var original = currentRolloverData.types[i];
+    var carry = parseFloat(document.getElementById("roll-carry-" + i).value) || 0;
+    var credit = parseFloat(document.getElementById("roll-credit-" + i).value) || 0;
+    var newTotal = carry + credit;
+
+    if (original.code === "EL" && newTotal > 300) newTotal = 300;
+
+    updatedAssigned.push({
+      code: original.code,
+      name: original.name,
+      total: newTotal,
+      used: 0
+    });
+
+    logDetails.push({
+      code: original.code,
+      name: original.name,
+      previous_total: original.total,
+      previous_used: original.used,
+      carried_forward: carry,
+      new_credit: credit,
+      final_total: newTotal
+    });
+  }
+
+  var upd = await client.from("staff_leave_balances").upsert([{
+    employee_id: currentRolloverData.employee_id,
+    staff_name: currentRolloverData.staff_name,
+    assigned_types: updatedAssigned,
+    updated_at: new Date().toISOString()
+  }], { onConflict: 'employee_id' });
+
+  if (upd.error) {
+    status.style.color = "#dc2626";
+    status.textContent = "Error: " + upd.error.message;
+    return;
+  }
+
+  await client.from("staff_leave_rollover_logs").insert([{
+    employee_id: currentRolloverData.employee_id,
+    staff_name: currentRolloverData.staff_name,
+    rollover_year: year,
+    details: logDetails
+  }]);
+
+  status.style.color = "#16a34a";
+  status.textContent = "Rollover successfully completed for " + currentRolloverData.staff_name + "! Used days reset to 0 and balances updated.";
+  document.getElementById("rolloverEditorContainer").style.display = "none";
+  document.getElementById("rolloverStaffSelect").value = "";
+};
+
+window.runBatchRolloverForAll = async function() {
+  var year = parseInt(document.getElementById("rolloverYearInput").value || 2027, 10);
+  if (!confirm("Run batch rollover for ALL staff for year " + year + "?\n- CL and RH will lapse and reset to 8 & 2.\n- Unused EL & HPL will carry forward.\n- All used days reset to 0.")) return;
+
+  var res = await client.from("staff_leave_balances").select("*");
+  if (!res.data || res.data.length === 0) {
+    alert("No staff balances found.");
+    return;
+  }
+
+  var successCount = 0;
+  for (var i = 0; i < res.data.length; i++) {
+    var rec = res.data[i];
+    var types = rec.assigned_types || [];
+    var newTypes = [];
+    var logDetails = [];
+
+    types.forEach(function(item) {
+      var total = parseFloat(item.total || 0);
+      var used = parseFloat(item.used || 0);
+      var unused = Math.max(0, parseFloat((total - used).toFixed(1)));
+
+      var carry = 0;
+      var credit = 0;
+
+      if (item.code === "CL") {
+        carry = 0; credit = 8;
+      } else if (item.code === "RH") {
+        carry = 0; credit = 2;
+      } else if (item.code === "EL") {
+        carry = unused; credit = 30;
+      } else if (item.code === "HPL") {
+        carry = unused; credit = 20;
+      } else {
+        carry = unused; credit = 0;
+      }
+
+      var finalTotal = carry + credit;
+      if (item.code === "EL" && finalTotal > 300) finalTotal = 300;
+
+      newTypes.push({
+        code: item.code,
+        name: item.name,
+        total: finalTotal,
+        used: 0
+      });
+
+      logDetails.push({
+        code: item.code,
+        name: item.name,
+        carried_forward: carry,
+        new_credit: credit,
+        final_total: finalTotal
+      });
+    });
+
+    await client.from("staff_leave_balances").upsert([{
+      employee_id: rec.employee_id,
+      staff_name: rec.staff_name,
+      assigned_types: newTypes,
+      updated_at: new Date().toISOString()
+    }], { onConflict: 'employee_id' });
+
+    await client.from("staff_leave_rollover_logs").insert([{
+      employee_id: rec.employee_id,
+      staff_name: rec.staff_name,
+      rollover_year: year,
+      details: logDetails
+    }]);
+
+    successCount++;
+  }
+
+  alert("Batch rollover complete! Processed " + successCount + " staff members for year " + year + ".");
+};
+
+// ---------------- 2. LEAVE APPLICATIONS & REVERSAL QUEUE ----------------
 async function loadAdminLeaves() {
   var tbody = document.getElementById("leaveQueueTableBody");
   var badge = document.getElementById("leavePendingBadge");
@@ -626,7 +843,7 @@ window.deleteLeaveRecord = async function(id) {
   loadAdminLeaves();
 };
 
-// ---------------- 2. STUDENT RESULTS CRUD, EDIT, BULK CSV & PROMOTION ----------------
+// ---------------- 3. STUDENT RESULTS CRUD, EDIT, BULK CSV & PROMOTION ----------------
 var DEFAULT_SUBJECTS = ["English", "Hindi", "Mathematics", "Science", "Social Science"];
 
 window.addNewSubjectRow = function(name, max, marks) {
@@ -790,7 +1007,7 @@ async function loadAdminStudentResults() {
           '<td>' + s.percentage + '%</td>' +
           '<td><span style="color:' + (s.result_status === 'PASSED' ? '#16a34a' : '#dc2626') + '; font-weight:700;">' + s.result_status + '</span></td>' +
           '<td>' +
-            '<button type="button" class="btn-edit" onclick="editStudentResult(\'' + s.id + '\')">✏️ Edit</button>' +
+            '<button type="button" class="btn-edit" onclick="editStudentResult(\'' + s.id + '\')">✏️️ Edit</button>' +
             '<button type="button" class="btn-delete" onclick="deleteStudentResult(\'' + s.id + '\')">Delete</button>' +
           '</td>' +
         '</tr>';
@@ -976,7 +1193,7 @@ window.executeBatchPromotion = async function() {
   }
 };
 
-// ---------------- 3. STAFF CRUD (UPLOAD & EDIT WITH PHOTO) ----------------
+// ---------------- 4. STAFF CRUD ----------------
 var staffForm = document.getElementById("staffForm");
 if (staffForm) {
   staffForm.addEventListener("submit", async function(e) {
@@ -1063,7 +1280,7 @@ window.editStaff = async function(id) {
   document.getElementById("staffPhotoLabel").textContent = "Update Staff Photo (Optional, leave blank to keep current)";
   document.getElementById("staffPhotoHelp").textContent = "Leave blank to keep existing photo. If uploading new, max size 50 KB.";
 
-  document.getElementById("staffFormModeTitle").textContent = "✏️ Edit Staff Member: " + s.name;
+  document.getElementById("staffFormModeTitle").textContent = "✏️️ Edit Staff Member: " + s.name;
   document.getElementById("saveStaffBtn").textContent = "Update Staff Member";
   document.getElementById("cancelStaffEditBtn").style.display = "inline-block";
   document.getElementById("staffFormPanel").scrollIntoView({ behavior: 'smooth' });
@@ -1115,7 +1332,7 @@ window.deleteStaff = async function(id) {
   loadAdminStaff();
 };
 
-// ---------------- 4. DOCUMENTS CRUD ----------------
+// ---------------- 5. DOCUMENTS CRUD ----------------
 var docForm = document.getElementById("docForm");
 if (docForm) {
   docForm.addEventListener("submit", async function(e) {
@@ -1187,7 +1404,7 @@ window.deleteDoc = async function(id) {
   loadAdminDocs();
 };
 
-// ---------------- 5. NOTICE BOARD CRUD ----------------
+// ---------------- 6. NOTICE BOARD CRUD ----------------
 var noticeForm = document.getElementById("noticeForm");
 if (noticeForm) {
   noticeForm.addEventListener("submit", async function(e) {
@@ -1240,7 +1457,7 @@ window.deleteNotice = async function(id) {
   loadAdminNotices();
 };
 
-// ---------------- 6. GALLERY & SLIDER CRUD ----------------
+// ---------------- 7. GALLERY & SLIDER CRUD ----------------
 var galleryForm = document.getElementById("galleryForm");
 if (galleryForm) {
   galleryForm.addEventListener("submit", async function(e) {
@@ -1306,7 +1523,7 @@ window.deleteGallery = async function(id) {
   loadAdminGallery();
 };
 
-// ---------------- 7. ENQUIRIES CRUD ----------------
+// ---------------- 8. ENQUIRIES CRUD ----------------
 async function loadAdminEnquiries() {
   var tbody = document.getElementById("enquiryTableBody");
   var badge = document.getElementById("enquiryCountBadge");
