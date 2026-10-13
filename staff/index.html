@@ -58,7 +58,7 @@
       border-radius: 8px; padding: 14px 16px; margin-bottom: 12px;
       display: grid; grid-template-columns: 2fr 1.5fr 1.5fr 1.2fr auto; gap: 12px; align-items: flex-end;
     }
-    .btn-remove-seg { background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    .btn-remove-sub { background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
     .btn-add-seg { background: #e0f2fe; color: #0284c7; border: 1px dashed #0284c7; padding: 8px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 15px; }
 
     .table-responsive { overflow-x: auto; margin-top: 15px; }
@@ -82,18 +82,24 @@
 </head>
 <body>
 
-  <!-- 1. LOGIN -->
+  <!-- 1. LOGIN (NAME + DOJ NESTS) -->
   <div id="staffLoginView" class="login-container">
     <div class="login-card">
       <h2>Staff Leave Portal</h2>
-      <p>CCS (Leave) Rules, 1972 Compliant System</p>
+      <p>EMRS Subdega • CCS (Leave) Rules System</p>
 
       <form onsubmit="handleStaffLogin(event)">
         <div class="form-field">
-          <label>Employee ID *</label>
-          <input type="text" id="loginEmpId" placeholder="e.g. 241408659" required />
+          <label>Employee Name *</label>
+          <select id="loginStaffSelect" required>
+            <option value="">-- Select Your Name --</option>
+          </select>
         </div>
-        <button type="submit" class="btn-submit" style="width: 100%;">Access Portal</button>
+        <div class="form-field">
+          <label>Date of Joining in NESTS *</label>
+          <input type="date" id="loginDojNests" required />
+        </div>
+        <button type="submit" class="btn-submit" style="width: 100%;">Verify & Sign In</button>
         <p id="loginError" style="color: #dc2626; text-align: center; margin-top: 12px; font-size: 0.88rem; font-weight: 600;"></p>
       </form>
     </div>
@@ -233,21 +239,58 @@
       return dateStr;
     }
 
+    // Populate employee names in login dropdown
+    async function populateLoginStaffList() {
+      var sel = document.getElementById('loginStaffSelect');
+      if (!sel) return;
+      var sb = getClient();
+      var res = await sb.from('staff').select('id, name, designation').order('name');
+      if (res.data) {
+        sel.innerHTML = '<option value="">-- Select Your Name --</option>' +
+          res.data.map(function(s) {
+            return '<option value="' + s.id + '">' + s.name + ' (' + (s.designation || 'Staff') + ')</option>';
+          }).join('');
+      }
+    }
+
     async function handleStaffLogin(e) {
       e.preventDefault();
-      var empId = document.getElementById('loginEmpId').value.trim().toUpperCase();
+      var staffId = document.getElementById('loginStaffSelect').value;
+      var dojNests = document.getElementById('loginDojNests').value;
       var err = document.getElementById('loginError');
-      err.textContent = "Verifying employee ID...";
 
-      var sb = getClient();
-      var res = await sb.from('staff').select('*').eq('employee_id', empId).maybeSingle();
-
-      if (res.error || !res.data) {
-        err.textContent = "Employee ID not found in staff directory.";
+      if (!staffId || !dojNests) {
+        err.textContent = "Please select your name and enter your Date of Joining in NESTS.";
         return;
       }
 
-      currentStaff = res.data;
+      err.style.color = "#0284c7";
+      err.textContent = "Verifying details...";
+
+      var sb = getClient();
+      var res = await sb.from('staff').select('*').eq('id', staffId).maybeSingle();
+
+      if (res.error || !res.data) {
+        err.style.color = "#dc2626";
+        err.textContent = "Staff record not found.";
+        return;
+      }
+
+      var record = res.data;
+      if (!record.doj_nests) {
+        err.style.color = "#dc2626";
+        err.textContent = "Your Date of Joining in NESTS is not recorded in the directory. Please ask the Admin to update it.";
+        return;
+      }
+
+      // Validate Date of Joining
+      if (record.doj_nests !== dojNests) {
+        err.style.color = "#dc2626";
+        err.textContent = "Incorrect Date of Joining in NESTS. Please verify and try again.";
+        return;
+      }
+
+      currentStaff = record;
       sessionStorage.setItem('emrs_staff_session', JSON.stringify(currentStaff));
       showStaffDashboard();
     }
@@ -266,8 +309,10 @@
       currentStaff = null;
       document.getElementById('staffLoginView').style.display = 'flex';
       document.getElementById('staffDashboardView').style.display = 'none';
-      document.getElementById('loginEmpId').value = '';
+      document.getElementById('loginStaffSelect').value = '';
+      document.getElementById('loginDojNests').value = '';
       document.getElementById('loginError').textContent = '';
+      populateLoginStaffList();
     }
 
     async function loadStaffBalancesAndTypes() {
@@ -303,7 +348,6 @@
         '</div>';
       }).join('');
 
-      // Initialize with 1 default segment row
       initSegments();
     }
 
@@ -410,7 +454,6 @@
       } else {
         leaveSegments[i].isHalfDay = true;
         leaveSegments[i].halfDaySession = val;
-        // For half day, end date must match start date
         leaveSegments[i].endDate = leaveSegments[i].startDate;
       }
       renderSegmentsDOM();
@@ -438,7 +481,6 @@
         }
       });
 
-      // Deduct intervening Sundays & holidays only from Casual Leave (Rule 11)
       var intervening = parseInt(document.getElementById('interveningHolidaysInput').value || 0, 10);
       if (intervening > 0) {
         if (clDaysCount >= intervening) {
@@ -452,12 +494,10 @@
       document.getElementById('calculatedTotalDays').value = total.toFixed(1) + " Day(s)";
     };
 
-    // ---------------- STRICT CCS COMBINATION VALIDATOR ----------------
     function validateCCSCombination(segments) {
       var types = segments.map(function(s) { return s.leaveType; });
       var hasCL = types.some(function(t) { return t.indexOf('Casual Leave') !== -1; });
       var hasRH = types.some(function(t) { return t.indexOf('Restricted') !== -1; });
-      var hasSCL = types.some(function(t) { return t.indexOf('Special Casual') !== -1; });
       var hasRegular = types.some(function(t) {
         return t.indexOf('Earned') !== -1 || t.indexOf('Half Pay') !== -1 ||
                t.indexOf('Commuted') !== -1 || t.indexOf('Maternity') !== -1 ||
@@ -465,7 +505,6 @@
                t.indexOf('Study') !== -1 || t.indexOf('Extraordinary') !== -1;
       });
 
-      // Rule 11: CL cannot be combined with EL, HPL, Commuted, etc.
       if (hasCL && hasRegular) {
         return {
           valid: false,
@@ -473,7 +512,6 @@
         };
       }
 
-      // RH cannot be combined with regular leaves
       if (hasRH && hasRegular) {
         return {
           valid: false,
@@ -494,14 +532,12 @@
         return;
       }
 
-      // Check CCS Combination Rules
       var validation = validateCCSCombination(leaveSegments);
       if (!validation.valid) {
         alert(validation.msg);
         return;
       }
 
-      // Recalculate total
       recalculateTotalDays();
       var totalDays = parseFloat(document.getElementById('calculatedTotalDays').value);
       var intervening = parseInt(document.getElementById('interveningHolidaysInput').value || 0, 10);
@@ -510,7 +546,6 @@
       var station = document.getElementById('leaveStation').checked;
       var reason = document.getElementById('leaveReason').value.trim();
 
-      // Consolidated type label (e.g. "Casual Leave (CL) + Restricted Holiday (RH)")
       var typeLabels = Array.from(new Set(leaveSegments.map(function(s) { return s.leaveType; }))).join(" + ");
       var overallStart = leaveSegments[0].startDate;
       var overallEnd = leaveSegments[leaveSegments.length - 1].endDate;
@@ -555,7 +590,6 @@
       btn.disabled = false;
     }
 
-    // PRINT SANCTION ORDER (Includes Segment Breakdown & Prefix/Suffix)
     window.printSanctionOrder = function(appJsonStr) {
       var d = JSON.parse(decodeURIComponent(appJsonStr));
       var orderNo = d.order_no || ('EMRS/SUB/' + new Date().getFullYear() + '/LV-' + d.id.substring(0, 5).toUpperCase());
@@ -677,6 +711,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+      populateLoginStaffList();
       var saved = sessionStorage.getItem('emrs_staff_session');
       if (saved) {
         try {
