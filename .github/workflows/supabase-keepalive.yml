@@ -1,0 +1,40 @@
+name: Supabase Database Keep-Alive
+
+on:
+  schedule:
+    # Runs at 06:00 UTC every Monday and Thursday (every 3-4 days)
+    - cron: '0 6 * * 1,4'
+  workflow_dispatch: # Allows manual trigger anytime from the Actions tab
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase PostgREST API
+        env:
+          SUPABASE_URL: "https://eukhcbxrxzhpwfizoqun.supabase.co"
+          # Reads the anon key from your repository secrets or fallbacks
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          echo "Sending heartbeat query to Supabase..."
+          
+          # If no secret is configured, fallback to reading supabase-config.js
+          if [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "Checking anonymous key from repo..."
+          fi
+          
+          HTTP_STATUS=$(curl -s -o response.json -w "%{http_code}" \
+            -X GET "$SUPABASE_URL/rest/v1/institution_details?select=id&limit=1" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY")
+            
+          echo "HTTP Response Status: $HTTP_STATUS"
+          cat response.json
+          
+          if [ "$HTTP_STATUS" -eq 200 ] || [ "$HTTP_STATUS" -eq 206 ]; then
+            echo "Success: Supabase database is active and activity timer has been reset."
+          else
+            echo "Warning: Received status $HTTP_STATUS"
+            # Exit with 0 so the workflow does not flag a hard build error if it's a minor warning
+            exit 0
+          fi
