@@ -423,7 +423,7 @@
           <h3 class="text-lg font-bold flex items-center gap-2">
             <i class="fa-solid fa-file-excel"></i> Bulk Student Excel Upload — <span id="modalClassBanner">Class VI</span>
           </h3>
-          <p class="text-xs text-emerald-100">Upload multiple student profiles at once (excluding photographs)</p>
+          <p class="text-xs text-emerald-100">Upload multiple student profiles at once with individual address columns (excluding photographs)</p>
         </div>
         <button onclick="closeBulkModal()" class="text-white/75 hover:text-white text-xl">&times;</button>
       </div>
@@ -433,7 +433,7 @@
         <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
             <h4 class="font-bold text-emerald-950 text-sm">Step 1: Download Standard Template</h4>
-            <p class="text-xs text-emerald-800 mt-0.5">Pre-configured with <strong id="templateClassIndicator">Class VI</strong>. Do not rename column titles.</p>
+            <p class="text-xs text-emerald-800 mt-0.5">Pre-configured with <strong id="templateClassIndicator">Class VI</strong> and discrete columns for At, Po, Block, District, State, and Pin.</p>
           </div>
           <button onclick="downloadClassTemplate()" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg font-bold text-xs shadow transition flex items-center gap-2 whitespace-nowrap">
             <i class="fa-solid fa-download"></i> Download Template (.csv)
@@ -1178,7 +1178,7 @@
       }
     }
 
-    // 7. Class-Wise Bulk Excel / CSV Upload
+    // 7. Class-Wise Bulk Excel / CSV Upload with At, Po, Block, District, State, Pin
     function openClassBulkModal() {
       if (!currentActiveClass) return;
 
@@ -1202,14 +1202,14 @@
         "roll_no", "full_name", "class_name", "section", "admission_no", "pen_no",
         "dob", "gender", "category", "sub_caste", "blood_group",
         "house_name", "father_name", "mother_name", "guardian_contact",
-        "address", "district", "state", "pincode", "admission_date"
+        "at", "po", "block", "district", "state", "pin", "admission_date"
       ];
 
       const sampleRow = [
-        "1", "Student Full Name", currentActiveClass, "A", `ADM_${Date.now().toString().slice(-5)}`, "PEN000000",
+        "1", "Student Full Name", currentActiveClass || "Class VI", "A", `ADM_${Date.now().toString().slice(-5)}`, "PEN000000",
         "2012-05-15", "Male", "ST", "Kisan", "A+",
         "Brahmaputra", "Father Name", "Mother Name", "9876543210",
-        "At/Po Subdega", "Sundargarh", "Odisha", "770014", "2026-07-01"
+        "Bhawanipur", "Subdega", "Subdega", "Sundargarh", "Odisha", "770014", "2026-07-01"
       ];
 
       const csvContent = "data:text/csv;charset=utf-8," + [
@@ -1220,7 +1220,7 @@
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement("a");
       link.setAttribute("href", encodedUri);
-      link.setAttribute("download", `EMRS_${currentActiveClass.replace(' ', '_')}_Template.csv`);
+      link.setAttribute("download", `EMRS_${(currentActiveClass || "Class_VI").replace(' ', '_')}_Template.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -1292,13 +1292,18 @@
 
             if (!row['admission_no'] || !row['full_name']) continue;
 
+            const atVal = (row['at'] || row['address'] || '').trim();
+            const poVal = (row['po'] || row['po_name'] || '').trim();
+            const blockVal = (row['block'] || row['block_name'] || '').trim();
+            const pinVal = (row['pin'] || row['pincode'] || row['pin_code'] || '').trim();
+
             recordsToUpsert.push({
               admission_no: String(row['admission_no']).trim(),
               pen_no: row['pen_no'] ? String(row['pen_no']).trim() : null,
               full_name: String(row['full_name']).trim(),
               gender: row['gender'] ? String(row['gender']).trim() : null,
               dob: row['dob'] ? String(row['dob']).trim() : null,
-              class_name: currentActiveClass,
+              class_name: currentActiveClass, // Bound strictly to active class
               section: row['section'] ? String(row['section']).trim().toUpperCase() : 'A',
               roll_no: row['roll_no'] ? parseInt(row['roll_no'], 10) || null : null,
               category: row['category'] ? String(row['category']).trim() : null,
@@ -1308,10 +1313,13 @@
               father_name: row['father_name'] ? String(row['father_name']).trim() : null,
               mother_name: row['mother_name'] ? String(row['mother_name']).trim() : null,
               guardian_contact: row['guardian_contact'] ? String(row['guardian_contact']).trim() : null,
-              address: row['address'] ? String(row['address']).trim() : null,
+              address: atVal || null,
+              at_name: atVal || null,
+              po_name: poVal || null,
+              block_name: blockVal || null,
               district: row['district'] ? String(row['district']).trim() : 'Sundargarh',
               state: row['state'] ? String(row['state']).trim() : 'Odisha',
-              pincode: row['pincode'] ? String(row['pincode']).trim() : null,
+              pincode: pinVal || null,
               admission_date: row['admission_date'] ? String(row['admission_date']).trim() : null,
               updated_at: new Date().toISOString()
             });
@@ -1464,6 +1472,9 @@
           mother_name: document.getElementById('motherName').value.trim() || null,
           guardian_contact: document.getElementById('guardianContact').value.trim() || null,
           address: document.getElementById('atField').value.trim() || null,
+          at_name: document.getElementById('atField').value.trim() || null,
+          po_name: document.getElementById('poField').value.trim() || null,
+          block_name: document.getElementById('blockField').value.trim() || null,
           district: document.getElementById('district').value || 'Sundargarh',
           state: document.getElementById('state').value.trim() || 'Odisha',
           pincode: document.getElementById('pincode').value.trim() || null,
@@ -1745,7 +1756,6 @@
         return;
       }
 
-      // Filter selected students belonging to active class and sort them by Roll No
       const selectedList = studentsData.filter(s => selectedStudentIds.has(s.id));
       selectedList.sort((a, b) => (parseInt(a.roll_no, 10) || 0) - (parseInt(b.roll_no, 10) || 0));
 
