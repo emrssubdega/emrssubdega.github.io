@@ -41,21 +41,22 @@
     .top-navbar { background: #ffffff; padding: 14px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; }
     .page-title { font-size: 1.25rem; font-weight: 800; color: #0b3c5d; }
     
-    .navbar-right-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .navbar-right-actions { display: flex; align-items: center; gap: 10px; flex-wrap: nowrap; }
     .live-website-btn {
       display: inline-flex; align-items: center; gap: 6px; background: #0b3c5d; color: #ffffff;
       padding: 8px 14px; border-radius: 6px; font-size: 0.86rem; font-weight: 700; text-decoration: none;
-      transition: background 0.2s;
+      transition: background 0.2s; white-space: nowrap;
     }
     .live-website-btn:hover { background: #072a42; }
     
     .top-logout-btn {
       display: inline-flex; align-items: center; gap: 6px; background: #ef4444; color: #ffffff;
       border: none; padding: 8px 14px; border-radius: 6px; font-size: 0.86rem; font-weight: 700; cursor: pointer;
+      white-space: nowrap;
     }
     .top-logout-btn:hover { background: #dc2626; }
 
-    .workspace-content { padding: 30px; max-width: 1200px; width: 100%; }
+    .workspace-content { padding: 30px; max-width: 1200px; width: 100%; flex: 1; }
 
     .admin-tab-pane { display: none; }
     .admin-tab-pane.show { display: block; }
@@ -140,11 +141,6 @@
         <button type="button" class="sidebar-btn" onclick="switchAdminTab('tab-institution', this)">
           <div class="sidebar-btn-content"><span>🏫</span> Campus & Details</div>
         </button>
-        <!-- STUDENT DIRECTORY & PROFILES SIDEBAR BUTTON -->
-        <a href="students.html" class="sidebar-btn">
-          <div class="sidebar-btn-content"><span>🎓</span> Student Profiles</div>
-          <span style="font-size: 0.75rem; color: #38bdf8;">↗</span>
-        </a>
         <button type="button" class="sidebar-btn" onclick="switchAdminTab('tab-leaves', this)">
           <div class="sidebar-btn-content"><span>📋</span> Leave Management</div>
           <span id="leavePendingBadge" class="badge-leave" style="display: none;">0</span>
@@ -154,7 +150,7 @@
           <span id="enquiryCountBadge" class="badge-counter" style="display: none;">0</span>
         </button>
         <button type="button" class="sidebar-btn" onclick="switchAdminTab('tab-results-admin', this)">
-          <div class="sidebar-btn-content"><span>📝</span> Student Results</div>
+          <div class="sidebar-btn-content"><span>🎓</span> Student Results</div>
         </button>
         <button type="button" class="sidebar-btn" onclick="switchAdminTab('tab-staff', this)">
           <div class="sidebar-btn-content"><span>👥</span> Staff Details</div>
@@ -172,14 +168,11 @@
     </aside>
 
     <main class="main-panel">
+      <!-- TOP NAVBAR: ALL BUTTONS ALIGNED HORIZONTALLY, STUDENT PROFILES OPENS IN NEW TAB -->
       <div class="top-navbar">
         <div class="page-title" id="pageTitleHeading">Dashboard Overview</div>
         <div class="navbar-right-actions">
-          <div class="user-info" style="font-size: 0.86rem; color: #64748b;">
-            Logged in: <strong id="adminUserBadge" style="color: #0b3c5d;">Admin</strong>
-          </div>
-          <!-- TOP NAVBAR DIRECT SWITCH BUTTON FOR STUDENT PROFILES -->
-          <a href="students.html" class="live-website-btn" style="background:#4f46e5;" title="Open Student Bio-Data & Profile Dossier">
+          <a href="students.html" target="_blank" rel="noopener noreferrer" class="live-website-btn" style="background:#4f46e5;" title="Open Student Bio-Data & Profile Dossier">
             <span>🎓</span> Student Profiles ↗
           </a>
           <a href="../staff/" target="_blank" class="live-website-btn" style="background:#0284c7;" title="Open employee leave portal">
@@ -746,6 +739,14 @@
         </div>
 
       </div>
+
+      <!-- FOOTER CONTAINER WITH LOGGED-IN EMAIL STATUS -->
+      <footer style="padding: 16px 30px; background: #ffffff; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #64748b;">
+        <div>EMRS Subdega Management System</div>
+        <div class="user-info">
+          Logged in as: <strong id="adminUserBadge" style="color: #0b3c5d;">Admin</strong>
+        </div>
+      </footer>
     </main>
   </div>
 
