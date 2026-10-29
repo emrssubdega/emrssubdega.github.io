@@ -116,12 +116,13 @@
         </select>
       </div>
       <div>
+        <!-- Updated Official House Filter -->
         <select id="houseFilter" onchange="filterStudents()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white transition outline-none">
           <option value="">All Houses</option>
-          <option value="Eklavya House">Eklavya House</option>
-          <option value="Birsa House">Birsa House</option>
-          <option value="Subhash House">Subhash House</option>
-          <option value="Raman House">Raman House</option>
+          <option value="Brahmaputra">Brahmaputra (Blue)</option>
+          <option value="Ganga">Ganga (Green)</option>
+          <option value="Godavari">Godavari (Red)</option>
+          <option value="Tapi">Tapi (Yellow)</option>
         </select>
       </div>
     </div>
@@ -312,7 +313,14 @@
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-600 mb-1">House</label>
-              <input type="text" id="houseName" autocomplete="off" placeholder="e.g. Eklavya House" class="w-full px-3 py-1.5 border rounded-lg outline-none">
+              <!-- Updated Official House Dropdown in Form -->
+              <select id="houseName" class="w-full px-3 py-1.5 border rounded-lg outline-none focus:border-indigo-500">
+                <option value="">Select House</option>
+                <option value="Brahmaputra">Brahmaputra (Blue)</option>
+                <option value="Ganga">Ganga (Green)</option>
+                <option value="Godavari">Godavari (Red)</option>
+                <option value="Tapi">Tapi (Yellow)</option>
+              </select>
             </div>
           </div>
         </div>
@@ -416,7 +424,7 @@
       <!-- Main Two-Column Layout -->
       <div style="display: flex; gap: 16px; align-items: flex-start;">
 
-        <!-- LEFT COLUMN: All Details Tables (Stretched with comfortable row heights) -->
+        <!-- LEFT COLUMN: All Details Tables -->
         <div style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
 
           <!-- SECTION 1: Basic Details -->
@@ -550,7 +558,6 @@
         </div>
 
         <!-- RIGHT COLUMN: Stacked Photos -->
-        <!-- margin-top: 50px starts top of Student Photo exactly level with Father's Name row -->
         <div style="width: 175px; margin-top: 50px; display: flex; flex-direction: column; justify-content: space-between; height: 690px; box-sizing: border-box;">
           
           <!-- 1. Student Photo Card (Starts at Father's Name row) -->
@@ -581,7 +588,7 @@
             </div>
           </div>
 
-          <!-- 3. Mother Photo Card (Ends exactly flush with Mobile No. row) -->
+          <!-- 3. Mother Photo Card (Ends level with Mobile No. row) -->
           <div style="text-align: center; border: 2px solid #b91c1c; border-radius: 4px; overflow: hidden; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
             <div id="boxMotherPhoto" style="width: 100%; height: 175px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; overflow: hidden; box-sizing: border-box;">
               <img id="pPhotoMother" style="display: none; width: 100%; height: 100%; object-fit: cover;">
@@ -600,7 +607,7 @@
       </div>
 
       <!-- Institutional Signatures (Firmly positioned at bottom of page) -->
-      <div style="margin-top: 80px; margin-bottom: 15px; display: flex; justify-content: space-between; font-size: 12px; padding: 0 24px;">
+      <div style="margin-top: 50px; margin-bottom: 15px; display: flex; justify-content: space-between; font-size: 12px; padding: 0 24px;">
         <div style="text-align: center; width: 230px;">
           <div style="font-weight: 800;">_____________________</div>
           <div style="margin-top: 5px; font-weight: 800; color: #000;">Class Teacher Signature</div>
@@ -784,7 +791,7 @@
       renderTable(filtered);
     }
 
-    // 5. Open / Reset / Edit Handlers (All fields optional)
+    // 5. Open / Reset / Edit Handlers
     function openStudentModal() {
       document.getElementById('studentForm').reset();
       
@@ -900,7 +907,7 @@
           category: document.getElementById('category').value || null,
           sub_caste: document.getElementById('subCaste').value.trim() || null,
           blood_group: document.getElementById('bloodGroup').value || null,
-          house_name: document.getElementById('houseName').value.trim() || null,
+          house_name: document.getElementById('houseName').value || null,
           father_name: document.getElementById('fatherName').value.trim() || null,
           mother_name: document.getElementById('motherName').value.trim() || null,
           guardian_contact: document.getElementById('guardianContact').value.trim() || null,
@@ -947,7 +954,7 @@
       }
     }
 
-    // 6. Dual-Mode A4 Printable Dossier Generator (Stretched single A4 page)
+    // 6. Dual-Mode A4 Printable Dossier Generator
     function printStudentProfile(id, withPhotos = true) {
       let s = null;
       if (id) {
