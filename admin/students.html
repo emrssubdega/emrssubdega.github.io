@@ -13,7 +13,7 @@
     @media print {
       @page {
         size: A4 portrait;
-        margin: 8mm 10mm 6mm 10mm;
+        margin: 10mm 12mm 8mm 12mm;
       }
       html, body {
         width: 100% !important;
@@ -85,7 +85,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
       <div>
         <h2 class="text-2xl font-black text-slate-900">Student Directory</h2>
-        <p class="text-sm text-slate-500">Manage student profiles, print dossiers (single page A4), and update records anytime.</p>
+        <p class="text-sm text-slate-500">Manage student profiles, print dossiers (stretched single page A4), and update records anytime.</p>
       </div>
       <div class="flex gap-2">
         <button onclick="printStudentProfile(null, false)" class="inline-flex items-center gap-2 bg-slate-700 hover:bg-slate-800 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow transition">
@@ -166,7 +166,7 @@
       <form id="studentForm" onsubmit="saveStudent(event)" autocomplete="off" class="p-6 overflow-y-auto space-y-6 flex-1 text-sm">
         <input type="hidden" id="studentId">
 
-        <!-- Photo Upload Row (All Optional) -->
+        <!-- Photo Upload Row -->
         <div>
           <h4 class="text-xs font-bold text-indigo-950 uppercase tracking-wider mb-2 flex items-center gap-2">
             <i class="fa-solid fa-camera text-indigo-600"></i> Photographs (Optional - Auto-compressed &le; 200 KB)
@@ -396,200 +396,201 @@
     </div>
   </div>
 
-  <!-- ==================== EXACT 1-PAGE A4 PRINTABLE PROFILE SHEET TEMPLATE ==================== -->
+  <!-- ==================== STRETCHED FULL-PAGE A4 PRINTABLE PROFILE SHEET ==================== -->
   <div id="printableProfile" style="display: none;">
-    <div style="font-family: Arial, Helvetica, sans-serif; width: 100%; max-width: 790px; margin: 0 auto; padding: 4px 6px; color: #000; background: #fff; box-sizing: border-box;">
+    <div style="font-family: Arial, Helvetica, sans-serif; width: 100%; max-width: 800px; margin: 0 auto; padding: 4px 6px; color: #000; background: #fff; box-sizing: border-box;">
       
       <!-- 1. School Header -->
-      <div style="text-align: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 5px; margin-bottom: 8px; background: linear-gradient(to right, #eff6ff, #f8fafc, #eff6ff); padding-top: 5px; border-radius: 4px;">
-        <h2 style="margin: 0; font-size: 19px; font-weight: 800; color: #1e3a8a; letter-spacing: 0.5px; text-transform: uppercase;">
+      <div style="text-align: center; border-bottom: 2.5px solid #1e3a8a; padding-bottom: 6px; margin-bottom: 12px; background: linear-gradient(to right, #eff6ff, #f8fafc, #eff6ff); padding-top: 6px; border-radius: 4px;">
+        <h2 style="margin: 0; font-size: 21px; font-weight: 800; color: #1e3a8a; letter-spacing: 0.5px; text-transform: uppercase;">
           EKLAVYA MODEL RESIDENTIAL SCHOOL, SUBDEGA
         </h2>
-        <p style="margin: 3px 0 0 0; font-size: 13px; font-weight: 800; color: #1e293b;">
+        <p style="margin: 4px 0 0 0; font-size: 13.5px; font-weight: 800; color: #1e293b;">
           At/Po: Bhawanipur, Dist: Sundargarh, Odisha - 770014
         </p>
-        <h3 style="margin: 5px 0 2px 0; font-size: 15.5px; font-weight: 800; color: #000; letter-spacing: 1.5px;">
+        <h3 style="margin: 6px 0 2px 0; font-size: 16px; font-weight: 800; color: #000; letter-spacing: 1.5px;">
           <u>STUDENT PROFILE</u>
         </h3>
       </div>
 
-      <!-- Main Two-Column Layout (Left: Data Tables, Right: Perfectly Aligned Photo Boxes) -->
-      <div style="display: flex; gap: 14px; align-items: flex-start;">
+      <!-- Main Two-Column Layout -->
+      <div style="display: flex; gap: 16px; align-items: flex-start;">
 
-        <!-- LEFT COLUMN: All Details Tables -->
-        <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+        <!-- LEFT COLUMN: All Details Tables (Stretched with comfortable row heights) -->
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
 
           <!-- SECTION 1: Basic Details -->
           <div>
-            <div style="font-weight: 800; font-size: 11px; color: #1e3a8a; text-transform: uppercase; margin-bottom: 2px;">
+            <div style="font-weight: 800; font-size: 11.5px; color: #1e3a8a; text-transform: uppercase; margin-bottom: 3px;">
               Basic Details:-
             </div>
-            <table style="width: 100%; border-collapse: collapse; font-size: 10.5px; border: 1.5px solid #000;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 11px; border: 1.5px solid #000;">
               <tr style="background: #f8fafc;">
-                <td style="padding: 2.5px 5px; border: 1px solid #000; width: 38%; font-weight: 800; color: #000;">Student Name</td>
-                <td id="pFullName" style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
+                <td style="padding: 5px 7px; border: 1px solid #000; width: 38%; font-weight: 800; color: #000;">Student Name</td>
+                <td id="pFullName" style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
               </tr>
               <tr>
-                <td style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">Father's Name</td>
-                <td id="pFatherName" style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
+                <td style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">Father's Name</td>
+                <td id="pFatherName" style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
               </tr>
               <tr style="background: #f8fafc;">
-                <td style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">Mother's Name</td>
-                <td id="pMotherName" style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
+                <td style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">Mother's Name</td>
+                <td id="pMotherName" style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
               </tr>
               <tr>
-                <td style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">Date of Birth</td>
-                <td id="pDob" style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
+                <td style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">Date of Birth</td>
+                <td id="pDob" style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
               </tr>
               <tr style="background: #f8fafc;">
-                <td style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">Gender</td>
-                <td id="pGender" style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
+                <td style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">Gender</td>
+                <td id="pGender" style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
               </tr>
               <tr>
-                <td style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">Category</td>
-                <td id="pCategory" style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
+                <td style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">Category</td>
+                <td id="pCategory" style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
               </tr>
               <tr style="background: #f8fafc;">
-                <td style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">Sub-Category</td>
-                <td id="pSubCategory" style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
+                <td style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">Sub-Category</td>
+                <td id="pSubCategory" style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
               </tr>
               <tr>
-                <td style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">Blood Group</td>
-                <td id="pBloodGroup" style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
+                <td style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">Blood Group</td>
+                <td id="pBloodGroup" style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
               </tr>
               <tr style="background: #f8fafc;">
-                <td style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">Student's Aadhar</td>
-                <td id="pAadhar" style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
+                <td style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">Student's Aadhar</td>
+                <td id="pAadhar" style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
               </tr>
             </table>
           </div>
 
           <!-- SECTION 2: Admission Details -->
           <div>
-            <div style="font-weight: 800; font-size: 11px; color: #1e3a8a; text-transform: uppercase; margin-bottom: 2px;">
+            <div style="font-weight: 800; font-size: 11.5px; color: #1e3a8a; text-transform: uppercase; margin-bottom: 3px;">
               Admission Details:-
             </div>
-            <table style="width: 100%; border-collapse: collapse; font-size: 10.5px; border: 1.5px solid #000;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 11px; border: 1.5px solid #000;">
               <tr>
-                <td style="padding: 2.5px 5px; border: 1px solid #000; width: 38%; font-weight: 800; color: #000; background: #f8fafc;">Admission No.</td>
-                <td id="pAdmissionNo" style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
+                <td style="padding: 5px 7px; border: 1px solid #000; width: 38%; font-weight: 800; color: #000; background: #f8fafc;">Admission No.</td>
+                <td id="pAdmissionNo" style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
               </tr>
               <tr>
-                <td style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">Admission Date</td>
-                <td id="pAdmissionDate" style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
+                <td style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">Admission Date</td>
+                <td id="pAdmissionDate" style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
               </tr>
               <tr style="background: #f8fafc;">
-                <td style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">PEN No.</td>
-                <td id="pPenNo" style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
+                <td style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">PEN No.</td>
+                <td id="pPenNo" style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
               </tr>
             </table>
           </div>
 
           <!-- SECTION 3: Academics Details -->
           <div>
-            <div style="font-weight: 800; font-size: 11px; color: #1e3a8a; text-transform: uppercase; margin-bottom: 2px;">
+            <div style="font-weight: 800; font-size: 11.5px; color: #1e3a8a; text-transform: uppercase; margin-bottom: 3px;">
               Academics Details:-
             </div>
-            <table style="width: 100%; border-collapse: collapse; font-size: 10.5px; border: 1.5px solid #000;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 11px; border: 1.5px solid #000;">
               <tr>
-                <td style="padding: 2.5px 5px; border: 1px solid #000; width: 38%; font-weight: 800; color: #000; background: #f8fafc;">Class</td>
-                <td id="pClass" style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
+                <td style="padding: 5px 7px; border: 1px solid #000; width: 38%; font-weight: 800; color: #000; background: #f8fafc;">Class</td>
+                <td id="pClass" style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
               </tr>
               <tr>
-                <td style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">Section</td>
-                <td id="pSection" style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
+                <td style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">Section</td>
+                <td id="pSection" style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
               </tr>
               <tr style="background: #f8fafc;">
-                <td style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">Roll No.</td>
-                <td id="pRollNo" style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
+                <td style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">Roll No.</td>
+                <td id="pRollNo" style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
               </tr>
               <tr>
-                <td style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">House</td>
-                <td id="pHouse" style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
+                <td style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">House</td>
+                <td id="pHouse" style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
               </tr>
             </table>
           </div>
 
           <!-- SECTION 4: Address & Contact Details -->
           <div>
-            <div style="font-weight: 800; font-size: 11px; color: #1e3a8a; text-transform: uppercase; margin-bottom: 2px;">
+            <div style="font-weight: 800; font-size: 11.5px; color: #1e3a8a; text-transform: uppercase; margin-bottom: 3px;">
               Address &amp; Contact Details:-
             </div>
-            <table style="width: 100%; border-collapse: collapse; font-size: 10.5px; border: 1.5px solid #000;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 11px; border: 1.5px solid #000;">
               <tr>
-                <td style="padding: 2.5px 5px; border: 1px solid #000; width: 38%; font-weight: 800; color: #000; background: #f8fafc;">AT</td>
-                <td id="pAt" style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
+                <td style="padding: 5px 7px; border: 1px solid #000; width: 38%; font-weight: 800; color: #000; background: #f8fafc;">AT</td>
+                <td id="pAt" style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
               </tr>
               <tr>
-                <td style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">PO</td>
-                <td id="pPo" style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
+                <td style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">PO</td>
+                <td id="pPo" style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
               </tr>
               <tr style="background: #f8fafc;">
-                <td style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">Block</td>
-                <td id="pBlock" style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
+                <td style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">Block</td>
+                <td id="pBlock" style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
               </tr>
               <tr>
-                <td style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">District</td>
-                <td id="pDistrict" style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">Sundargarh</td>
+                <td style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">District</td>
+                <td id="pDistrict" style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">Sundargarh</td>
               </tr>
               <tr style="background: #f8fafc;">
-                <td style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">State</td>
-                <td id="pState" style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">Odisha</td>
+                <td style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">State</td>
+                <td id="pState" style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">Odisha</td>
               </tr>
               <tr>
-                <td style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">Pin Code</td>
-                <td id="pPinCode" style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
+                <td style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">Pin Code</td>
+                <td id="pPinCode" style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
               </tr>
               <tr style="background: #f8fafc;">
-                <td style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">Mobile No.</td>
-                <td id="pMobile" style="padding: 2.5px 5px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
+                <td style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">Mobile No.</td>
+                <td id="pMobile" style="padding: 5px 7px; border: 1px solid #000; font-weight: 800; color: #000;">&nbsp;</td>
               </tr>
             </table>
           </div>
 
         </div>
 
-        <!-- RIGHT COLUMN: Stacked Photos (Aligned with Student Name row; Ends exactly with Mobile No row) -->
-        <div style="width: 170px; margin-top: 18px; display: flex; flex-direction: column; justify-content: space-between; height: 570px; box-sizing: border-box;">
+        <!-- RIGHT COLUMN: Stacked Photos -->
+        <!-- margin-top: 50px starts top of Student Photo exactly level with Father's Name row -->
+        <div style="width: 175px; margin-top: 50px; display: flex; flex-direction: column; justify-content: space-between; height: 690px; box-sizing: border-box;">
           
-          <!-- 1. Student Photo Card -->
-          <div style="text-align: center; border: 1.5px solid #1e3a8a; border-radius: 4px; overflow: hidden; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-            <div id="boxStudentPhoto" style="width: 100%; height: 130px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; overflow: hidden; box-sizing: border-box;">
+          <!-- 1. Student Photo Card (Starts at Father's Name row) -->
+          <div style="text-align: center; border: 2px solid #1e3a8a; border-radius: 4px; overflow: hidden; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+            <div id="boxStudentPhoto" style="width: 100%; height: 175px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; overflow: hidden; box-sizing: border-box;">
               <img id="pPhotoStudent" style="display: none; width: 100%; height: 100%; object-fit: cover;">
               <div id="labelStudentPhoto" style="font-size: 11px; font-weight: 800; color: #64748b; padding: 6px;">
-                <i class="fa-solid fa-camera" style="font-size: 22px; display: block; margin-bottom: 4px; color: #94a3b8;"></i>
-                Paste Photo
+                <i class="fa-solid fa-camera" style="font-size: 24px; display: block; margin-bottom: 6px; color: #94a3b8;"></i>
+                Paste Passport Photo<br>(3.5 cm x 4.5 cm)
               </div>
             </div>
-            <div style="background: #1e3a8a; color: #fff; font-size: 11px; font-weight: 800; padding: 4px 0; text-transform: uppercase; letter-spacing: 0.5px; border-top: 1.5px solid #1e3a8a;">
+            <div style="background: #1e3a8a; color: #fff; font-size: 11px; font-weight: 800; padding: 4.5px 0; text-transform: uppercase; letter-spacing: 0.5px; border-top: 2px solid #1e3a8a;">
               Student Photo
             </div>
           </div>
 
           <!-- 2. Father Photo Card -->
-          <div style="text-align: center; border: 1.5px solid #047857; border-radius: 4px; overflow: hidden; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-            <div id="boxFatherPhoto" style="width: 100%; height: 130px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; overflow: hidden; box-sizing: border-box;">
+          <div style="text-align: center; border: 2px solid #047857; border-radius: 4px; overflow: hidden; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+            <div id="boxFatherPhoto" style="width: 100%; height: 175px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; overflow: hidden; box-sizing: border-box;">
               <img id="pPhotoFather" style="display: none; width: 100%; height: 100%; object-fit: cover;">
               <div id="labelFatherPhoto" style="font-size: 11px; font-weight: 800; color: #64748b; padding: 6px;">
-                <i class="fa-solid fa-camera" style="font-size: 22px; display: block; margin-bottom: 4px; color: #94a3b8;"></i>
-                Paste Photo
+                <i class="fa-solid fa-camera" style="font-size: 24px; display: block; margin-bottom: 6px; color: #94a3b8;"></i>
+                Paste Passport Photo<br>(3.5 cm x 4.5 cm)
               </div>
             </div>
-            <div style="background: #047857; color: #fff; font-size: 11px; font-weight: 800; padding: 4px 0; text-transform: uppercase; letter-spacing: 0.5px; border-top: 1.5px solid #047857;">
+            <div style="background: #047857; color: #fff; font-size: 11px; font-weight: 800; padding: 4.5px 0; text-transform: uppercase; letter-spacing: 0.5px; border-top: 2px solid #047857;">
               Father's Photo
             </div>
           </div>
 
-          <!-- 3. Mother Photo Card (Ends level with Mobile No. row) -->
-          <div style="text-align: center; border: 1.5px solid #b91c1c; border-radius: 4px; overflow: hidden; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-            <div id="boxMotherPhoto" style="width: 100%; height: 130px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; overflow: hidden; box-sizing: border-box;">
+          <!-- 3. Mother Photo Card (Ends exactly flush with Mobile No. row) -->
+          <div style="text-align: center; border: 2px solid #b91c1c; border-radius: 4px; overflow: hidden; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+            <div id="boxMotherPhoto" style="width: 100%; height: 175px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; overflow: hidden; box-sizing: border-box;">
               <img id="pPhotoMother" style="display: none; width: 100%; height: 100%; object-fit: cover;">
               <div id="labelMotherPhoto" style="font-size: 11px; font-weight: 800; color: #64748b; padding: 6px;">
-                <i class="fa-solid fa-camera" style="font-size: 22px; display: block; margin-bottom: 4px; color: #94a3b8;"></i>
-                Paste Photo
+                <i class="fa-solid fa-camera" style="font-size: 24px; display: block; margin-bottom: 6px; color: #94a3b8;"></i>
+                Paste Passport Photo<br>(3.5 cm x 4.5 cm)
               </div>
             </div>
-            <div style="background: #b91c1c; color: #fff; font-size: 11px; font-weight: 800; padding: 4px 0; text-transform: uppercase; letter-spacing: 0.5px; border-top: 1.5px solid #b91c1c;">
+            <div style="background: #b91c1c; color: #fff; font-size: 11px; font-weight: 800; padding: 4.5px 0; text-transform: uppercase; letter-spacing: 0.5px; border-top: 2px solid #b91c1c;">
               Mother's Photo
             </div>
           </div>
@@ -598,15 +599,15 @@
 
       </div>
 
-      <!-- Institutional Signatures (Pinned firmly to the bottom of the page) -->
-      <div style="margin-top: 36px; padding-top: 8px; display: flex; justify-content: space-between; font-size: 11.5px; padding-left: 20px; padding-right: 20px;">
+      <!-- Institutional Signatures (Firmly positioned at bottom of page) -->
+      <div style="margin-top: 50px; margin-bottom: 15px; display: flex; justify-content: space-between; font-size: 12px; padding: 0 24px;">
         <div style="text-align: center; width: 230px;">
           <div style="font-weight: 800;">_____________________</div>
-          <div style="margin-top: 4px; font-weight: 800; color: #000;">Class Teacher Signature</div>
+          <div style="margin-top: 5px; font-weight: 800; color: #000;">Class Teacher Signature</div>
         </div>
         <div style="text-align: center; width: 230px;">
           <div style="font-weight: 800;">_________________</div>
-          <div style="margin-top: 4px; font-weight: 800; color: #000;">Principal I/c</div>
+          <div style="margin-top: 5px; font-weight: 800; color: #000;">Principal I/c</div>
           <div style="font-size: 11px; font-weight: 800; color: #334155;">EMRS Subdega</div>
         </div>
       </div>
@@ -946,7 +947,7 @@
       }
     }
 
-    // 6. Dual-Mode A4 Printable Dossier Generator (Ensures single A4 page output)
+    // 6. Dual-Mode A4 Printable Dossier Generator (Stretched single A4 page)
     function printStudentProfile(id, withPhotos = true) {
       let s = null;
       if (id) {
