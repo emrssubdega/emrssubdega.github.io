@@ -11,18 +11,25 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     @media print {
-      body * { visibility: hidden; }
-      #printableProfile, #printableProfile * { visibility: visible; }
-      #printableProfile {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        margin: 0;
-        padding: 0;
-        background: #fff;
+      body * {
+        visibility: hidden !important;
       }
-      .no-print { display: none !important; }
+      #printableProfile, #printableProfile * {
+        visibility: visible !important;
+      }
+      #printableProfile {
+        display: block !important;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+      }
+      .no-print {
+        display: none !important;
+      }
     }
     .photo-preview {
       width: 100px;
@@ -73,7 +80,7 @@
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-6 grid grid-cols-1 sm:grid-cols-4 gap-3">
       <div class="sm:col-span-2 relative">
         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
-        <input type="text" id="searchInput" oninput="filterStudents()" placeholder="Search by name, admission no, or PEN..." class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white transition outline-none">
+        <input type="text" id="searchInput" oninput="filterStudents()" autocomplete="off" placeholder="Search by name, admission no, or PEN..." class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white transition outline-none">
       </div>
       <div>
         <select id="classFilter" onchange="filterStudents()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white transition outline-none">
@@ -135,10 +142,11 @@
         <button onclick="closeStudentModal()" class="text-white/75 hover:text-white text-xl">&times;</button>
       </div>
 
-      <form id="studentForm" onsubmit="saveStudent(event)" class="p-6 overflow-y-auto space-y-6 flex-1 text-sm">
+      <!-- autocomplete="off" added to form and inputs to eliminate browser suggestion popups -->
+      <form id="studentForm" onsubmit="saveStudent(event)" autocomplete="off" class="p-6 overflow-y-auto space-y-6 flex-1 text-sm">
         <input type="hidden" id="studentId">
 
-        <!-- Photo Upload Row (Enforces Max 200 KB limit) -->
+        <!-- Photo Upload Row -->
         <div>
           <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-2">
             <i class="fa-solid fa-camera text-indigo-600"></i> Photographs (Auto-compressed to &le; 200 KB)
@@ -168,7 +176,7 @@
           </div>
         </div>
 
-        <!-- Academic / Enrollment Identification -->
+        <!-- Academic / Enrollment Info -->
         <div>
           <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-2">
             <i class="fa-solid fa-id-card text-indigo-600"></i> Enrollment Identification
@@ -176,11 +184,11 @@
           <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
             <div>
               <label class="block text-xs font-medium text-slate-600 mb-1">Admission No *</label>
-              <input type="text" id="admissionNo" required class="w-full px-3 py-1.5 border rounded-lg outline-none focus:border-indigo-500">
+              <input type="text" id="admissionNo" autocomplete="off" required class="w-full px-3 py-1.5 border rounded-lg outline-none focus:border-indigo-500">
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-600 mb-1">PEN (UDISE+)</label>
-              <input type="text" id="penNo" placeholder="Permanent Education No" class="w-full px-3 py-1.5 border rounded-lg outline-none focus:border-indigo-500">
+              <input type="text" id="penNo" autocomplete="off" placeholder="Permanent Education No" class="w-full px-3 py-1.5 border rounded-lg outline-none focus:border-indigo-500">
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-600 mb-1">Class *</label>
@@ -197,14 +205,14 @@
             <div>
               <label class="block text-xs font-medium text-slate-600 mb-1">Section / Roll</label>
               <div class="flex gap-2">
-                <input type="text" id="section" value="A" placeholder="Sec" class="w-1/2 px-2 py-1.5 border rounded-lg outline-none">
-                <input type="text" id="rollNo" placeholder="Roll" class="w-1/2 px-2 py-1.5 border rounded-lg outline-none">
+                <input type="text" id="section" value="A" autocomplete="off" placeholder="Sec" class="w-1/2 px-2 py-1.5 border rounded-lg outline-none">
+                <input type="text" id="rollNo" autocomplete="off" placeholder="Roll" class="w-1/2 px-2 py-1.5 border rounded-lg outline-none">
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Personal Details -->
+        <!-- Personal Bio-Data -->
         <div>
           <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-2">
             <i class="fa-solid fa-user text-indigo-600"></i> Personal Bio-Data
@@ -212,7 +220,7 @@
           <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
             <div class="sm:col-span-2">
               <label class="block text-xs font-medium text-slate-600 mb-1">Full Name *</label>
-              <input type="text" id="fullName" required class="w-full px-3 py-1.5 border rounded-lg outline-none focus:border-indigo-500">
+              <input type="text" id="fullName" autocomplete="off" required class="w-full px-3 py-1.5 border rounded-lg outline-none focus:border-indigo-500">
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-600 mb-1">Gender *</label>
@@ -237,7 +245,7 @@
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-600 mb-1">Sub-Tribe / Caste</label>
-              <input type="text" id="subCaste" placeholder="e.g. Kisan, Oram, Munda" class="w-full px-3 py-1.5 border rounded-lg outline-none">
+              <input type="text" id="subCaste" autocomplete="off" placeholder="e.g. Kisan, Oram, Munda" class="w-full px-3 py-1.5 border rounded-lg outline-none">
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-600 mb-1">Blood Group</label>
@@ -255,7 +263,7 @@
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-600 mb-1">Hostel House</label>
-              <input type="text" id="houseName" placeholder="e.g. Eklavya House" class="w-full px-3 py-1.5 border rounded-lg outline-none">
+              <input type="text" id="houseName" autocomplete="off" placeholder="e.g. Eklavya House" class="w-full px-3 py-1.5 border rounded-lg outline-none">
             </div>
           </div>
         </div>
@@ -268,39 +276,39 @@
           <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
             <div>
               <label class="block text-xs font-medium text-slate-600 mb-1">Father's Name</label>
-              <input type="text" id="fatherName" class="w-full px-3 py-1.5 border rounded-lg outline-none">
+              <input type="text" id="fatherName" autocomplete="off" class="w-full px-3 py-1.5 border rounded-lg outline-none">
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-600 mb-1">Father's Occupation</label>
-              <input type="text" id="fatherOccupation" class="w-full px-3 py-1.5 border rounded-lg outline-none">
+              <input type="text" id="fatherOccupation" autocomplete="off" class="w-full px-3 py-1.5 border rounded-lg outline-none">
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-600 mb-1">Mother's Name</label>
-              <input type="text" id="motherName" class="w-full px-3 py-1.5 border rounded-lg outline-none">
+              <input type="text" id="motherName" autocomplete="off" class="w-full px-3 py-1.5 border rounded-lg outline-none">
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-600 mb-1">Mother's Occupation</label>
-              <input type="text" id="motherOccupation" class="w-full px-3 py-1.5 border rounded-lg outline-none">
+              <input type="text" id="motherOccupation" autocomplete="off" class="w-full px-3 py-1.5 border rounded-lg outline-none">
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-600 mb-1">Primary Contact (Phone)</label>
-              <input type="tel" id="guardianContact" placeholder="10-digit mobile" class="w-full px-3 py-1.5 border rounded-lg outline-none">
+              <input type="tel" id="guardianContact" autocomplete="off" placeholder="10-digit mobile" class="w-full px-3 py-1.5 border rounded-lg outline-none">
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-600 mb-1">Alternate Contact</label>
-              <input type="tel" id="alternateContact" class="w-full px-3 py-1.5 border rounded-lg outline-none">
+              <input type="tel" id="alternateContact" autocomplete="off" class="w-full px-3 py-1.5 border rounded-lg outline-none">
             </div>
             <div class="sm:col-span-2">
               <label class="block text-xs font-medium text-slate-600 mb-1">Village / Street Address</label>
-              <input type="text" id="address" placeholder="At/Po..." class="w-full px-3 py-1.5 border rounded-lg outline-none">
+              <input type="text" id="address" autocomplete="off" placeholder="At/Po..." class="w-full px-3 py-1.5 border rounded-lg outline-none">
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-600 mb-1">District</label>
-              <input type="text" id="district" value="Sundargarh" class="w-full px-3 py-1.5 border rounded-lg outline-none">
+              <input type="text" id="district" value="Sundargarh" autocomplete="off" class="w-full px-3 py-1.5 border rounded-lg outline-none">
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-600 mb-1">PIN Code</label>
-              <input type="text" id="pincode" class="w-full px-3 py-1.5 border rounded-lg outline-none">
+              <input type="text" id="pincode" autocomplete="off" class="w-full px-3 py-1.5 border rounded-lg outline-none">
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-600 mb-1">Admission Date</label>
@@ -321,8 +329,8 @@
   </div>
 
   <!-- ==================== A4 PRINTABLE PROFILE SHEET ==================== -->
-  <div id="printableProfile" class="hidden">
-    <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 24px; color: #1e293b;">
+  <div id="printableProfile" style="display: none;">
+    <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 24px; color: #1e293b; background: #fff;">
       <!-- Letterhead / Header -->
       <div style="text-align: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 12px; margin-bottom: 16px;">
         <h2 style="margin: 0; font-size: 20px; font-weight: bold; color: #1e3a8a; text-transform: uppercase;">EKLAVYA MODEL RESIDENTIAL SCHOOL (EMRS), SUBDEGA</h2>
@@ -430,7 +438,7 @@
         </div>
       </div>
 
-      <!-- Section 3: Institutional Signatures (Without Student Signature) -->
+      <!-- Section 3: Institutional Signatures -->
       <div style="margin-top: 45px; display: flex; justify-content: space-between; font-size: 11px;">
         <div style="text-align: center; width: 30%; border-top: 1px solid #334155; padding-top: 6px;">
           Parent / Guardian Signature
@@ -449,7 +457,6 @@
   <!-- ==================== JAVASCRIPT APPLICATION LOGIC ==================== -->
   <script>
     // 1. Supabase Initialization
-    // Check if window.sb is already active in parent scope, else initialize
     const SUPABASE_URL = "https://eukhcbxrxzhpwfizoqun.supabase.co";
     const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1a2hjYnhyeHpocHdmaXpvcXVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkyMjk4MTAsImV4cCI6MjEwNDgwNTgxMH0.4655_txow4JwIp6PV0kiSQN5f6pQFObpQI4flnV2WBw"; 
 
@@ -613,17 +620,48 @@
       renderTable(filtered);
     }
 
-    // 5. CRUD Logic
+    // 5. Explicitly Clears Every Field to Stop Pre-population
     function openStudentModal() {
       document.getElementById('studentForm').reset();
+      
+      // Explicit reset
       document.getElementById('studentId').value = '';
-      document.getElementById('modalTitle').innerText = 'Add New Student';
-      document.getElementById('previewStudentPhoto').src = 'https://placehold.co/100x120?text=Student';
-      document.getElementById('previewFatherPhoto').src = 'https://placehold.co/100x120?text=Father';
-      document.getElementById('previewMotherPhoto').src = 'https://placehold.co/100x120?text=Mother';
+      document.getElementById('admissionNo').value = '';
+      document.getElementById('penNo').value = '';
+      document.getElementById('className').value = 'Class VI';
+      document.getElementById('section').value = 'A';
+      document.getElementById('rollNo').value = '';
+      document.getElementById('fullName').value = '';
+      document.getElementById('gender').value = 'Male';
+      document.getElementById('dob').value = '';
+      document.getElementById('category').value = 'ST';
+      document.getElementById('subCaste').value = '';
+      document.getElementById('bloodGroup').value = '';
+      document.getElementById('houseName').value = '';
+      document.getElementById('fatherName').value = '';
+      document.getElementById('fatherOccupation').value = '';
+      document.getElementById('motherName').value = '';
+      document.getElementById('motherOccupation').value = '';
+      document.getElementById('guardianContact').value = '';
+      document.getElementById('alternateContact').value = '';
+      document.getElementById('address').value = '';
+      document.getElementById('district').value = 'Sundargarh';
+      document.getElementById('pincode').value = '';
+      document.getElementById('admissionDate').value = '';
+
+      // Clear File Pickers and Previews
+      document.getElementById('fileStudentPhoto').value = '';
+      document.getElementById('fileFatherPhoto').value = '';
+      document.getElementById('fileMotherPhoto').value = '';
       document.getElementById('urlStudentPhoto').value = '';
       document.getElementById('urlFatherPhoto').value = '';
       document.getElementById('urlMotherPhoto').value = '';
+
+      document.getElementById('previewStudentPhoto').src = 'https://placehold.co/100x120?text=Student';
+      document.getElementById('previewFatherPhoto').src = 'https://placehold.co/100x120?text=Father';
+      document.getElementById('previewMotherPhoto').src = 'https://placehold.co/100x120?text=Mother';
+
+      document.getElementById('modalTitle').innerText = 'Add New Student';
       document.getElementById('studentModal').classList.remove('hidden');
     }
 
@@ -746,7 +784,7 @@
       }
     }
 
-    // 6. A4 Printable Dossier Generator (With Parent Signature Only)
+    // 6. Robust A4 Printable Dossier Generator (Ensures DOM and Images Load Before Print)
     function printStudentProfile(id) {
       const s = studentsData.find(x => x.id === id);
       if (!s) return;
@@ -773,7 +811,14 @@
       document.getElementById('pPhotoFather').src = s.father_photo_url || 'https://placehold.co/90x110?text=No+Photo';
       document.getElementById('pPhotoMother').src = s.mother_photo_url || 'https://placehold.co/90x110?text=No+Photo';
 
-      window.print();
+      const printElem = document.getElementById('printableProfile');
+      printElem.style.display = 'block';
+
+      // Slight timeout to give browser layout and images time to mount before opening print dialog
+      setTimeout(() => {
+        window.print();
+        printElem.style.display = 'none';
+      }, 350);
     }
 
     // Initialize application on page load
