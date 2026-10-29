@@ -430,15 +430,15 @@
         </div>
       </div>
 
-      <!-- Section 3: Institutional Signatures -->
-      <div style="margin-top: 40px; display: flex; justify-content: space-between; font-size: 11px;">
-        <div style="text-align: center; width: 28%; border-top: 1px solid #334155; padding-top: 6px;">
-          Student / Parent Signature
+      <!-- Section 3: Institutional Signatures (Without Student Signature) -->
+      <div style="margin-top: 45px; display: flex; justify-content: space-between; font-size: 11px;">
+        <div style="text-align: center; width: 30%; border-top: 1px solid #334155; padding-top: 6px;">
+          Parent / Guardian Signature
         </div>
-        <div style="text-align: center; width: 28%; border-top: 1px solid #334155; padding-top: 6px;">
-          Class Teacher
+        <div style="text-align: center; width: 30%; border-top: 1px solid #334155; padding-top: 6px;">
+          Class Teacher Signature
         </div>
-        <div style="text-align: center; width: 28%; border-top: 1px solid #334155; padding-top: 6px;">
+        <div style="text-align: center; width: 30%; border-top: 1px solid #334155; padding-top: 6px;">
           Principal / Head of School<br>
           <span style="font-size: 9px; color: #64748b;">EMRS Subdega, Sundargarh</span>
         </div>
@@ -449,10 +449,11 @@
   <!-- ==================== JAVASCRIPT APPLICATION LOGIC ==================== -->
   <script>
     // 1. Supabase Initialization
+    // Check if window.sb is already active in parent scope, else initialize
     const SUPABASE_URL = "https://eukhcbxrxzhpwfizoqun.supabase.co";
-    const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1a2hjYnhyeHpocHdmaXpvcXVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc2NTQwNDMsImV4cCI6MjA3MzIyMDA0M30.6iG55g931Q2yK4U4Xh9qZ0Z7b4-3-Q3Y7x0A4c7f0mY"; 
-    
-    const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON) : null;
+    const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1a2hjYnhyeHpocHdmaXpvcXVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkyMjk4MTAsImV4cCI6MjEwNDgwNTgxMH0.4655_txow4JwIp6PV0kiSQN5f6pQFObpQI4flnV2WBw"; 
+
+    const sb = (window.supabaseClient || (window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON) : null));
 
     let studentsData = [];
 
@@ -490,7 +491,6 @@
               if (blob && blob.size <= MAX_BYTES) {
                 resolve(blob);
               } else {
-                // Secondary fallback pass with higher compression if still slightly over 200 KB
                 canvas.toBlob((blob2) => resolve(blob2 || file), 'image/jpeg', 0.5);
               }
             }, 'image/jpeg', 0.7);
@@ -746,7 +746,7 @@
       }
     }
 
-    // 6. A4 Printable Dossier Generator
+    // 6. A4 Printable Dossier Generator (With Parent Signature Only)
     function printStudentProfile(id) {
       const s = studentsData.find(x => x.id === id);
       if (!s) return;
