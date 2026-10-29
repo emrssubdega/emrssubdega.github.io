@@ -93,12 +93,18 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
       <div>
         <h2 class="text-2xl font-black text-slate-900">Student Directory</h2>
-        <p class="text-sm text-slate-500">Click any column header to sort alphabetically, numerically, or house-wise.</p>
+        <p class="text-sm text-slate-500">Manage student records, batch upload via Excel/CSV, and print A4 dossiers.</p>
       </div>
-      <div class="flex gap-2">
+      <div class="flex flex-wrap gap-2">
+        <!-- Bulk Excel Upload Button -->
+        <button onclick="openBulkModal()" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow transition">
+          <i class="fa-solid fa-file-excel"></i> Bulk Excel Upload
+        </button>
+        <!-- Print Blank Form -->
         <button onclick="printStudentProfile(null, false)" class="inline-flex items-center gap-2 bg-slate-700 hover:bg-slate-800 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow transition">
           <i class="fa-solid fa-file-lines"></i> Print Blank Form
         </button>
+        <!-- Add Single Student -->
         <button onclick="openStudentModal()" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow transition">
           <i class="fa-solid fa-user-plus"></i> Add New Student
         </button>
@@ -155,7 +161,7 @@
       </div>
     </div>
 
-    <!-- 2. SECTION POPUP / SELECTION BAR -->
+    <!-- 2. SECTION SELECTION BAR -->
     <div id="sectionContainer" class="bg-indigo-900 text-white rounded-2xl p-4 mb-6 shadow-sm hidden">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div class="flex items-center gap-3">
@@ -170,7 +176,6 @@
           </div>
         </div>
 
-        <!-- Section Action Buttons -->
         <div class="flex items-center gap-2 flex-wrap">
           <button onclick="selectSection('')" id="secBtnAll" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white text-indigo-900 shadow-sm transition">
             All Sections
@@ -181,9 +186,6 @@
           <button onclick="selectSection('B')" id="secBtnB" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-800 hover:bg-indigo-700 text-white transition">
             Section B
           </button>
-          <button onclick="selectSection('C')" id="secBtnC" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-800 hover:bg-indigo-700 text-white transition">
-            Section C
-          </button>
           <button onclick="resetClassSelection()" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-red-600/80 hover:bg-red-600 text-white transition ml-2">
             <i class="fa-solid fa-xmark"></i> Close
           </button>
@@ -191,7 +193,7 @@
       </div>
     </div>
 
-    <!-- 3. Search & Quick Filters -->
+    <!-- 3. Search & House Filter Bar -->
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
       <div class="sm:col-span-2 relative">
         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
@@ -244,6 +246,56 @@
       </div>
     </div>
   </main>
+
+  <!-- ==================== BULK EXCEL / CSV UPLOAD MODAL ==================== -->
+  <div id="bulkModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 no-print overflow-y-auto">
+    <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden my-6 border border-slate-200 flex flex-col">
+      <div class="bg-emerald-800 text-white px-6 py-4 flex items-center justify-between">
+        <div>
+          <h3 class="text-lg font-bold flex items-center gap-2">
+            <i class="fa-solid fa-file-excel"></i> Bulk Student Excel Upload
+          </h3>
+          <p class="text-xs text-emerald-100">Upload multiple student profiles at once (excluding photographs)</p>
+        </div>
+        <button onclick="closeBulkModal()" class="text-white/75 hover:text-white text-xl">&times;</button>
+      </div>
+
+      <div class="p-6 space-y-5 text-sm">
+        <!-- Step 1: Download Template -->
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <h4 class="font-bold text-emerald-950 text-sm">Step 1: Download Standard Template</h4>
+            <p class="text-xs text-emerald-800 mt-0.5">Use this template in Microsoft Excel or Google Sheets. Do not alter column names.</p>
+          </div>
+          <button onclick="downloadStudentTemplate()" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg font-bold text-xs shadow transition flex items-center gap-2 whitespace-nowrap">
+            <i class="fa-solid fa-download"></i> Download Template (.csv)
+          </button>
+        </div>
+
+        <!-- Step 2: Select and Upload File -->
+        <div class="border border-slate-200 rounded-xl p-4 bg-slate-50 space-y-3">
+          <h4 class="font-bold text-slate-900 text-sm">Step 2: Upload Filled File</h4>
+          <input type="file" id="bulkStudentFile" accept=".csv" class="w-full text-xs file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-700 file:text-white hover:file:bg-emerald-800 cursor-pointer">
+          <p class="text-xs text-slate-500">
+            * Matches records by <strong>Admission No</strong>. Existing records will be updated without removing their uploaded photos.
+          </p>
+        </div>
+
+        <!-- Status & Log Display -->
+        <div id="bulkLogBox" class="hidden text-xs p-3 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 max-h-36 overflow-y-auto font-mono">
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center justify-end gap-3 pt-3 border-t">
+          <button type="button" onclick="closeBulkModal()" class="px-4 py-2 border rounded-xl hover:bg-slate-100 font-semibold text-slate-600 transition">Cancel</button>
+          <button type="button" id="bulkUploadBtn" onclick="processBulkUpload()" class="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold rounded-xl shadow transition flex items-center gap-2">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <span>Process &amp; Import Records</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ==================== STUDENT ENTRY / EDIT MODAL ==================== -->
   <div id="studentModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 no-print overflow-y-auto">
@@ -397,7 +449,10 @@
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-600 mb-1">Section</label>
-              <input type="text" id="section" autocomplete="off" placeholder="e.g. A" class="w-full px-3 py-1.5 border rounded-lg outline-none">
+              <select id="section" class="w-full px-3 py-1.5 border rounded-lg outline-none focus:border-indigo-500">
+                <option value="A">Section A</option>
+                <option value="B">Section B</option>
+              </select>
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-600 mb-1">Roll No. (Numeric for auto-sort)</label>
@@ -838,13 +893,12 @@
     // Class selection handler
     function selectClass(className) {
       selectedClass = className;
-      selectedSection = ''; // reset section to all on class change
+      selectedSection = '';
 
       const roman = className.replace('Class ', '');
       document.getElementById('activeClassBadge').innerText = roman;
       document.getElementById('activeClassTitle').innerText = className;
 
-      // Highlight active class card
       document.querySelectorAll('.class-card').forEach(card => {
         if (card.querySelector('span:nth-child(2)').innerText === roman) {
           card.classList.add('border-indigo-600', 'bg-indigo-50/50', 'ring-2', 'ring-indigo-600');
@@ -853,7 +907,6 @@
         }
       });
 
-      // Show Section Bar
       document.getElementById('sectionContainer').classList.remove('hidden');
       updateSectionButtonsUI();
       filterStudents();
@@ -869,7 +922,6 @@
       filterStudents();
     }
 
-    // Section selection handler
     function selectSection(sec) {
       selectedSection = sec;
       updateSectionButtonsUI();
@@ -880,8 +932,7 @@
       const btns = {
         '': document.getElementById('secBtnAll'),
         'A': document.getElementById('secBtnA'),
-        'B': document.getElementById('secBtnB'),
-        'C': document.getElementById('secBtnC')
+        'B': document.getElementById('secBtnB')
       };
 
       Object.keys(btns).forEach(key => {
@@ -895,7 +946,7 @@
       });
     }
 
-    // COLUMN SORTING CONTROLLER
+    // Column Sorting Controller
     function toggleSort(columnKey) {
       if (currentSortColumn === columnKey) {
         currentSortOrder = (currentSortOrder === 'asc') ? 'desc' : 'asc';
@@ -922,7 +973,6 @@
       });
     }
 
-    // Filter and Sort Engine
     function filterStudents() {
       const q = document.getElementById('searchInput').value.toLowerCase().trim();
       const house = document.getElementById('houseFilter').value;
@@ -938,12 +988,10 @@
         return matchCls && matchSec && matchHouse && matchQ;
       });
 
-      // Execute dynamic sort based on active column and direction
       filtered.sort((a, b) => {
         let valA = a[currentSortColumn];
         let valB = b[currentSortColumn];
 
-        // 1. Numeric sorting for roll_no and admission_no
         if (currentSortColumn === 'roll_no' || currentSortColumn === 'admission_no') {
           const numA = parseInt(String(valA).replace(/\D/g, ''), 10);
           const numB = parseInt(String(valB).replace(/\D/g, ''), 10);
@@ -955,7 +1003,6 @@
           if (!isNaN(numB)) return currentSortOrder === 'asc' ? 1 : -1;
         }
 
-        // 2. String / Alphabetical sorting (full_name, house_name, class_name)
         valA = (valA || '').toString().toLowerCase();
         valB = (valB || '').toString().toLowerCase();
 
@@ -1020,7 +1067,173 @@
       `).join('');
     }
 
-    // 5. Open / Reset / Edit Handlers
+    // 5. Bulk Excel / CSV Upload & Template Generation
+    function openBulkModal() {
+      document.getElementById('bulkStudentFile').value = '';
+      const logBox = document.getElementById('bulkLogBox');
+      logBox.classList.add('hidden');
+      logBox.innerHTML = '';
+      document.getElementById('bulkModal').classList.remove('hidden');
+    }
+
+    function closeBulkModal() {
+      document.getElementById('bulkModal').classList.add('hidden');
+    }
+
+    function downloadStudentTemplate() {
+      const headers = [
+        "roll_no", "full_name", "class_name", "section", "admission_no", "pen_no",
+        "dob", "gender", "category", "sub_caste", "blood_group",
+        "house_name", "father_name", "mother_name", "guardian_contact",
+        "address", "district", "state", "pincode", "admission_date"
+      ];
+
+      const sampleRow = [
+        "1", "Sudhir Kumar", "Class VI", "A", "ADM202601", "PEN987654",
+        "2012-05-15", "Male", "ST", "Kisan", "A+",
+        "Brahmaputra", "Father Name", "Mother Name", "9876543210",
+        "At/Po Subdega", "Sundargarh", "Odisha", "770014", "2026-07-01"
+      ];
+
+      const csvContent = "data:text/csv;charset=utf-8," + [
+        headers.join(","),
+        sampleRow.join(",")
+      ].join("\n");
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "EMRS_Student_Bulk_Template.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // CSV Parse Helper
+    function parseCSVLine(text) {
+      let result = [];
+      let current = '';
+      let inQuotes = false;
+      for (let i = 0; i < text.length; i++) {
+        let char = text[i];
+        if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+          result.push(current.trim().replace(/^"|"$/g, ''));
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      result.push(current.trim().replace(/^"|"$/g, ''));
+      return result;
+    }
+
+    async function processBulkUpload() {
+      const fileInput = document.getElementById('bulkStudentFile');
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert('Please select a CSV file first.');
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const btn = document.getElementById('bulkUploadBtn');
+      const logBox = document.getElementById('bulkLogBox');
+      
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing...`;
+      logBox.classList.remove('hidden');
+      logBox.innerHTML = `<div>Reading file: ${file.name}...</div>`;
+
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        try {
+          const text = e.target.result;
+          const lines = text.split(/\r\n|\n/).filter(line => line.trim() !== '');
+
+          if (lines.length < 2) {
+            throw new Error('The file is empty or missing data rows.');
+          }
+
+          const rawHeaders = parseCSVLine(lines[0]);
+          const headers = rawHeaders.map(h => h.trim().toLowerCase());
+
+          // Verify essential columns
+          const req = ['full_name', 'class_name', 'admission_no'];
+          for (let r of req) {
+            if (!headers.includes(r)) {
+              throw new Error(`Missing required column: "${r}". Please use the official template.`);
+            }
+          }
+
+          logBox.innerHTML += `<div>Found ${lines.length - 1} records. Validating & preparing payload...</div>`;
+
+          let recordsToUpsert = [];
+          for (let i = 1; i < lines.length; i++) {
+            const values = parseCSVLine(lines[i]);
+            if (values.length < headers.length) continue;
+
+            let row = {};
+            headers.forEach((h, idx) => {
+              row[h] = values[idx] || null;
+            });
+
+            if (!row['admission_no'] || !row['full_name']) continue;
+
+            recordsToUpsert.push({
+              admission_no: String(row['admission_no']).trim(),
+              pen_no: row['pen_no'] ? String(row['pen_no']).trim() : null,
+              full_name: String(row['full_name']).trim(),
+              gender: row['gender'] ? String(row['gender']).trim() : null,
+              dob: row['dob'] ? String(row['dob']).trim() : null,
+              class_name: row['class_name'] ? String(row['class_name']).trim() : null,
+              section: row['section'] ? String(row['section']).trim().toUpperCase() : 'A',
+              roll_no: row['roll_no'] ? parseInt(row['roll_no'], 10) || null : null,
+              category: row['category'] ? String(row['category']).trim() : null,
+              sub_caste: row['sub_caste'] ? String(row['sub_caste']).trim() : null,
+              blood_group: row['blood_group'] ? String(row['blood_group']).trim() : null,
+              house_name: row['house_name'] ? String(row['house_name']).trim() : null,
+              father_name: row['father_name'] ? String(row['father_name']).trim() : null,
+              mother_name: row['mother_name'] ? String(row['mother_name']).trim() : null,
+              guardian_contact: row['guardian_contact'] ? String(row['guardian_contact']).trim() : null,
+              address: row['address'] ? String(row['address']).trim() : null,
+              district: row['district'] ? String(row['district']).trim() : 'Sundargarh',
+              state: row['state'] ? String(row['state']).trim() : 'Odisha',
+              pincode: row['pincode'] ? String(row['pincode']).trim() : null,
+              admission_date: row['admission_date'] ? String(row['admission_date']).trim() : null,
+              updated_at: new Date().toISOString()
+            });
+          }
+
+          if (recordsToUpsert.length === 0) {
+            throw new Error('No valid student rows found in the CSV file.');
+          }
+
+          logBox.innerHTML += `<div>Upserting ${recordsToUpsert.length} records to Supabase...</div>`;
+
+          // Upsert using admission_no as key
+          const { data, error } = await sb
+            .from('students')
+            .upsert(recordsToUpsert, { onConflict: 'admission_no' });
+
+          if (error) throw error;
+
+          logBox.innerHTML += `<div class="text-emerald-700 font-bold">Successfully imported ${recordsToUpsert.length} students!</div>`;
+          alert(`Successfully uploaded ${recordsToUpsert.length} student records!`);
+          closeBulkModal();
+          await loadStudents();
+        } catch (err) {
+          logBox.innerHTML += `<div class="text-red-600 font-bold">Error: ${err.message}</div>`;
+          alert('Upload failed: ' + err.message);
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> <span>Process &amp; Import Records</span>`;
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // 6. Single Student Modal Handlers
     function openStudentModal() {
       document.getElementById('studentForm').reset();
       
@@ -1119,7 +1332,6 @@
         const studentId = document.getElementById('studentId').value;
         const admNo = document.getElementById('admissionNo').value.trim() || `TMP_${Date.now()}`;
 
-        // Optional photo uploads
         let sUrl = await uploadPhotoIfSelected('fileStudentPhoto', 'students', admNo);
         let fUrl = await uploadPhotoIfSelected('fileFatherPhoto', 'parents', `father_${admNo}`);
         let mUrl = await uploadPhotoIfSelected('fileMotherPhoto', 'parents', `mother_${admNo}`);
@@ -1183,14 +1395,13 @@
       }
     }
 
-    // 6. Dual-Mode A4 Printable Dossier Generator
+    // 7. Dual-Mode A4 Printable Dossier Generator
     function printStudentProfile(id, withPhotos = true) {
       let s = null;
       if (id) {
         s = studentsData.find(x => x.id === id);
       }
 
-      // Populate Basic Details
       document.getElementById('pFullName').innerText = (s && s.full_name) || '';
       document.getElementById('pFatherName').innerText = (s && s.father_name) || '';
       document.getElementById('pMotherName').innerText = (s && s.mother_name) || '';
@@ -1201,18 +1412,15 @@
       document.getElementById('pBloodGroup').innerText = (s && s.blood_group) || '';
       document.getElementById('pAadhar').innerText = (s && s.aadhar_no) || '';
 
-      // Populate Admission Details
       document.getElementById('pAdmissionNo').innerText = (s && s.admission_no) || '';
       document.getElementById('pAdmissionDate').innerText = (s && s.admission_date) ? s.admission_date.split('-').reverse().join('/') : '';
       document.getElementById('pPenNo').innerText = (s && s.pen_no) || '';
 
-      // Populate Academics Details
       document.getElementById('pClass').innerText = (s && s.class_name) || '';
       document.getElementById('pSection').innerText = (s && s.section) || '';
       document.getElementById('pRollNo').innerText = (s && s.roll_no) || '';
       document.getElementById('pHouse').innerText = (s && s.house_name) || '';
 
-      // Populate Address & Contact Details
       document.getElementById('pAt').innerText = (s && (s.at_name || s.address)) || '';
       document.getElementById('pPo').innerText = (s && s.po_name) || '';
       document.getElementById('pBlock').innerText = (s && s.block_name) || '';
@@ -1221,7 +1429,6 @@
       document.getElementById('pPinCode').innerText = (s && s.pincode) || '';
       document.getElementById('pMobile').innerText = (s && s.guardian_contact) || '';
 
-      // Photo Containers
       const imgStudent = document.getElementById('pPhotoStudent');
       const lblStudent = document.getElementById('labelStudentPhoto');
       const imgFather = document.getElementById('pPhotoFather');
@@ -1256,7 +1463,6 @@
         lblMother.style.display = 'block';
       }
 
-      // Display and Print
       const printElem = document.getElementById('printableProfile');
       printElem.style.display = 'block';
 
