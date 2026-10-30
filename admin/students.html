@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../supabase-config.js"></script>
   <style>
     @media print {
       @page {
@@ -85,12 +86,22 @@
         </div>
       </div>
       <div class="flex items-center space-x-3">
+        <span class="text-xs text-indigo-200 hidden sm:inline">Logged in: <strong id="adminEmailBadge" class="text-white">-</strong></span>
         <a href="index.html" class="px-3 py-1.5 rounded-lg bg-indigo-800 hover:bg-indigo-700 text-xs font-semibold flex items-center gap-1.5 transition">
-          <i class="fa-solid fa-arrow-left"></i> Admin Dashboard
+          <i class="fa-solid fa-arrow-left"></i> Dashboard
         </a>
+        <button onclick="handleSignOut()" class="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-xs font-semibold flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+        </button>
       </div>
     </div>
   </header>
+
+  <!-- Auth Loading Shield -->
+  <div id="authShield" class="fixed inset-0 bg-slate-900/80 z-50 flex flex-col items-center justify-center text-white space-y-3">
+    <i class="fa-solid fa-shield-halved text-4xl text-amber-400 animate-pulse"></i>
+    <p class="text-sm font-semibold tracking-wide">Verifying administrator credentials...</p>
+  </div>
 
   <!-- Main Container -->
   <main class="max-w-7xl mx-auto px-4 py-8 w-full flex-1 no-print">
@@ -281,7 +292,6 @@
           </div>
         </div>
         <div class="flex items-center gap-2 flex-wrap">
-          <!-- BULK DELETE BUTTON -->
           <button onclick="bulkDeleteSelectedStudents()" class="px-3.5 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5" title="Permanently delete all selected students">
             <i class="fa-solid fa-trash-can"></i> Bulk Delete Selected
           </button>
@@ -430,7 +440,7 @@
               <i class="fa-solid fa-file-excel"></i> Bulk Student Excel Upload — <span id="modalClassBanner">Class VI</span>
             </h3>
             <span class="text-[10px] font-extrabold bg-emerald-600 text-white px-2 py-0.5 rounded-full border border-emerald-400">
-              v3.7 Anti-Duplicate
+              v3.8 Secure
             </span>
           </div>
           <p class="text-xs text-emerald-100">Upload multiple student profiles at once (Supports both DD/MM/YYYY and YYYY-MM-DD)</p>
@@ -747,7 +757,40 @@
     let currentSortColumn = 'roll_no';
     let currentSortOrder = 'asc';
 
-    // 2. Client-side Image Optimization Engine
+    // 2. Strict Authentication Guard
+    async function checkAuthSession() {
+      const shield = document.getElementById('authShield');
+      try {
+        const { data: { session }, error } = await sb.auth.getSession();
+        if (error || !session) {
+          // Not logged in -> Redirect immediately to login portal
+          alert('Access Denied: You must sign in to access the Student Directory.');
+          window.location.href = 'index.html';
+          return false;
+        }
+
+        // Show logged-in admin email in header
+        const emailBadge = document.getElementById('adminEmailBadge');
+        if (emailBadge && session.user && session.user.email) {
+          emailBadge.innerText = session.user.email;
+        }
+
+        if (shield) shield.style.display = 'none';
+        return true;
+      } catch (err) {
+        console.error('Auth verification error:', err);
+        window.location.href = 'index.html';
+        return false;
+      }
+    }
+
+    async function handleSignOut() {
+      if (!confirm('Are you sure you want to sign out of the Admin Portal?')) return;
+      await sb.auth.signOut();
+      window.location.href = 'index.html';
+    }
+
+    // 3. Client-side Image Optimization Engine
     async function compressImageTo200KB(file) {
       const MAX_BYTES = 200 * 1024;
       if (file.size <= MAX_BYTES) return file;
@@ -791,7 +834,7 @@
       });
     }
 
-    // 3. Supabase Storage Photo Uploader
+    // 4. Supabase Storage Photo Uploader
     async function uploadPhotoIfSelected(fileInputId, folder, prefix) {
       const fileInput = document.getElementById(fileInputId);
       if (!fileInput.files || fileInput.files.length === 0) return null;
@@ -825,7 +868,7 @@
       }
     }
 
-    // 4. Data Loading & View Switching with URL Hash Preservation
+    // 5. Data Loading & View Switching with URL Hash Preservation
     async function loadStudents() {
       try {
         const { data, error } = await sb
@@ -1098,7 +1141,7 @@
       updateMasterCheckboxState();
     }
 
-    // 5. Promotion Module Logic
+    // 6. Promotion Module Logic
     function openPromoteModal() {
       if (!currentActiveClass) return;
 
@@ -1181,7 +1224,7 @@
       }
     }
 
-    // 6. Delete Single Student / TC Exit Handler
+    // 7. Delete Single Student / TC Exit Handler
     async function deleteStudentRecord(id, name) {
       const reason = prompt(`Confirm Student Exit / Transfer Certificate (TC):\n\nType "CONFIRM" to permanently remove ${name} from the school active register.`);
       if (reason !== 'CONFIRM') {
@@ -1200,7 +1243,7 @@
       }
     }
 
-    // 7. BULK DELETE SELECTED STUDENTS (Delete duplicates in batch)
+    // 8. Bulk Delete Selected Students
     async function bulkDeleteSelectedStudents() {
       if (selectedStudentIds.size === 0) {
         alert('Please select at least one student checkbox to delete.');
@@ -1208,7 +1251,7 @@
       }
 
       const count = selectedStudentIds.size;
-      const confirmPrompt = prompt(`WARNING: Permanent Deletion of Duplicate Records\n\nYou are about to permanently delete ${count} selected student(s) from ${currentActiveClass}.\n\nType "DELETE" below to confirm:`);
+      const confirmPrompt = prompt(`WARNING: Permanent Deletion of Records\n\nYou are about to permanently delete ${count} selected student(s) from ${currentActiveClass}.\n\nType "DELETE" below to confirm:`);
       
       if (confirmPrompt !== 'DELETE') {
         alert('Bulk deletion cancelled. No records were modified.');
@@ -1233,7 +1276,7 @@
       }
     }
 
-    // 8. EXPORT CURRENT POPULATED CLASS DATA (CSV / Excel format)
+    // 9. Export Current Populated Class Data (CSV / Excel format)
     function exportCurrentClassData() {
       if (!currentActiveClass) return;
 
@@ -1306,7 +1349,7 @@
       document.body.removeChild(link);
     }
 
-    // 9. Class-Wise Bulk Excel / CSV Upload with Anti-Duplicate Smart Matching
+    // 10. Class-Wise Bulk Excel / CSV Upload with Anti-Duplicate Smart Matching
     function openClassBulkModal() {
       if (!currentActiveClass) return;
 
@@ -1465,7 +1508,7 @@
             const rollNo = cleanVal(row['roll_no']) ? parseInt(row['roll_no'], 10) || null : null;
             const sectionVal = (cleanVal(row['section']) || 'A').toUpperCase();
 
-            // ANTI-DUPLICATION MATCHING:
+            // Anti-duplication matching
             let existingMatch = null;
             if (admNo) {
               existingMatch = studentsData.find(s => s.admission_no && s.admission_no.toLowerCase() === admNo.toLowerCase());
@@ -1547,7 +1590,7 @@
       reader.readAsText(file);
     }
 
-    // 10. Single Student Add/Edit Modal Handlers
+    // 11. Single Student Add/Edit Modal Handlers
     function openStudentModal() {
       document.getElementById('studentForm').reset();
       
@@ -1701,7 +1744,7 @@
       }
     }
 
-    // 11. Single & Bulk Printable HTML Template Builder
+    // 12. Single & Bulk Printable HTML Template Builder
     function buildProfileSheetHtml(s, withPhotos) {
       const dobFormatted = (s && s.dob) ? s.dob.split('-').reverse().join('/') : '';
       const admDateFormatted = (s && s.admission_date) ? s.admission_date.split('-').reverse().join('/') : '';
@@ -1927,7 +1970,7 @@
       `;
     }
 
-    // 12. Single & Bulk Printing Execution
+    // 13. Single & Bulk Printing Execution
     function printStudentProfile(id, withPhotos = true) {
       let s = null;
       if (id) {
@@ -1968,8 +2011,13 @@
     // Listen to browser Back/Forward buttons to switch views smoothly
     window.addEventListener('hashchange', checkUrlHashForClass);
 
-    // Initialize application on page load
-    window.addEventListener('DOMContentLoaded', loadStudents);
+    // Initialize application on page load after verifying authentication
+    window.addEventListener('DOMContentLoaded', async () => {
+      const isAuth = await checkAuthSession();
+      if (isAuth) {
+        await loadStudents();
+      }
+    });
   </script>
 </body>
 </html>
