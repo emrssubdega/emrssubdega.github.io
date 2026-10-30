@@ -253,12 +253,19 @@
 
         <!-- Class Scoped Action Buttons -->
         <div class="flex items-center gap-2 flex-wrap">
+          <!-- EXPORT FILLED DATA BUTTON -->
+          <button onclick="exportCurrentClassData()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5" title="Download all student data for this class in CSV/Excel format">
+            <i class="fa-solid fa-file-export"></i> Export Data (CSV)
+          </button>
+          <!-- BULK UPLOAD BUTTON -->
           <button onclick="openClassBulkModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5">
             <i class="fa-solid fa-file-excel"></i> Bulk Upload (<span id="bulkClassLabel">Class VI</span>)
           </button>
+          <!-- PROMOTE STUDENTS BUTTON -->
           <button onclick="openPromoteModal()" class="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5">
             <i class="fa-solid fa-share"></i> Promote Students
           </button>
+          <!-- ADD SINGLE STUDENT BUTTON -->
           <button onclick="openStudentModal()" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5">
             <i class="fa-solid fa-user-plus"></i> Add Student
           </button>
@@ -418,16 +425,21 @@
     <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden my-6 border border-slate-200 flex flex-col">
       <div class="bg-emerald-800 text-white px-6 py-4 flex items-center justify-between">
         <div>
-          <h3 class="text-lg font-bold flex items-center gap-2">
-            <i class="fa-solid fa-file-excel"></i> Bulk Student Excel Upload — <span id="modalClassBanner">Class VI</span>
-          </h3>
-          <p class="text-xs text-emerald-100">Upload multiple student profiles at once with individual address columns (excluding photographs)</p>
+          <div class="flex items-center gap-2">
+            <h3 class="text-lg font-bold flex items-center gap-2">
+              <i class="fa-solid fa-file-excel"></i> Bulk Student Excel Upload — <span id="modalClassBanner">Class VI</span>
+            </h3>
+            <span class="text-[10px] font-extrabold bg-emerald-600 text-white px-2 py-0.5 rounded-full border border-emerald-400">
+              v3.6 Anti-Duplicate
+            </span>
+          </div>
+          <p class="text-xs text-emerald-100">Upload multiple student profiles at once (Supports both DD/MM/YYYY and YYYY-MM-DD)</p>
         </div>
         <button onclick="closeBulkModal()" class="text-white/75 hover:text-white text-xl">&times;</button>
       </div>
 
       <div class="p-6 space-y-5 text-sm">
-        <!-- Step 1: Download Template -->
+        <!-- Step 1: Download Blank Template -->
         <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
             <h4 class="font-bold text-emerald-950 text-sm">Step 1: Download Standard Template</h4>
@@ -443,7 +455,7 @@
           <h4 class="font-bold text-slate-900 text-sm">Step 2: Upload Filled File for <span id="uploadTargetClassLabel">Class VI</span></h4>
           <input type="file" id="bulkStudentFile" accept=".csv" class="w-full text-xs file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-700 file:text-white hover:file:bg-emerald-800 cursor-pointer">
           <p class="text-xs text-slate-500">
-            * Supports both DD/MM/YYYY and YYYY-MM-DD date formats automatically. Blank fields are safely saved and can be updated anytime later.
+            * <strong>No duplicate entries:</strong> Re-uploading this file will automatically update existing students without duplicating rows or deleting photos.
           </p>
         </div>
 
@@ -1188,7 +1200,81 @@
       }
     }
 
-    // 7. Class-Wise Bulk Excel / CSV Upload with Multi-Format Date Conversion
+    // 7. EXPORT CURRENT POPULATED CLASS DATA (CSV / Excel format)
+    function exportCurrentClassData() {
+      if (!currentActiveClass) return;
+
+      const list = studentsData.filter(s => {
+        const matchCls = s.class_name === currentActiveClass;
+        const matchSec = !currentActiveSection || (s.section && s.section.toUpperCase() === currentActiveSection.toUpperCase());
+        return matchCls && matchSec;
+      });
+
+      if (list.length === 0) {
+        alert(`No student records to export for ${currentActiveClass}.`);
+        return;
+      }
+
+      // Sort by roll number ascending
+      list.sort((a, b) => (parseInt(a.roll_no, 10) || 0) - (parseInt(b.roll_no, 10) || 0));
+
+      const headers = [
+        "roll_no", "full_name", "class_name", "section", "admission_no", "pen_no",
+        "dob", "gender", "category", "sub_caste", "blood_group",
+        "house_name", "father_name", "mother_name", "guardian_contact",
+        "at", "po", "block", "district", "state", "pin", "admission_date"
+      ];
+
+      const escapeCsv = (val) => {
+        if (val === null || val === undefined) return '';
+        let str = String(val).trim();
+        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+          str = '"' + str.replace(/"/g, '""') + '"';
+        }
+        return str;
+      };
+
+      const rows = list.map(s => [
+        escapeCsv(s.roll_no),
+        escapeCsv(s.full_name),
+        escapeCsv(s.class_name),
+        escapeCsv(s.section || 'A'),
+        escapeCsv(s.admission_no),
+        escapeCsv(s.pen_no),
+        escapeCsv(s.dob),
+        escapeCsv(s.gender),
+        escapeCsv(s.category),
+        escapeCsv(s.sub_caste),
+        escapeCsv(s.blood_group),
+        escapeCsv(s.house_name),
+        escapeCsv(s.father_name),
+        escapeCsv(s.mother_name),
+        escapeCsv(s.guardian_contact),
+        escapeCsv(s.at_name || s.address),
+        escapeCsv(s.po_name),
+        escapeCsv(s.block_name),
+        escapeCsv(s.district || 'Sundargarh'),
+        escapeCsv(s.state || 'Odisha'),
+        escapeCsv(s.pincode || '770073'),
+        escapeCsv(s.admission_date)
+      ].join(','));
+
+      const csvContent = "data:text/csv;charset=utf-8," + [
+        headers.join(','),
+        ...rows
+      ].join('\n');
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      const secTag = currentActiveSection ? `_Sec_${currentActiveSection}` : '';
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `EMRS_${currentActiveClass.replace(' ', '_')}${secTag}_Roster.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // 8. Class-Wise Bulk Excel / CSV Upload with Anti-Duplicate Smart Matching
     function openClassBulkModal() {
       if (!currentActiveClass) return;
 
@@ -1284,27 +1370,29 @@
           const rawHeaders = parseCSVLine(lines[0]);
           const headers = rawHeaders.map(h => h.trim().toLowerCase());
 
-          logBox.innerHTML += `<div>Found ${lines.length - 1} records. Binding strictly to ${currentActiveClass}...</div>`;
+          logBox.innerHTML += `<div>Found ${lines.length - 1} records. Matching with existing students to prevent duplicates...</div>`;
 
-          // Clean values: turn blank or undefined strings into true NULL
           const cleanVal = (val) => {
             if (val === undefined || val === null) return null;
             const s = String(val).trim();
             return s === '' ? null : s;
           };
 
-          // Safe multi-format Date Parser (DD/MM/YYYY, DD-MM-YYYY -> YYYY-MM-DD)
           const parseDateToIso = (rawDate) => {
             const v = cleanVal(rawDate);
             if (!v) return null;
 
-            // If already YYYY-MM-DD
-            if (/^\d{4}-\d{2}-\d{2}$/.test(v)) {
-              return v;
+            const datePart = v.split(' ')[0].trim();
+
+            const ymdMatch = datePart.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+            if (ymdMatch) {
+              const y = ymdMatch[1];
+              const m = ymdMatch[2].padStart(2, '0');
+              const d = ymdMatch[3].padStart(2, '0');
+              return `${y}-${m}-${d}`;
             }
 
-            // If DD/MM/YYYY or DD-MM-YYYY
-            const dmyMatch = v.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+            const dmyMatch = datePart.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})$/);
             if (dmyMatch) {
               const day = dmyMatch[1].padStart(2, '0');
               const month = dmyMatch[2].padStart(2, '0');
@@ -1312,8 +1400,7 @@
               return `${year}-${month}-${day}`;
             }
 
-            // Fallback: standard Date parsing if possible
-            const parsed = new Date(v);
+            const parsed = new Date(datePart);
             if (!isNaN(parsed.getTime())) {
               return parsed.toISOString().split('T')[0];
             }
@@ -1321,7 +1408,6 @@
             return null;
           };
 
-          // Safe normalizer for gender avoiding constraint violation
           const normalizeGender = (g) => {
             const val = cleanVal(g);
             if (!val) return null;
@@ -1343,25 +1429,41 @@
             });
 
             let admNo = cleanVal(row['admission_no']);
-            if (!admNo) {
-              admNo = `TMP_${Date.now()}_${i}`;
+            const fullName = cleanVal(row['full_name']) || 'Student';
+            const rollNo = cleanVal(row['roll_no']) ? parseInt(row['roll_no'], 10) || null : null;
+            const sectionVal = (cleanVal(row['section']) || 'A').toUpperCase();
+
+            // ANTI-DUPLICATION MATCHING:
+            // Find existing student by Admission No OR by (Class + Section + Roll No) OR by (Class + Full Name)
+            let existingMatch = null;
+            if (admNo) {
+              existingMatch = studentsData.find(s => s.admission_no && s.admission_no.toLowerCase() === admNo.toLowerCase());
+            }
+            if (!existingMatch && rollNo !== null) {
+              existingMatch = studentsData.find(s => s.class_name === currentActiveClass && (s.section || 'A').toUpperCase() === sectionVal && parseInt(s.roll_no, 10) === rollNo);
+            }
+            if (!existingMatch && fullName !== 'Student') {
+              existingMatch = studentsData.find(s => s.class_name === currentActiveClass && s.full_name && s.full_name.toLowerCase() === fullName.toLowerCase());
             }
 
-            const fullName = cleanVal(row['full_name']) || 'Student';
+            if (!admNo) {
+              admNo = existingMatch ? existingMatch.admission_no : `ADM_${Date.now()}_${i}`;
+            }
+
             const atVal = cleanVal(row['at'] || row['address']);
             const poVal = cleanVal(row['po'] || row['po_name']);
             const blockVal = cleanVal(row['block'] || row['block_name']);
             const pinVal = cleanVal(row['pin'] || row['pincode'] || row['pin_code']);
 
-            recordsToUpsert.push({
+            const recordPayload = {
               admission_no: admNo,
               pen_no: cleanVal(row['pen_no']),
               full_name: fullName,
               gender: normalizeGender(row['gender']),
               dob: parseDateToIso(row['dob']),
               class_name: currentActiveClass,
-              section: (cleanVal(row['section']) || 'A').toUpperCase(),
-              roll_no: cleanVal(row['roll_no']) ? parseInt(row['roll_no'], 10) || null : null,
+              section: sectionVal,
+              roll_no: rollNo,
               category: cleanVal(row['category']),
               sub_caste: cleanVal(row['sub_caste']),
               blood_group: cleanVal(row['blood_group']),
@@ -1378,23 +1480,31 @@
               pincode: pinVal || '770073',
               admission_date: parseDateToIso(row['admission_date']),
               updated_at: new Date().toISOString()
-            });
+            };
+
+            // If matched with an existing record in DB, attach its unique primary ID so PostgreSQL UPDATES in-place
+            if (existingMatch && existingMatch.id) {
+              recordPayload.id = existingMatch.id;
+            }
+
+            recordsToUpsert.push(recordPayload);
           }
 
           if (recordsToUpsert.length === 0) {
             throw new Error('No valid student records found in file.');
           }
 
-          logBox.innerHTML += `<div>Upserting ${recordsToUpsert.length} records into ${currentActiveClass}...</div>`;
+          logBox.innerHTML += `<div>Updating ${recordsToUpsert.length} records in ${currentActiveClass}...</div>`;
 
+          // Upsert to Supabase
           const { error } = await sb
             .from('students')
-            .upsert(recordsToUpsert, { onConflict: 'admission_no' });
+            .upsert(recordsToUpsert);
 
           if (error) throw error;
 
-          logBox.innerHTML += `<div class="text-emerald-700 font-bold">Successfully imported ${recordsToUpsert.length} students into ${currentActiveClass}!</div>`;
-          alert(`Successfully uploaded ${recordsToUpsert.length} students for ${currentActiveClass}!`);
+          logBox.innerHTML += `<div class="text-emerald-700 font-bold">Successfully imported &amp; updated ${recordsToUpsert.length} students without duplication!</div>`;
+          alert(`Successfully updated ${recordsToUpsert.length} students for ${currentActiveClass}!`);
           closeBulkModal();
           await loadStudents();
         } catch (err) {
@@ -1408,7 +1518,7 @@
       reader.readAsText(file);
     }
 
-    // 8. Single Student Add/Edit Modal Handlers
+    // 9. Single Student Add/Edit Modal Handlers
     function openStudentModal() {
       document.getElementById('studentForm').reset();
       
@@ -1562,7 +1672,7 @@
       }
     }
 
-    // 9. Single & Bulk Printable HTML Template Builder
+    // 10. Single & Bulk Printable HTML Template Builder
     function buildProfileSheetHtml(s, withPhotos) {
       const dobFormatted = (s && s.dob) ? s.dob.split('-').reverse().join('/') : '';
       const admDateFormatted = (s && s.admission_date) ? s.admission_date.split('-').reverse().join('/') : '';
@@ -1788,7 +1898,7 @@
       `;
     }
 
-    // 10. Single & Bulk Printing Execution
+    // 11. Single & Bulk Printing Execution
     function printStudentProfile(id, withPhotos = true) {
       let s = null;
       if (id) {
