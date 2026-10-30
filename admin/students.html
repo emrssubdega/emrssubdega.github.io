@@ -813,7 +813,7 @@
       }
     }
 
-    // 4. Data Loading & View Switching
+    // 4. Data Loading & View Switching with URL Hash Preservation
     async function loadStudents() {
       try {
         const { data, error } = await sb
@@ -824,9 +824,9 @@
         studentsData = data || [];
 
         updateClassCardCounts();
-        if (currentActiveClass) {
-          filterStudents();
-        }
+        
+        // Restore view from URL Hash if page was refreshed or loaded with a hash
+        checkUrlHashForClass();
       } catch (err) {
         console.error('Error loading students:', err);
         document.getElementById('studentTableBody').innerHTML = `
@@ -843,10 +843,27 @@
       });
     }
 
+    // Checks URL hash on load/refresh (e.g., #Class-VI or #Class-X)
+    function checkUrlHashForClass() {
+      const hash = window.location.hash.replace('#', '').trim();
+      const validClasses = ['Class-VI', 'Class-VII', 'Class-VIII', 'Class-IX', 'Class-X', 'Class-XI', 'Class-XII'];
+      
+      if (hash && validClasses.includes(hash)) {
+        const formattedName = hash.replace('-', ' ');
+        openClassView(formattedName, false); // false = don't overwrite hash
+      } else {
+        backToClassSelection(false);
+      }
+    }
+
     // Switch to Class Window
-    function openClassView(className) {
+    function openClassView(className, updateHash = true) {
       currentActiveClass = className;
       currentActiveSection = ''; // default to all sections
+
+      if (updateHash) {
+        window.location.hash = className.replace(' ', '-');
+      }
 
       document.getElementById('activeClassTag').innerText = className;
       document.getElementById('activeClassTitle').innerText = `${className} Student Roster`;
@@ -866,10 +883,15 @@
     }
 
     // Switch Back to Class Grid
-    function backToClassSelection() {
+    function backToClassSelection(updateHash = true) {
       currentActiveClass = '';
       currentActiveSection = '';
       selectedStudentIds.clear();
+
+      if (updateHash) {
+        history.pushState("", document.title, window.location.pathname + window.location.search);
+      }
+
       document.getElementById('viewClassRoster').classList.add('hidden');
       document.getElementById('viewClassSelection').classList.remove('hidden');
       updateClassCardCounts();
@@ -928,7 +950,7 @@
       });
     }
 
-    // Selection Handling (Check / Uncheck students for bulk operations)
+    // Selection Handling
     function toggleStudentSelection(id, checked) {
       if (checked) {
         selectedStudentIds.add(id);
@@ -1274,14 +1296,12 @@
 
           logBox.innerHTML += `<div>Found ${lines.length - 1} records. Binding strictly to ${currentActiveClass}...</div>`;
 
-          // Clean values: turn blank or undefined strings into true NULL
           const cleanVal = (val) => {
             if (val === undefined || val === null) return null;
             const s = String(val).trim();
             return s === '' ? null : s;
           };
 
-          // Safe normalizer for gender avoiding constraint violation
           const normalizeGender = (g) => {
             const val = cleanVal(g);
             if (!val) return null;
@@ -1302,7 +1322,6 @@
               row[h] = values[idx] || null;
             });
 
-            // Extract admission number or generate temporary unique ID if left blank
             let admNo = cleanVal(row['admission_no']);
             if (!admNo) {
               admNo = `TMP_${Date.now()}_${i}`;
@@ -1320,7 +1339,7 @@
               full_name: fullName,
               gender: normalizeGender(row['gender']),
               dob: cleanVal(row['dob']),
-              class_name: currentActiveClass, // Bound strictly to active class
+              class_name: currentActiveClass,
               section: (cleanVal(row['section']) || 'A').toUpperCase(),
               roll_no: cleanVal(row['roll_no']) ? parseInt(row['roll_no'], 10) || null : null,
               category: cleanVal(row['category']),
@@ -1336,7 +1355,7 @@
               block_name: blockVal,
               district: cleanVal(row['district']) || 'Sundargarh',
               state: cleanVal(row['state']) || 'Odisha',
-              pincode: pinVal,
+              pincode: pinVal || '770073',
               admission_date: cleanVal(row['admission_date']),
               updated_at: new Date().toISOString()
             });
@@ -1395,7 +1414,7 @@
       document.getElementById('blockField').value = '';
       document.getElementById('district').value = 'Sundargarh';
       document.getElementById('state').value = 'Odisha';
-      document.getElementById('pincode').value = '';
+      document.getElementById('pincode').value = '770073';
       document.getElementById('admissionDate').value = '';
 
       document.getElementById('fileStudentPhoto').value = '';
@@ -1446,7 +1465,7 @@
       document.getElementById('blockField').value = s.block_name || '';
       document.getElementById('district').value = s.district || 'Sundargarh';
       document.getElementById('state').value = s.state || 'Odisha';
-      document.getElementById('pincode').value = s.pincode || '';
+      document.getElementById('pincode').value = s.pincode || '770073';
       document.getElementById('admissionDate').value = s.admission_date || '';
 
       document.getElementById('urlStudentPhoto').value = s.student_photo_url || '';
@@ -1494,7 +1513,7 @@
           block_name: document.getElementById('blockField').value.trim() || null,
           district: document.getElementById('district').value || 'Sundargarh',
           state: document.getElementById('state').value.trim() || 'Odisha',
-          pincode: document.getElementById('pincode').value.trim() || null,
+          pincode: document.getElementById('pincode').value.trim() || '770073',
           admission_date: document.getElementById('admissionDate').value || null,
           updated_at: new Date().toISOString()
         };
@@ -1531,7 +1550,7 @@
       return `
       <div class="profile-page-sheet" style="font-family: Arial, Helvetica, sans-serif; width: 100%; max-width: 800px; margin: 0 auto; padding: 4px 6px; color: #000; background: #fff; box-sizing: border-box;">
         
-        <!-- School Header -->
+        <!-- School Header (Updated to 770073) -->
         <div style="text-align: center; border-bottom: 2.5px solid #1e3a8a; padding-bottom: 6px; margin-bottom: 12px; background: linear-gradient(to right, #eff6ff, #f8fafc, #eff6ff); padding-top: 6px; border-radius: 4px;">
           <h2 style="margin: 0; font-size: 21px; font-weight: 800; color: #1e3a8a; letter-spacing: 0.5px; text-transform: uppercase;">
             EKLAVYA MODEL RESIDENTIAL SCHOOL, SUBDEGA
@@ -1786,6 +1805,9 @@
         container.innerHTML = '';
       }, 400);
     }
+
+    // Listen to browser Back/Forward buttons to switch views smoothly
+    window.addEventListener('hashchange', checkUrlHashForClass);
 
     // Initialize application on page load
     window.addEventListener('DOMContentLoaded', loadStudents);
