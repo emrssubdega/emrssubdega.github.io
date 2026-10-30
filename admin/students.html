@@ -289,7 +289,6 @@
 
       <!-- Section Selection Pills & Filter Bar -->
       <div class="bg-indigo-900 text-white rounded-2xl p-4 mb-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <!-- Section Buttons: All, Section A, Section B -->
         <div class="flex items-center gap-2 flex-wrap">
           <span class="text-xs font-bold text-indigo-200 mr-2 uppercase tracking-wider">Choose Section:</span>
           <button onclick="selectSection('')" id="secBtnAll" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white text-indigo-900 shadow-sm transition">
@@ -303,7 +302,6 @@
           </button>
         </div>
 
-        <!-- Search & House Filter within Active Class -->
         <div class="flex items-center gap-2">
           <div class="relative">
             <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
@@ -445,7 +443,7 @@
           <h4 class="font-bold text-slate-900 text-sm">Step 2: Upload Filled File for <span id="uploadTargetClassLabel">Class VI</span></h4>
           <input type="file" id="bulkStudentFile" accept=".csv" class="w-full text-xs file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-700 file:text-white hover:file:bg-emerald-800 cursor-pointer">
           <p class="text-xs text-slate-500">
-            * Matches records by <strong>Admission No</strong>. Existing records will be updated without removing their uploaded photos.
+            * Blank fields in your Excel sheet will be kept safely as empty values and can be updated anytime later.
           </p>
         </div>
 
@@ -1178,7 +1176,7 @@
       }
     }
 
-    // 7. Class-Wise Bulk Excel / CSV Upload with At, Po, Block, District, State, Pin
+    // 7. Class-Wise Bulk Excel / CSV Upload with Resilient Blank Field Support
     function openClassBulkModal() {
       if (!currentActiveClass) return;
 
@@ -1274,11 +1272,25 @@
           const rawHeaders = parseCSVLine(lines[0]);
           const headers = rawHeaders.map(h => h.trim().toLowerCase());
 
-          if (!headers.includes('admission_no') || !headers.includes('full_name')) {
-            throw new Error('Missing required columns: "admission_no" and "full_name".');
-          }
-
           logBox.innerHTML += `<div>Found ${lines.length - 1} records. Binding strictly to ${currentActiveClass}...</div>`;
+
+          // Clean values: turn blank or undefined strings into true NULL
+          const cleanVal = (val) => {
+            if (val === undefined || val === null) return null;
+            const s = String(val).trim();
+            return s === '' ? null : s;
+          };
+
+          // Safe normalizer for gender avoiding constraint violation
+          const normalizeGender = (g) => {
+            const val = cleanVal(g);
+            if (!val) return null;
+            const lower = val.toLowerCase();
+            if (lower === 'male' || lower === 'm' || lower === 'boy') return 'Male';
+            if (lower === 'female' || lower === 'f' || lower === 'girl') return 'Female';
+            if (lower === 'other' || lower === 'o') return 'Other';
+            return 'Male';
+          };
 
           let recordsToUpsert = [];
           for (let i = 1; i < lines.length; i++) {
@@ -1290,37 +1302,42 @@
               row[h] = values[idx] || null;
             });
 
-            if (!row['admission_no'] || !row['full_name']) continue;
+            // Extract admission number or generate temporary unique ID if left blank
+            let admNo = cleanVal(row['admission_no']);
+            if (!admNo) {
+              admNo = `TMP_${Date.now()}_${i}`;
+            }
 
-            const atVal = (row['at'] || row['address'] || '').trim();
-            const poVal = (row['po'] || row['po_name'] || '').trim();
-            const blockVal = (row['block'] || row['block_name'] || '').trim();
-            const pinVal = (row['pin'] || row['pincode'] || row['pin_code'] || '').trim();
+            const fullName = cleanVal(row['full_name']) || 'Student';
+            const atVal = cleanVal(row['at'] || row['address']);
+            const poVal = cleanVal(row['po'] || row['po_name']);
+            const blockVal = cleanVal(row['block'] || row['block_name']);
+            const pinVal = cleanVal(row['pin'] || row['pincode'] || row['pin_code']);
 
             recordsToUpsert.push({
-              admission_no: String(row['admission_no']).trim(),
-              pen_no: row['pen_no'] ? String(row['pen_no']).trim() : null,
-              full_name: String(row['full_name']).trim(),
-              gender: row['gender'] ? String(row['gender']).trim() : null,
-              dob: row['dob'] ? String(row['dob']).trim() : null,
+              admission_no: admNo,
+              pen_no: cleanVal(row['pen_no']),
+              full_name: fullName,
+              gender: normalizeGender(row['gender']),
+              dob: cleanVal(row['dob']),
               class_name: currentActiveClass, // Bound strictly to active class
-              section: row['section'] ? String(row['section']).trim().toUpperCase() : 'A',
-              roll_no: row['roll_no'] ? parseInt(row['roll_no'], 10) || null : null,
-              category: row['category'] ? String(row['category']).trim() : null,
-              sub_caste: row['sub_caste'] ? String(row['sub_caste']).trim() : null,
-              blood_group: row['blood_group'] ? String(row['blood_group']).trim() : null,
-              house_name: row['house_name'] ? String(row['house_name']).trim() : null,
-              father_name: row['father_name'] ? String(row['father_name']).trim() : null,
-              mother_name: row['mother_name'] ? String(row['mother_name']).trim() : null,
-              guardian_contact: row['guardian_contact'] ? String(row['guardian_contact']).trim() : null,
-              address: atVal || null,
-              at_name: atVal || null,
-              po_name: poVal || null,
-              block_name: blockVal || null,
-              district: row['district'] ? String(row['district']).trim() : 'Sundargarh',
-              state: row['state'] ? String(row['state']).trim() : 'Odisha',
-              pincode: pinVal || null,
-              admission_date: row['admission_date'] ? String(row['admission_date']).trim() : null,
+              section: (cleanVal(row['section']) || 'A').toUpperCase(),
+              roll_no: cleanVal(row['roll_no']) ? parseInt(row['roll_no'], 10) || null : null,
+              category: cleanVal(row['category']),
+              sub_caste: cleanVal(row['sub_caste']),
+              blood_group: cleanVal(row['blood_group']),
+              house_name: cleanVal(row['house_name']),
+              father_name: cleanVal(row['father_name']),
+              mother_name: cleanVal(row['mother_name']),
+              guardian_contact: cleanVal(row['guardian_contact']),
+              address: atVal,
+              at_name: atVal,
+              po_name: poVal,
+              block_name: blockVal,
+              district: cleanVal(row['district']) || 'Sundargarh',
+              state: cleanVal(row['state']) || 'Odisha',
+              pincode: pinVal,
+              admission_date: cleanVal(row['admission_date']),
               updated_at: new Date().toISOString()
             });
           }
