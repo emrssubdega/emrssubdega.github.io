@@ -57,7 +57,8 @@
     .photo-preview {
       width: 100px;
       height: 120px;
-      object-fit: cover;
+      object-fit: contain;
+      background-color: #ffffff;
       border: 2px dashed #cbd5e1;
       border-radius: 8px;
     }
@@ -322,7 +323,7 @@
         <div class="flex items-center gap-2">
           <div class="relative">
             <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-            <input type="text" id="searchInput" oninput="filterStudents()" autocomplete="off" placeholder="Search roll no, name, adm..." class="pl-8 pr-3 py-1.5 bg-indigo-950/60 border border-indigo-700 text-white placeholder-indigo-300 rounded-xl text-xs focus:ring-2 focus:ring-amber-400 outline-none w-48 sm:w-60">
+            <input type="text" id="searchInput" oninput="filterStudents()" autocomplete="off" placeholder="Search roll no, name, adm, aadhar..." class="pl-8 pr-3 py-1.5 bg-indigo-950/60 border border-indigo-700 text-white placeholder-indigo-300 rounded-xl text-xs focus:ring-2 focus:ring-amber-400 outline-none w-48 sm:w-60">
           </div>
           <select id="houseFilter" onchange="filterStudents()" class="px-3 py-1.5 bg-indigo-950/60 border border-indigo-700 text-white rounded-xl text-xs focus:ring-2 focus:ring-amber-400 outline-none">
             <option value="">All Houses</option>
@@ -440,7 +441,7 @@
               <i class="fa-solid fa-file-excel"></i> Bulk Student Excel Upload — <span id="modalClassBanner">Class VI</span>
             </h3>
             <span class="text-[10px] font-extrabold bg-emerald-600 text-white px-2 py-0.5 rounded-full border border-emerald-400">
-              v3.9 Full-Sync
+              v4.0 Full Photo Sync
             </span>
           </div>
           <p class="text-xs text-emerald-100">Upload multiple student profiles at once (Supports both DD/MM/YYYY and YYYY-MM-DD)</p>
@@ -1102,7 +1103,7 @@
             </span>
           </td>
           <td class="p-3 text-center">
-            <img src="${s.student_photo_url || 'https://placehold.co/50x60?text=Photo'}" class="w-10 h-12 object-cover rounded shadow-sm mx-auto border border-slate-200">
+            <img src="${s.student_photo_url || 'https://placehold.co/50x60?text=Photo'}" class="w-10 h-12 object-contain bg-slate-100 rounded shadow-sm mx-auto border border-slate-200">
           </td>
           <td class="p-3 font-bold text-slate-900">
             <div>${s.full_name || '-'}</div>
@@ -1750,7 +1751,7 @@
       }
     }
 
-    // 12. Single & Bulk Printable HTML Template Builder
+    // 12. Single & Bulk Printable HTML Template Builder (With Full Uncropped Images)
     function buildProfileSheetHtml(s, withPhotos) {
       const dobFormatted = (s && s.dob) ? s.dob.split('-').reverse().join('/') : '';
       const admDateFormatted = (s && s.admission_date) ? s.admission_date.split('-').reverse().join('/') : '';
@@ -1907,14 +1908,14 @@
 
           </div>
 
-          <!-- RIGHT COLUMN: Stacked Photos -->
+          <!-- RIGHT COLUMN: Stacked Photos (Uncropped, Full Aspect Ratio) -->
           <div style="width: 175px; margin-top: 50px; display: flex; flex-direction: column; justify-content: space-between; height: 690px; box-sizing: border-box;">
             
             <!-- 1. Student Photo Card -->
             <div style="text-align: center; border: 2px solid #1e3a8a; border-radius: 4px; overflow: hidden; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
-              <div style="width: 100%; height: 175px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; overflow: hidden; box-sizing: border-box;">
+              <div style="width: 100%; height: 175px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; overflow: hidden; box-sizing: border-box;">
                 ${(withPhotos && s && s.student_photo_url) 
-                  ? `<img src="${s.student_photo_url}" style="width: 100%; height: 100%; object-fit: cover;">` 
+                  ? `<img src="${s.student_photo_url}" style="width: 100%; height: 100%; object-fit: contain; background-color: #ffffff;">` 
                   : `<div style="font-size: 11px; font-weight: 800; color: #64748b; padding: 6px;">
                        <i class="fa-solid fa-camera" style="font-size: 24px; display: block; margin-bottom: 6px; color: #94a3b8;"></i>
                        Paste Passport Photo<br>(3.5 cm x 4.5 cm)
@@ -1927,9 +1928,9 @@
 
             <!-- 2. Father Photo Card -->
             <div style="text-align: center; border: 2px solid #047857; border-radius: 4px; overflow: hidden; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
-              <div style="width: 100%; height: 175px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; overflow: hidden; box-sizing: border-box;">
+              <div style="width: 100%; height: 175px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; overflow: hidden; box-sizing: border-box;">
                 ${(withPhotos && s && s.father_photo_url) 
-                  ? `<img src="${s.father_photo_url}" style="width: 100%; height: 100%; object-fit: cover;">` 
+                  ? `<img src="${s.father_photo_url}" style="width: 100%; height: 100%; object-fit: contain; background-color: #ffffff;">` 
                   : `<div style="font-size: 11px; font-weight: 800; color: #64748b; padding: 6px;">
                        <i class="fa-solid fa-camera" style="font-size: 24px; display: block; margin-bottom: 6px; color: #94a3b8;"></i>
                        Paste Passport Photo<br>(3.5 cm x 4.5 cm)
@@ -1942,9 +1943,9 @@
 
             <!-- 3. Mother Photo Card -->
             <div style="text-align: center; border: 2px solid #b91c1c; border-radius: 4px; overflow: hidden; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
-              <div style="width: 100%; height: 175px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; overflow: hidden; box-sizing: border-box;">
+              <div style="width: 100%; height: 175px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; overflow: hidden; box-sizing: border-box;">
                 ${(withPhotos && s && s.mother_photo_url) 
-                  ? `<img src="${s.mother_photo_url}" style="width: 100%; height: 100%; object-fit: cover;">` 
+                  ? `<img src="${s.mother_photo_url}" style="width: 100%; height: 100%; object-fit: contain; background-color: #ffffff;">` 
                   : `<div style="font-size: 11px; font-weight: 800; color: #64748b; padding: 6px;">
                        <i class="fa-solid fa-camera" style="font-size: 24px; display: block; margin-bottom: 6px; color: #94a3b8;"></i>
                        Paste Passport Photo<br>(3.5 cm x 4.5 cm)
@@ -1960,7 +1961,7 @@
         </div>
 
         <!-- Institutional Signatures -->
-        <div style="margin-top: 85px; margin-bottom: 15px; display: flex; justify-content: space-between; font-size: 12px; padding: 0 24px;">
+        <div style="margin-top: 80px; margin-bottom: 15px; display: flex; justify-content: space-between; font-size: 12px; padding: 0 24px;">
           <div style="text-align: center; width: 230px;">
             <div style="font-weight: 800;">_____________________</div>
             <div style="margin-top: 5px; font-weight: 800; color: #000;">Class Teacher Signature</div>
