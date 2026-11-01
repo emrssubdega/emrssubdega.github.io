@@ -440,7 +440,7 @@
               <i class="fa-solid fa-file-excel"></i> Bulk Student Excel Upload — <span id="modalClassBanner">Class VI</span>
             </h3>
             <span class="text-[10px] font-extrabold bg-emerald-600 text-white px-2 py-0.5 rounded-full border border-emerald-400">
-              v3.8 Secure
+              v3.9 Full-Sync
             </span>
           </div>
           <p class="text-xs text-emerald-100">Upload multiple student profiles at once (Supports both DD/MM/YYYY and YYYY-MM-DD)</p>
@@ -453,7 +453,7 @@
         <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
             <h4 class="font-bold text-emerald-950 text-sm">Step 1: Download Standard Template</h4>
-            <p class="text-xs text-emerald-800 mt-0.5">Pre-configured with <strong id="templateClassIndicator">Class VI</strong> and discrete columns for At, Po, Block, District, State, and Pin.</p>
+            <p class="text-xs text-emerald-800 mt-0.5">Pre-configured with <strong id="templateClassIndicator">Class VI</strong>, Aadhaar, and discrete address columns.</p>
           </div>
           <button onclick="downloadClassTemplate()" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg font-bold text-xs shadow transition flex items-center gap-2 whitespace-nowrap">
             <i class="fa-solid fa-download"></i> Download Template (.csv)
@@ -590,7 +590,7 @@
             </div>
             <div>
               <label class="block text-xs font-medium text-slate-600 mb-1">Student's Aadhaar</label>
-              <input type="text" id="aadharNo" autocomplete="off" placeholder="Aadhaar No." class="w-full px-3 py-1.5 border rounded-lg outline-none">
+              <input type="text" id="aadharNo" autocomplete="off" placeholder="12-digit Aadhaar" class="w-full px-3 py-1.5 border rounded-lg outline-none focus:border-indigo-500">
             </div>
           </div>
         </div>
@@ -763,13 +763,11 @@
       try {
         const { data: { session }, error } = await sb.auth.getSession();
         if (error || !session) {
-          // Not logged in -> Redirect immediately to login portal
           alert('Access Denied: You must sign in to access the Student Directory.');
           window.location.href = 'index.html';
           return false;
         }
 
-        // Show logged-in admin email in header
         const emailBadge = document.getElementById('adminEmailBadge');
         if (emailBadge && session.user && session.user.email) {
           emailBadge.innerText = session.user.email;
@@ -1051,7 +1049,8 @@
         const matchQ = !q || (s.full_name && s.full_name.toLowerCase().includes(q)) ||
                               (s.admission_no && s.admission_no.toLowerCase().includes(q)) ||
                               (s.roll_no && String(s.roll_no).includes(q)) ||
-                              (s.pen_no && s.pen_no.toLowerCase().includes(q));
+                              (s.pen_no && s.pen_no.toLowerCase().includes(q)) ||
+                              (s.aadhar_no && String(s.aadhar_no).includes(q));
         return matchCls && matchSec && matchHouse && matchQ;
       });
 
@@ -1276,7 +1275,7 @@
       }
     }
 
-    // 9. Export Current Populated Class Data (CSV / Excel format)
+    // 9. Export Current Populated Class Data
     function exportCurrentClassData() {
       if (!currentActiveClass) return;
 
@@ -1295,7 +1294,7 @@
 
       const headers = [
         "roll_no", "full_name", "class_name", "section", "admission_no", "pen_no",
-        "dob", "gender", "category", "sub_caste", "blood_group",
+        "dob", "gender", "category", "sub_caste", "blood_group", "aadhar_no",
         "house_name", "father_name", "mother_name", "guardian_contact",
         "at", "po", "block", "district", "state", "pin", "admission_date"
       ];
@@ -1321,6 +1320,7 @@
         escapeCsv(s.category),
         escapeCsv(s.sub_caste),
         escapeCsv(s.blood_group),
+        escapeCsv(s.aadhar_no),
         escapeCsv(s.house_name),
         escapeCsv(s.father_name),
         escapeCsv(s.mother_name),
@@ -1371,14 +1371,14 @@
     function downloadClassTemplate() {
       const headers = [
         "roll_no", "full_name", "class_name", "section", "admission_no", "pen_no",
-        "dob", "gender", "category", "sub_caste", "blood_group",
+        "dob", "gender", "category", "sub_caste", "blood_group", "aadhar_no",
         "house_name", "father_name", "mother_name", "guardian_contact",
         "at", "po", "block", "district", "state", "pin", "admission_date"
       ];
 
       const sampleRow = [
         "1", "Student Full Name", currentActiveClass || "Class VI", "A", `ADM_${Date.now().toString().slice(-5)}`, "PEN000000",
-        "2012-05-15", "Male", "ST", "Kisan", "A+",
+        "2012-05-15", "Male", "ST", "Kisan", "A+", "",
         "Brahmaputra", "Father Name", "Mother Name", "9876543210",
         "Bhawanipur", "Subdega", "Subdega", "Sundargarh", "Odisha", "770073", "2026-07-01"
       ];
@@ -1528,6 +1528,7 @@
             const poVal = cleanVal(row['po'] || row['po_name']);
             const blockVal = cleanVal(row['block'] || row['block_name']);
             const pinVal = cleanVal(row['pin'] || row['pincode'] || row['pin_code']);
+            const aadharVal = cleanVal(row['aadhar_no'] || row['aadhar'] || row['student_aadhar'] || row['aadharno']);
 
             const recordPayload = {
               admission_no: admNo,
@@ -1541,6 +1542,7 @@
               category: cleanVal(row['category']),
               sub_caste: cleanVal(row['sub_caste']),
               blood_group: cleanVal(row['blood_group']),
+              aadhar_no: aadharVal,
               house_name: cleanVal(row['house_name']),
               father_name: cleanVal(row['father_name']),
               mother_name: cleanVal(row['mother_name']),
@@ -1693,6 +1695,9 @@
         let fUrl = await uploadPhotoIfSelected('fileFatherPhoto', 'parents', `father_${admNo}`);
         let mUrl = await uploadPhotoIfSelected('fileMotherPhoto', 'parents', `mother_${admNo}`);
 
+        const aadharInput = document.getElementById('aadharNo');
+        const aadharVal = aadharInput ? aadharInput.value.trim() || null : null;
+
         const payload = {
           admission_no: admNo,
           pen_no: document.getElementById('penNo').value.trim() || null,
@@ -1705,6 +1710,7 @@
           category: document.getElementById('category').value || null,
           sub_caste: document.getElementById('subCaste').value.trim() || null,
           blood_group: document.getElementById('bloodGroup').value || null,
+          aadhar_no: aadharVal,
           house_name: document.getElementById('houseName').value || null,
           father_name: document.getElementById('fatherName').value.trim() || null,
           mother_name: document.getElementById('motherName').value.trim() || null,
