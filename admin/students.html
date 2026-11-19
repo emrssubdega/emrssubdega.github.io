@@ -10,6 +10,9 @@
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../supabase-config.js"></script>
+  <!-- PDF.js & jsPDF for Client-Side PDF Auto-Compression <= 200KB -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     @media print {
       @page {
@@ -115,12 +118,12 @@
   <!-- Main Container -->
   <main class="max-w-7xl mx-auto px-4 py-8 w-full flex-1 no-print">
 
-    <!-- VIEW 1: INITIAL CLASS-ONLY SELECTION SCREEN -->
+    <!-- ==================== VIEW 1: INITIAL CLASS-ONLY SELECTION SCREEN ==================== -->
     <div id="viewClassSelection">
       <div class="mb-8 text-center max-w-2xl mx-auto">
         <h2 class="text-3xl font-black text-slate-900 tracking-tight">Student Academic Hierarchy</h2>
         <p class="text-sm text-slate-500 mt-2">
-          Select an academic class below to access its roster, section breakdown, batch promotions, and class-wise Excel upload.
+          Select an academic class below to access its roster, section breakdown, batch promotions, or view the Transfer Certificate (TC) Register.
         </p>
       </div>
 
@@ -230,10 +233,28 @@
             <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
           </div>
         </div>
+
+        <!-- TRANSFER CERTIFICATE (TC) REGISTER CARD -->
+        <div onclick="openTcRegisterView()" class="bg-rose-50/70 rounded-2xl p-6 border-2 border-rose-200 hover:border-rose-600 hover:shadow-xl transition-all duration-200 cursor-pointer flex flex-col justify-between group">
+          <div class="flex justify-between items-start">
+            <span class="w-12 h-12 rounded-xl bg-rose-100 text-rose-700 font-black text-xl flex items-center justify-center group-hover:bg-rose-600 group-hover:text-white transition">
+              <i class="fa-solid fa-file-contract"></i>
+            </span>
+            <span id="badge-TC_ISSUED" class="text-xs font-bold px-2.5 py-1 bg-rose-200/75 text-rose-900 rounded-full">0 Issued</span>
+          </div>
+          <div class="mt-5">
+            <h3 class="text-lg font-bold text-rose-950 group-hover:text-rose-700 transition">TC Register</h3>
+            <p class="text-xs text-rose-700 mt-1">Transfer Certificates &amp; Exited Students</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-rose-200/60 flex items-center justify-between text-xs font-bold text-rose-700">
+            <span>View TC Records</span>
+            <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- VIEW 2: CLASS ROSTER & MANAGEMENT WINDOW -->
+    <!-- ==================== VIEW 2: CLASS ROSTER & MANAGEMENT WINDOW ==================== -->
     <div id="viewClassRoster" class="hidden">
       <!-- Top Class Header -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
@@ -360,9 +381,130 @@
       </div>
     </div>
 
+    <!-- ==================== VIEW 3: TRANSFER CERTIFICATE (TC) REGISTER ==================== -->
+    <div id="viewTcRegister" class="hidden">
+      <!-- Top TC Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 bg-white p-5 rounded-2xl border border-rose-200 shadow-sm">
+        <div class="flex items-center gap-3">
+          <button onclick="backToClassSelection()" class="p-2.5 px-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition flex items-center gap-2">
+            <i class="fa-solid fa-arrow-left"></i> All Classes
+          </button>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-md bg-rose-600 text-white font-extrabold text-xs">TC Archive</span>
+              <h2 class="text-xl font-black text-slate-900">Transfer Certificate (TC) Register</h2>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">Permanent record of students who were issued Transfer Certificates along with uploaded copies.</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 flex-wrap">
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+            <input type="text" id="tcSearchInput" oninput="renderTcTable()" autocomplete="off" placeholder="Search TC No, Name, Adm No..." class="pl-8 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-rose-500 outline-none w-56 sm:w-64">
+          </div>
+          <button onclick="openIssueTcModal('')" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5">
+            <i class="fa-solid fa-file-circle-plus"></i> Record New TC
+          </button>
+        </div>
+      </div>
+
+      <!-- TC Records Table -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-rose-50/80 border-b border-rose-200 text-xs font-bold text-rose-950 uppercase tracking-wider">
+                <th class="p-3.5">1. TC No.</th>
+                <th class="p-3.5">2. TC Issue Date</th>
+                <th class="p-3.5">Student Name</th>
+                <th class="p-3.5">Last Class &amp; Sec</th>
+                <th class="p-3.5">Admission No</th>
+                <th class="p-3.5">Father's Name</th>
+                <th class="p-3.5 text-center">TC Document</th>
+                <th class="p-3.5 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tcTableBody" class="divide-y divide-slate-100 text-sm">
+              <tr>
+                <td colspan="8" class="p-8 text-center text-slate-400">No Transfer Certificates recorded yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
   </main>
 
-  <!-- VIEW / PREVIEW STUDENT DETAILS MODAL -->
+  <!-- ==================== ISSUE / UPLOAD TRANSFER CERTIFICATE MODAL ==================== -->
+  <div id="issueTcModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 no-print overflow-y-auto">
+    <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden my-6 border border-slate-200 flex flex-col">
+      <div class="bg-rose-700 text-white px-6 py-4 flex items-center justify-between">
+        <div>
+          <h3 class="text-base font-bold flex items-center gap-2">
+            <i class="fa-solid fa-file-contract"></i> Issue &amp; Upload Transfer Certificate (TC)
+          </h3>
+          <p class="text-xs text-rose-100">Upload JPG/JPEG/PDF (Auto-compressed to &le; 200 KB max)</p>
+        </div>
+        <button onclick="closeIssueTcModal()" class="text-white/75 hover:text-white text-xl">&times;</button>
+      </div>
+
+      <form id="tcForm" onsubmit="saveStudentTc(event)" class="p-6 space-y-4 text-sm">
+        <!-- Student Selector -->
+        <div id="tcStudentSelectContainer">
+          <label class="block text-xs font-bold text-slate-700 mb-1">Select Student <span class="text-red-500">*</span></label>
+          <select id="tcStudentId" required class="w-full px-3 py-2 border rounded-xl outline-none focus:border-rose-500 font-semibold text-xs">
+            <option value="">-- Choose Active Student --</option>
+          </select>
+        </div>
+
+        <!-- Read-only Student Summary Banner -->
+        <div id="tcSelectedStudentBanner" class="hidden bg-rose-50 border border-rose-200 rounded-xl p-3 text-xs text-rose-950">
+          <div class="font-bold text-sm" id="tcBannerName">Student Name</div>
+          <div class="text-rose-700 mt-0.5" id="tcBannerMeta">Class VI • Sec A • Adm No: 001</div>
+        </div>
+
+        <!-- Section 1: TC No. -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">1. TC No. <span class="text-red-500">*</span></label>
+          <input type="text" id="tcNumberInput" required autocomplete="off" placeholder="e.g. EMRS/SUB/TC/2026/014" class="w-full px-3 py-2 border rounded-xl outline-none focus:border-rose-500 font-semibold">
+        </div>
+
+        <!-- Section 2: TC Issue Date -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">2. TC Issue Date <span class="text-red-500">*</span></label>
+          <input type="date" id="tcIssueDateInput" required class="w-full px-3 py-2 border rounded-xl outline-none focus:border-rose-500 font-semibold">
+        </div>
+
+        <!-- TC File Upload (JPG/JPEG/PDF <= 200 KB) -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Upload TC File (JPG, JPEG, or PDF — Auto-compressed &le; 200 KB)</label>
+          <input type="file" id="tcFileInput" accept=".jpg,.jpeg,.pdf,image/jpeg,application/pdf" onchange="validateTcFileSelection(event)" class="w-full text-xs file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-rose-700 file:text-white hover:file:bg-rose-800 cursor-pointer border rounded-xl p-1.5 bg-slate-50">
+          <p id="tcFileStatusText" class="text-[11px] text-slate-500 mt-1">
+            * Files larger than 200 KB (JPG, JPEG, or PDF) will be automatically compressed to fit within 200 KB.
+          </p>
+        </div>
+
+        <!-- Existing TC File Link -->
+        <div id="existingTcFileBox" class="hidden text-xs bg-slate-100 p-2.5 rounded-lg flex items-center justify-between">
+          <span class="font-semibold text-slate-700"><i class="fa-solid fa-paperclip text-rose-600 mr-1"></i> Current Uploaded TC:</span>
+          <a id="existingTcFileLink" href="#" target="_blank" class="text-rose-700 font-bold underline hover:text-rose-900">View / Download File</a>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center justify-end gap-3 pt-3 border-t">
+          <button type="button" onclick="closeIssueTcModal()" class="px-4 py-2 border rounded-xl hover:bg-slate-100 font-semibold text-slate-600 transition">Cancel</button>
+          <button type="submit" id="saveTcBtn" class="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-xl shadow transition flex items-center gap-2">
+            <i class="fa-solid fa-check"></i>
+            <span>Save TC Record</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== VIEW / PREVIEW STUDENT DETAILS MODAL ==================== -->
   <div id="viewStudentModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 no-print overflow-y-auto">
     <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden my-6 border border-slate-200 max-h-[92vh] flex flex-col">
       <div class="bg-indigo-900 text-white px-6 py-4 flex items-center justify-between">
@@ -379,6 +521,17 @@
       </div>
 
       <div class="p-6 overflow-y-auto space-y-6 flex-1 text-sm bg-slate-50">
+        <!-- TC Alert Banner if TC Issued -->
+        <div id="viewTcBanner" class="hidden bg-rose-50 border border-rose-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <span class="text-xs font-extrabold uppercase tracking-wider text-rose-700 block">Transfer Certificate Issued</span>
+            <span class="text-xs text-rose-950 font-semibold">TC No: <strong id="viewTcNo">-</strong> • Issue Date: <strong id="viewTcDate">-</strong></span>
+          </div>
+          <a id="viewTcDocBtn" href="#" target="_blank" class="hidden px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-lg shadow-sm transition inline-flex items-center gap-1.5">
+            <i class="fa-solid fa-file-arrow-down"></i> View TC Copy
+          </a>
+        </div>
+
         <!-- Photographs Row -->
         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
           <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
@@ -526,7 +679,7 @@
     </div>
   </div>
 
-  <!-- PROMOTE STUDENTS BATCH MODAL -->
+  <!-- ==================== PROMOTE STUDENTS BATCH MODAL ==================== -->
   <div id="promoteModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 no-print overflow-y-auto">
     <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden my-6 border border-slate-200 flex flex-col">
       <div class="bg-amber-600 text-white px-6 py-4 flex items-center justify-between">
@@ -582,7 +735,7 @@
     </div>
   </div>
 
-  <!-- CLASS-WISE BULK EXCEL UPLOAD MODAL -->
+  <!-- ==================== CLASS-WISE BULK EXCEL UPLOAD MODAL ==================== -->
   <div id="bulkModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 no-print overflow-y-auto">
     <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden my-6 border border-slate-200 flex flex-col">
       <div class="bg-emerald-800 text-white px-6 py-4 flex items-center justify-between">
@@ -592,7 +745,7 @@
               <i class="fa-solid fa-file-excel"></i> Bulk Student Excel Upload — <span id="modalClassBanner">Class VI</span>
             </h3>
             <span class="text-[10px] font-extrabold bg-emerald-600 text-white px-2 py-0.5 rounded-full border border-emerald-400">
-              v4.3 Fixed Script
+              v5.1 TC Register &amp; Auto-Compress
             </span>
           </div>
           <p class="text-xs text-emerald-100">Upload multiple student profiles at once (Supports both DD/MM/YYYY and YYYY-MM-DD)</p>
@@ -633,7 +786,7 @@
     </div>
   </div>
 
-  <!-- STUDENT ENTRY / EDIT MODAL -->
+  <!-- ==================== STUDENT ENTRY / EDIT MODAL ==================== -->
   <div id="studentModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 no-print overflow-y-auto">
     <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden my-6 border border-slate-200 max-h-[92vh] flex flex-col">
       <div class="bg-indigo-900 text-white px-6 py-4 flex items-center justify-between">
@@ -893,9 +1046,14 @@
 
     const sb = (window.supabaseClient || (window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON) : null));
 
+    if (window.pdfjsLib) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+
     let studentsData = [];
     let currentActiveClass = '';
     let currentActiveSection = '';
+    let currentViewMode = 'HOME'; // 'HOME', 'CLASS', 'TC_REGISTER'
     let selectedStudentIds = new Set();
     let lastUpdatedStudentId = null;
 
@@ -934,7 +1092,7 @@
       window.location.href = 'index.html';
     }
 
-    // 3. Image Optimization
+    // 3. Image & PDF Auto-Compression Engine (<= 200 KB)
     async function compressImageTo200KB(file) {
       const MAX_BYTES = 200 * 1024;
       if (file.size <= MAX_BYTES) return file;
@@ -948,7 +1106,7 @@
           img.onload = () => {
             let width = img.width;
             let height = img.height;
-            const maxDim = 800;
+            const maxDim = 1000;
 
             if (width > height && width > maxDim) {
               height = Math.round((height * maxDim) / width);
@@ -968,14 +1126,76 @@
               if (blob && blob.size <= MAX_BYTES) {
                 resolve(blob);
               } else {
-                canvas.toBlob((blob2) => resolve(blob2 || file), 'image/jpeg', 0.5);
+                canvas.toBlob((blob2) => {
+                  if (blob2 && blob2.size <= MAX_BYTES) {
+                    resolve(blob2);
+                  } else {
+                    canvas.toBlob((blob3) => resolve(blob3 || file), 'image/jpeg', 0.35);
+                  }
+                }, 'image/jpeg', 0.55);
               }
-            }, 'image/jpeg', 0.7);
+            }, 'image/jpeg', 0.75);
           };
           img.onerror = reject;
         };
         reader.onerror = reject;
       });
+    }
+
+    async function compressPdfTo200KB(file) {
+      const MAX_BYTES = 200 * 1024;
+      if (file.size <= MAX_BYTES) return file;
+
+      if (!window.pdfjsLib || !window.jspdf) {
+        throw new Error('PDF compression library unavailable. Please upload a PDF under 200 KB or a JPG/JPEG image.');
+      }
+
+      const arrayBuffer = await file.arrayBuffer();
+      const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      const numPages = pdfDoc.numPages;
+      const { jsPDF } = window.jspdf;
+
+      // Iteratively scale and compress pages into a compact PDF <= 200 KB
+      const attempts = [
+        { scale: 1.2, quality: 0.6 },
+        { scale: 1.0, quality: 0.45 },
+        { scale: 0.85, quality: 0.35 },
+        { scale: 0.7, quality: 0.25 }
+      ];
+
+      for (const cfg of attempts) {
+        let outPdf = null;
+        for (let p = 1; p <= numPages; p++) {
+          const page = await pdfDoc.getPage(p);
+          const viewport = page.getViewport({ scale: cfg.scale });
+          const canvas = document.createElement('canvas');
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          const ctx = canvas.getContext('2d');
+
+          await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+          const imgData = canvas.toDataURL('image/jpeg', cfg.quality);
+          const orientation = viewport.width > viewport.height ? 'l' : 'p';
+
+          if (p === 1) {
+            outPdf = new jsPDF({
+              orientation: orientation,
+              unit: 'pt',
+              format: [viewport.width, viewport.height]
+            });
+          } else {
+            outPdf.addPage([viewport.width, viewport.height], orientation);
+          }
+          outPdf.addImage(imgData, 'JPEG', 0, 0, viewport.width, viewport.height);
+        }
+
+        const pdfBlob = outPdf.output('blob');
+        if (pdfBlob.size <= MAX_BYTES) {
+          return pdfBlob;
+        }
+      }
+
+      throw new Error('Unable to compress multi-page PDF below 200 KB. Please upload a single-page PDF or JPG/JPEG image.');
     }
 
     // 4. Photo Uploader
@@ -1012,7 +1232,12 @@
       }
     }
 
-    // 5. Data Loading & View Switching with State Retention
+    // Helper: Active students filter (keeps existing NULL or ACTIVE records untouched)
+    function isStudentActive(s) {
+      return !s.status || s.status === 'ACTIVE';
+    }
+
+    // 5. Data Loading & View Switching
     async function loadStudents(keepScrollAndFocus = false) {
       try {
         const { data, error } = await sb
@@ -1024,7 +1249,9 @@
 
         updateClassCardCounts();
 
-        if (currentActiveClass) {
+        if (currentViewMode === 'TC_REGISTER') {
+          renderTcTable();
+        } else if (currentActiveClass) {
           filterStudents();
 
           if (keepScrollAndFocus && lastUpdatedStudentId) {
@@ -1051,16 +1278,25 @@
     function updateClassCardCounts() {
       const classes = ['Class VI', 'Class VII', 'Class VIII', 'Class IX', 'Class X', 'Class XI', 'Class XII'];
       classes.forEach(c => {
-        const cnt = studentsData.filter(s => s.class_name === c).length;
+        const cnt = studentsData.filter(s => s.class_name === c && isStudentActive(s)).length;
         const el = document.getElementById(`badge-${c}`);
         if (el) el.innerText = `${cnt} Enrolled`;
       });
+
+      const tcCount = studentsData.filter(s => s.status === 'TC_ISSUED').length;
+      const tcEl = document.getElementById('badge-TC_ISSUED');
+      if (tcEl) tcEl.innerText = `${tcCount} Issued`;
     }
 
     function checkUrlHashForClass() {
       const hash = window.location.hash.replace('#', '').trim();
       if (!hash) {
         backToClassSelection(false);
+        return;
+      }
+
+      if (hash === 'TC-Register') {
+        openTcRegisterView(false);
         return;
       }
 
@@ -1079,6 +1315,10 @@
     }
 
     function updateUrlHash() {
+      if (currentViewMode === 'TC_REGISTER') {
+        window.location.hash = 'TC-Register';
+        return;
+      }
       if (!currentActiveClass) {
         history.pushState("", document.title, window.location.pathname + window.location.search);
         return;
@@ -1091,6 +1331,7 @@
     }
 
     function openClassView(className, updateHash = true, defaultSection = '') {
+      currentViewMode = 'CLASS';
       currentActiveClass = className;
       if (defaultSection) {
         currentActiveSection = defaultSection;
@@ -1105,10 +1346,11 @@
       document.getElementById('bulkClassLabel').innerText = className;
 
       document.getElementById('viewClassSelection').classList.add('hidden');
+      document.getElementById('viewTcRegister').classList.add('hidden');
       document.getElementById('viewClassRoster').classList.remove('hidden');
 
       selectedStudentIds.clear();
-      studentsData.filter(s => s.class_name === currentActiveClass).forEach(s => selectedStudentIds.add(s.id));
+      studentsData.filter(s => s.class_name === currentActiveClass && isStudentActive(s)).forEach(s => selectedStudentIds.add(s.id));
       updateSelectedCountBadge();
 
       updateSectionButtonsUI();
@@ -1119,7 +1361,25 @@
       }
     }
 
+    function openTcRegisterView(updateHash = true) {
+      currentViewMode = 'TC_REGISTER';
+      currentActiveClass = '';
+      currentActiveSection = '';
+
+      if (updateHash) {
+        updateUrlHash();
+      }
+
+      document.getElementById('viewClassSelection').classList.add('hidden');
+      document.getElementById('viewClassRoster').classList.add('hidden');
+      document.getElementById('viewTcRegister').classList.remove('hidden');
+
+      renderTcTable();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     function backToClassSelection(updateHash = true) {
+      currentViewMode = 'HOME';
       currentActiveClass = '';
       currentActiveSection = '';
       selectedStudentIds.clear();
@@ -1129,6 +1389,7 @@
       }
 
       document.getElementById('viewClassRoster').classList.add('hidden');
+      document.getElementById('viewTcRegister').classList.add('hidden');
       document.getElementById('viewClassSelection').classList.remove('hidden');
       updateClassCardCounts();
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1233,6 +1494,7 @@
       const house = document.getElementById('houseFilter').value;
 
       let filtered = studentsData.filter(s => {
+        const matchStatus = isStudentActive(s);
         const matchCls = s.class_name === currentActiveClass;
         const matchSec = !currentActiveSection || (s.section && s.section.toUpperCase() === currentActiveSection.toUpperCase());
         const matchHouse = !house || s.house_name === house;
@@ -1241,7 +1503,7 @@
                               (s.roll_no && String(s.roll_no).includes(q)) ||
                               (s.pen_no && s.pen_no.toLowerCase().includes(q)) ||
                               (s.aadhar_no && String(s.aadhar_no).includes(q));
-        return matchCls && matchSec && matchHouse && matchQ;
+        return matchStatus && matchCls && matchSec && matchHouse && matchQ;
       });
 
       filtered.sort((a, b) => {
@@ -1275,7 +1537,7 @@
     function renderTable(list) {
       const tbody = document.getElementById('studentTableBody');
       if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="10" class="p-8 text-center text-slate-400">No student records found in ${currentActiveClass} ${currentActiveSection ? `(Section ${currentActiveSection})` : ''}.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" class="p-8 text-center text-slate-400">No active student records found in ${currentActiveClass} ${currentActiveSection ? `(Section ${currentActiveSection})` : ''}.</td></tr>`;
         return;
       }
 
@@ -1323,14 +1585,242 @@
             <button onclick="editStudent('${s.id}')" title="Edit Student" class="p-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg text-xs font-semibold">
               <i class="fa-solid fa-pen"></i>
             </button>
-            <button onclick="deleteStudentRecord('${s.id}', '${s.full_name}')" title="Exit / Delete Student (TC)" class="p-1.5 px-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-semibold">
-              <i class="fa-solid fa-user-xmark"></i> Exit / TC
+            <button onclick="openIssueTcModal('${s.id}')" title="Issue Transfer Certificate (TC)" class="p-1.5 px-2 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg text-xs font-semibold">
+              <i class="fa-solid fa-file-contract"></i> Issue TC
             </button>
           </td>
         </tr>
       `}).join('');
 
       updateMasterCheckboxState();
+    }
+
+    // ==================== TC MODULE LOGIC ====================
+    function renderTcTable() {
+      const q = (document.getElementById('tcSearchInput').value || '').toLowerCase().trim();
+      const tcList = studentsData.filter(s => {
+        if (s.status !== 'TC_ISSUED') return false;
+        return !q || (s.tc_no && s.tc_no.toLowerCase().includes(q)) ||
+                     (s.full_name && s.full_name.toLowerCase().includes(q)) ||
+                     (s.admission_no && s.admission_no.toLowerCase().includes(q)) ||
+                     (s.father_name && s.father_name.toLowerCase().includes(q));
+      });
+
+      tcList.sort((a, b) => (b.tc_issue_date || '').localeCompare(a.tc_issue_date || ''));
+
+      const tbody = document.getElementById('tcTableBody');
+      if (tcList.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-slate-400">No Transfer Certificate records found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = tcList.map(s => {
+        const issueDateFormatted = s.tc_issue_date ? s.tc_issue_date.split('-').reverse().join('/') : '-';
+        const docBadge = s.tc_file_url
+          ? `<a href="${s.tc_file_url}" target="_blank" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 transition">
+               <i class="fa-solid fa-file-arrow-down"></i> View / Download
+             </a>`
+          : `<span class="text-xs text-slate-400 italic">Not uploaded</span>`;
+
+        return `
+        <tr class="hover:bg-rose-50/40 transition border-b border-slate-100">
+          <td class="p-3.5 font-mono font-bold text-rose-800 text-xs">${s.tc_no || '-'}</td>
+          <td class="p-3.5 font-semibold text-slate-700 text-xs">${issueDateFormatted}</td>
+          <td class="p-3.5 font-bold text-slate-900">${s.full_name || '-'}</td>
+          <td class="p-3.5 text-xs font-semibold text-slate-700">${s.class_name || '-'} (Sec ${s.section || 'A'})</td>
+          <td class="p-3.5 text-xs font-semibold text-slate-600">${s.admission_no || '-'}</td>
+          <td class="p-3.5 text-xs text-slate-600">${s.father_name || '-'}</td>
+          <td class="p-3.5 text-center">${docBadge}</td>
+          <td class="p-3.5 text-right space-x-1 whitespace-nowrap">
+            <button onclick="viewStudentDetails('${s.id}')" title="View Full Profile" class="p-1.5 px-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-xs font-semibold">
+              <i class="fa-solid fa-eye"></i> Profile
+            </button>
+            <button onclick="openIssueTcModal('${s.id}')" title="Edit TC Details / Replace File" class="p-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg text-xs font-semibold">
+              <i class="fa-solid fa-pen"></i> Edit TC
+            </button>
+            <button onclick="restoreStudentFromTc('${s.id}', '${s.full_name}')" title="Cancel TC & Restore to Active Class" class="p-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold">
+              <i class="fa-solid fa-rotate-left"></i> Restore
+            </button>
+          </td>
+        </tr>
+        `;
+      }).join('');
+    }
+
+    function openIssueTcModal(studentId = '') {
+      document.getElementById('tcForm').reset();
+      document.getElementById('tcFileInput').value = '';
+      document.getElementById('tcFileStatusText').innerText = '* Files larger than 200 KB (JPG, JPEG, or PDF) will be automatically compressed to fit within 200 KB.';
+      document.getElementById('tcFileStatusText').className = 'text-[11px] text-slate-500 mt-1';
+      document.getElementById('existingTcFileBox').classList.add('hidden');
+
+      const selectContainer = document.getElementById('tcStudentSelectContainer');
+      const selectEl = document.getElementById('tcStudentId');
+      const bannerEl = document.getElementById('tcSelectedStudentBanner');
+
+      const eligibleStudents = studentsData
+        .filter(s => isStudentActive(s) || s.id === studentId)
+        .sort((a, b) => (a.class_name || '').localeCompare(b.class_name || '') || (parseInt(a.roll_no, 10) || 0) - (parseInt(b.roll_no, 10) || 0));
+
+      selectEl.innerHTML = `<option value="">-- Choose Student --</option>` + eligibleStudents.map(s =>
+        `<option value="${s.id}">${s.class_name} (Sec ${s.section || 'A'}) - Roll ${s.roll_no || '-'} : ${s.full_name} [Adm: ${s.admission_no || '-'}]</option>`
+      ).join('');
+
+      if (studentId) {
+        const s = studentsData.find(x => x.id === studentId);
+        if (s) {
+          selectEl.value = s.id;
+          selectContainer.classList.add('hidden');
+          bannerEl.classList.remove('hidden');
+          document.getElementById('tcBannerName').innerText = s.full_name || 'Student';
+          document.getElementById('tcBannerMeta').innerText = `${s.class_name || ''} • Section ${s.section || 'A'} • Roll No: ${s.roll_no || '-'} • Adm No: ${s.admission_no || '-'}`;
+
+          if (s.tc_no) document.getElementById('tcNumberInput').value = s.tc_no;
+          if (s.tc_issue_date) document.getElementById('tcIssueDateInput').value = s.tc_issue_date;
+          if (s.tc_file_url) {
+            document.getElementById('existingTcFileBox').classList.remove('hidden');
+            document.getElementById('existingTcFileLink').href = s.tc_file_url;
+          }
+        }
+      } else {
+        selectContainer.classList.remove('hidden');
+        bannerEl.classList.add('hidden');
+      }
+
+      document.getElementById('issueTcModal').classList.remove('hidden');
+    }
+
+    function closeIssueTcModal() {
+      document.getElementById('issueTcModal').classList.add('hidden');
+    }
+
+    function validateTcFileSelection(event) {
+      const file = event.target.files[0];
+      const statusText = document.getElementById('tcFileStatusText');
+      if (!file) return;
+
+      const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+      const isJpeg = file.type === 'image/jpeg' || file.type === 'image/jpg' || /\.(jpe?g)$/i.test(file.name);
+
+      if (!isPdf && !isJpeg) {
+        alert('Invalid file format. Please upload only JPG, JPEG, or PDF files.');
+        event.target.value = '';
+        return;
+      }
+
+      const sizeKB = Math.round(file.size / 1024);
+
+      if (file.size > 200 * 1024) {
+        statusText.innerText = `${isPdf ? 'PDF' : 'JPEG'} selected (${sizeKB} KB). Will be automatically compressed to ≤ 200 KB on save.`;
+        statusText.className = 'text-[11px] text-amber-700 font-bold mt-1';
+      } else {
+        statusText.innerText = `${isPdf ? 'PDF' : 'JPEG'} ready (${sizeKB} KB — within 200 KB limit).`;
+        statusText.className = 'text-[11px] text-emerald-700 font-bold mt-1';
+      }
+    }
+
+    async function uploadTcDocument(file, studentAdmNo) {
+      const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+      let fileToUpload = file;
+      let extension = isPdf ? 'pdf' : 'jpg';
+      let contentType = isPdf ? 'application/pdf' : 'image/jpeg';
+
+      if (file.size > 200 * 1024) {
+        fileToUpload = isPdf
+          ? await compressPdfTo200KB(file)
+          : await compressImageTo200KB(file);
+
+        if (fileToUpload.size > 200 * 1024) {
+          throw new Error('File still exceeds 200 KB after auto-compression. Please upload a smaller scan.');
+        }
+      }
+
+      const safeAdm = (studentAdmNo || 'student').replace(/[^a-zA-Z0-9_-]/g, '_');
+      const fileName = `tc_${safeAdm}_${Date.now()}.${extension}`;
+
+      const { error } = await sb.storage
+        .from('student-tc')
+        .upload(fileName, fileToUpload, { contentType: contentType, upsert: true });
+
+      if (error) throw error;
+      const { data: urlData } = sb.storage.from('student-tc').getPublicUrl(fileName);
+      return urlData.publicUrl;
+    }
+
+    async function saveStudentTc(e) {
+      e.preventDefault();
+      const studentId = document.getElementById('tcStudentId').value;
+      const tcNo = document.getElementById('tcNumberInput').value.trim();
+      const tcIssueDate = document.getElementById('tcIssueDateInput').value;
+      const fileInput = document.getElementById('tcFileInput');
+
+      if (!studentId || !tcNo || !tcIssueDate) {
+        alert('Please fill in Student, TC No., and TC Issue Date.');
+        return;
+      }
+
+      const btn = document.getElementById('saveTcBtn');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Compressing & Saving...`;
+
+      try {
+        const student = studentsData.find(s => s.id === studentId);
+        let tcFileUrl = student ? student.tc_file_url : null;
+
+        if (fileInput.files && fileInput.files.length > 0) {
+          tcFileUrl = await uploadTcDocument(fileInput.files[0], student ? student.admission_no : studentId);
+        }
+
+        const updatePayload = {
+          status: 'TC_ISSUED',
+          tc_no: tcNo,
+          tc_issue_date: tcIssueDate,
+          tc_file_url: tcFileUrl,
+          updated_at: new Date().toISOString()
+        };
+
+        const { error } = await sb
+          .from('students')
+          .update(updatePayload)
+          .eq('id', studentId);
+
+        if (error) throw error;
+
+        alert(`Transfer Certificate (${tcNo}) recorded successfully!`);
+        closeIssueTcModal();
+        await loadStudents(false);
+      } catch (err) {
+        alert('Error saving TC record: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-check"></i> <span>Save TC Record</span>`;
+      }
+    }
+
+    async function restoreStudentFromTc(id, name) {
+      if (!confirm(`Restore ${name} back to their active class roster? (Their TC record fields will be cleared).`)) {
+        return;
+      }
+
+      try {
+        const { error } = await sb
+          .from('students')
+          .update({
+            status: 'ACTIVE',
+            tc_no: null,
+            tc_issue_date: null,
+            tc_file_url: null,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', id);
+
+        if (error) throw error;
+
+        alert(`${name} has been restored to active status.`);
+        await loadStudents(false);
+      } catch (err) {
+        alert('Error restoring student: ' + err.message);
+      }
     }
 
     // 6. View Student Details Modal Logic
@@ -1343,6 +1833,22 @@
 
       document.getElementById('viewModalFullName').innerText = s.full_name || 'Student Details';
       document.getElementById('viewModalSubHeader').innerText = `${s.class_name || currentActiveClass} • Section ${s.section || 'A'} • Roll No: ${s.roll_no || '-'}`;
+
+      const tcBanner = document.getElementById('viewTcBanner');
+      const tcDocBtn = document.getElementById('viewTcDocBtn');
+      if (s.status === 'TC_ISSUED') {
+        tcBanner.classList.remove('hidden');
+        document.getElementById('viewTcNo').innerText = s.tc_no || '-';
+        document.getElementById('viewTcDate').innerText = s.tc_issue_date ? s.tc_issue_date.split('-').reverse().join('/') : '-';
+        if (s.tc_file_url) {
+          tcDocBtn.href = s.tc_file_url;
+          tcDocBtn.classList.remove('hidden');
+        } else {
+          tcDocBtn.classList.add('hidden');
+        }
+      } else {
+        tcBanner.classList.add('hidden');
+      }
 
       document.getElementById('viewPhotoStudent').src = s.student_photo_url || 'https://placehold.co/100x120?text=Student';
       document.getElementById('viewPhotoFather').src = s.father_photo_url || 'https://placehold.co/100x120?text=Father';
@@ -1396,7 +1902,7 @@
       if (!currentActiveClass) return;
 
       document.getElementById('promoFromLabel').innerText = currentActiveClass;
-      const count = studentsData.filter(s => s.class_name === currentActiveClass).length;
+      const count = studentsData.filter(s => s.class_name === currentActiveClass && isStudentActive(s)).length;
       document.getElementById('promoCountNotice').innerText = `${count} students`;
 
       const classProgression = {
@@ -1423,14 +1929,14 @@
       const secOpt = document.getElementById('promoSectionOption').value;
       const btn = document.getElementById('confirmPromoteBtn');
 
-      const eligible = studentsData.filter(s => s.class_name === currentActiveClass);
+      const eligible = studentsData.filter(s => s.class_name === currentActiveClass && isStudentActive(s));
       if (eligible.length === 0) {
-        alert(`No students found in ${currentActiveClass} to promote.`);
+        alert(`No active students found in ${currentActiveClass} to promote.`);
         closePromoteModal();
         return;
       }
 
-      if (!confirm(`Are you sure you want to promote ${eligible.length} students from ${currentActiveClass} to ${targetClass}?`)) {
+      if (!confirm(`Are you sure you want to promote ${eligible.length} active students from ${currentActiveClass} to ${targetClass}?`)) {
         return;
       }
 
@@ -1474,26 +1980,7 @@
       }
     }
 
-    // 8. Delete Single Student / TC Exit Handler
-    async function deleteStudentRecord(id, name) {
-      const reason = prompt(`Confirm Student Exit / Transfer Certificate (TC):\n\nType "CONFIRM" to permanently remove ${name} from the school active register.`);
-      if (reason !== 'CONFIRM') {
-        alert('Student record was not deleted.');
-        return;
-      }
-
-      try {
-        const { error } = await sb.from('students').delete().eq('id', id);
-        if (error) throw error;
-
-        alert(`Record of ${name} has been successfully deleted.`);
-        await loadStudents(false);
-      } catch (err) {
-        alert('Error removing student: ' + err.message);
-      }
-    }
-
-    // 9. Bulk Delete Selected Students
+    // 8. Bulk Delete Selected Students
     async function bulkDeleteSelectedStudents() {
       if (selectedStudentIds.size === 0) {
         alert('Please select at least one student checkbox to delete.');
@@ -1526,14 +2013,15 @@
       }
     }
 
-    // 10. Export Current Populated Class Data
+    // 9. Export Current Populated Class Data
     function exportCurrentClassData() {
       if (!currentActiveClass) return;
 
       const list = studentsData.filter(s => {
+        const matchStatus = isStudentActive(s);
         const matchCls = s.class_name === currentActiveClass;
         const matchSec = !currentActiveSection || (s.section && s.section.toUpperCase() === currentActiveSection.toUpperCase());
-        return matchCls && matchSec;
+        return matchStatus && matchCls && matchSec;
       });
 
       if (list.length === 0) {
@@ -1600,7 +2088,7 @@
       document.body.removeChild(link);
     }
 
-    // 11. Class-Wise Bulk Excel / CSV Upload
+    // 10. Class-Wise Bulk Excel / CSV Upload
     function openClassBulkModal() {
       if (!currentActiveClass) return;
 
@@ -1810,6 +2298,8 @@
 
             if (existingMatch && existingMatch.id) {
               recordPayload.id = existingMatch.id;
+            } else {
+              recordPayload.status = 'ACTIVE';
             }
 
             recordsToUpsert.push(recordPayload);
@@ -1842,7 +2332,7 @@
       reader.readAsText(file);
     }
 
-    // 12. Single Student Add/Edit Modal Handlers
+    // 11. Single Student Add/Edit Modal Handlers
     function openStudentModal() {
       document.getElementById('studentForm').reset();
       
@@ -1986,6 +2476,7 @@
           const res = await sb.from('students').update(payload).eq('id', studentId);
           if (res.error) throw res.error;
         } else {
+          payload.status = 'ACTIVE';
           const res = await sb.from('students').insert([payload]).select();
           if (res.error) throw res.error;
           if (res.data && res.data.length > 0) {
@@ -2016,7 +2507,7 @@
       }
     }
 
-    // 13. Single & Bulk Printable HTML Template Builder
+    // 12. Single & Bulk Printable HTML Template Builder
     function buildProfileSheetHtml(s, withPhotos) {
       const dobFormatted = (s && s.dob) ? s.dob.split('-').reverse().join('/') : '';
       const admDateFormatted = (s && s.admission_date) ? s.admission_date.split('-').reverse().join('/') : '';
@@ -2238,7 +2729,7 @@
       `;
     }
 
-    // 14. Single & Bulk Printing Execution
+    // 13. Single & Bulk Printing Execution
     function printStudentProfile(id, withPhotos = true) {
       let s = null;
       if (id) {
